@@ -2,10 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities{
+  .auth-btn{
+    @apply text-xs font-semibold px-4 py-2 rounded-md border border-green-400
+  }
+  .header-item{
+    @apply px-8 w-full max-w-[1400px] border-b border-faded-grey flex items-center font-medium text-sm
+  }
+}
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+
+  color: #222531;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -16,12 +27,3 @@
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-}
