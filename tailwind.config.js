@@ -16,7 +16,9 @@ module.exports = {
       },
       colors: {
         'faded-grey': '#EFF2F5',
-        'dark-grey': '#6B7280'
+        'dark-grey': '#6B7280',
+        'medium-grey': '#58667E',
+        'news-grey': "rgb(248, 250, 253)",
       }
     },
   },
