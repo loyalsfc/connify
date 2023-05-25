@@ -3,11 +3,12 @@
 import Image from 'next/image'
 import React from 'react'
 import Link from 'next/link'
-import {FaSearch} from "react-icons/fa"
+import {FaBars, FaHamburger, FaSearch} from "react-icons/fa"
 import axios from 'axios'
 import { fetcher } from '../../utils/utils'
 import useSWR from 'swr'
 import { numberToString } from '../../utils/utils'
+import Logo from './Logo'
 
 function Header() {
     const {data: metrics, error, isLoading} = useSWR("global-metrics", fetcher)
@@ -36,9 +37,9 @@ function Header() {
     // });
 
     return (
-        <header className=''>
+        <header className='flex flex-col-reverse lg:flex-col'>
             <div className='header-item justify-between py-2'>
-                <div className='flex gap-4'>
+                <div className='flex gap-4 overflow-x-scroll'>
                     <Listing 
                         title="Cryptos"
                         value={numberToString(metrics?.data?.data?.total_cryptocurrencies)}
@@ -62,34 +63,26 @@ function Header() {
                         `}
                     />
                 </div>
-                <div className='flex gap-3'>
+                <div className='hidden gap-3 text-center lg:flex'>
                     <Link className='auth-btn text-green-400' href="">Login</Link>
                     <Link className='auth-btn bg-green-400 text-white' href="">Sign Up</Link>
                 </div>
             </div>
-            <div className='header-item gap-6'>
-                <h1 className='flex items-center font-bold text-2xl gap-2'>
-                    <Image
-                        src="/logo.jpg"
-                        height="40"
-                        width="40"
-                        alt="Logo"
-                    />
-                    Coinnify 
-                </h1>
-                <nav>
+            <div className='header-item gap-6 py-2 lg:py-4'>
+                <Logo />
+                <nav className='hidden lg:block' >
                     <ul className='flex gap-4'>
-                        <li className='py-6'>Cryptocurrencies</li>
-                        <li className='py-6'>Exchange</li>
-                        <li className='py-6'>Learn Crypto</li>
-                        <li className='py-6'>NFT</li>
-                        <li className='py-6'>Products</li>
+                        <li>Cryptocurrencies</li>
+                        <li>Exchange</li>
+                        <li>Learn Crypto</li>
+                        <li>NFT</li>
+                        <li>Products</li>
                     </ul>
                 </nav>
-                <div className='ml-auto'>
+                <div className='ml-auto hidden lg:block'>
                     <ul className='flex gap-4 items-center'>
-                        <li className='py-6'> Watchlist</li>
-                        <li className='py-6'>  PortFolio</li>
+                        <li>Watchlist</li>
+                        <li>PortFolio</li>
                         <li>
                             <div className='flex items-center gap-3 bg-faded-grey p-2 rounded-md'>
                                 <FaSearch />
@@ -98,13 +91,19 @@ function Header() {
                         </li>
                     </ul>
                 </div>
+                <button className='ml-auto text-2xl block lg:hidden'>
+                    <FaSearch />
+                </button>
+                <button className='block text-2xl lg:hidden'>
+                    <FaBars />
+                </button>
             </div>
         </header>
     )
 }
 
 function Listing({title, value}){
-    return <p className='text-xs font-medium'>
+    return <p className='text-xs font-medium shrink-0'>
         <span className='text-[#616E85]'>{title}: </span>
         <span className='text-[#3861FB]'>{value}</span>
     </p>
