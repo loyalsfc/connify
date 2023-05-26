@@ -11,7 +11,10 @@ import { numberToString } from '../../utils/utils'
 import Logo from './Logo'
 
 function Header() {
-    const {data: metrics, error, isLoading} = useSWR("global-metrics", fetcher)
+    const {data: metrics, error: metricsError, isLoading: metricsLoading} = useSWR(
+        "v1/global-metrics/quotes/latest",
+        fetcher
+    )
 
     // axios.get('https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?start=1&limit=10&convert=USD', {
     //             headers: {
@@ -69,7 +72,7 @@ function Header() {
                 </div>
             </div>
             <div className='header-item gap-6 py-2 lg:py-4'>
-                <Logo />
+                <Link href="/"><Logo /></Link>
                 <nav className='hidden lg:block' >
                     <ul className='flex gap-4'>
                         <li>Cryptocurrencies</li>

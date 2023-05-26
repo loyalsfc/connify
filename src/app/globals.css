@@ -7,7 +7,10 @@
     @apply text-xs font-semibold px-4 py-2 rounded-md border border-green-400
   }
   .header-item{
-    @apply px-8 w-full max-w-[1400px] border-b border-faded-grey flex items-center font-medium text-sm
+    @apply px-4 sm:px-8 w-full max-w-[1400px] border-b border-faded-grey flex items-center font-medium text-sm
+  }
+  .sticky-item{
+    @apply sticky bg-white p-2.5
   }
 }
 
@@ -32,4 +35,8 @@ button:disabled{
 }
 *::-webkit-scrollbar{
   display: none;
+}
+
+tr:hover td{
+  background-color: #F8FAFD;
 }

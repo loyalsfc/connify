@@ -9,6 +9,16 @@ const nextConfig = {
             },
         ];
     },
+    images: {
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 's2.coinmarketcap.com',
+                port: '',
+                pathname: "/static/**",
+            }
+        ]
+    }
 }
 
 module.exports = nextConfig
