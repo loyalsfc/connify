@@ -1,9 +1,8 @@
 'use client'
 
-import Image from 'next/image'
 import React from 'react'
 import Link from 'next/link'
-import {FaBars, FaHamburger, FaSearch} from "react-icons/fa"
+import {FaBars, FaSearch} from "react-icons/fa"
 import axios from 'axios'
 import { fetcher } from '../../utils/utils'
 import useSWR from 'swr'
@@ -15,29 +14,6 @@ function Header() {
         "v1/global-metrics/quotes/latest",
         fetcher
     )
-
-    // axios.get('https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?start=1&limit=10&convert=USD', {
-    //             headers: {
-    //                 'X-CMC_PRO_API_KEY': '337af67c-9bf9-475b-84e8-c66530ad73f0',
-    //             },
-    //     })
-    //     .then(function (response) {
-    //         // handle success
-    //         console.log(response);
-    //     })
-    //     .catch(function (error) {
-    //         // handle error
-    //         console.log(error);
-    //     })
-    //     .finally(function () { 
-    //         // always executed
-    //     });
-
-    // const response = await axios.get('https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?start=1&limit=10&convert=USD', {
-    //         headers: {
-    //             'X-CMC_PRO_API_KEY': '337af67c-9bf9-475b-84e8-c66530ad73f0',
-    //         },
-    // });
 
     return (
         <header className='flex flex-col-reverse lg:flex-col'>
