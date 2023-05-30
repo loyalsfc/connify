@@ -28,7 +28,6 @@ async function getData(slug){
         }
     })
     const metadata = await metaDataRes.json()
-
     // if(!res.ok){
     //     throw new Error('Failed to fetch data')
     // }
@@ -38,25 +37,18 @@ async function getData(slug){
 
 async function Page({params}) {
     console.log(params)
-
-    // const mainFetcher = (slug) => axios.post(`http://192.168.0.192:5000/api/coin`, {slug})
-    // const {data: historyData, error: historyError} = useSWR(params.slug, mainFetcher)
-    // const {data, isLoading, isError} = useSWR(
-    //     `v2/cryptocurrency/info?slug=${params.slug}`,
-    //     fetcher
-    // )
-    // console.log(data?.data)
-    // console.log(historyData?.data)
     const data = await getData(params.slug)
-    
     console.log(data)
+
+    const {logo} = data?.metadata?.data['1']
+
     return (
         <main className='py-6'>
             <section className='px-4 sm:px-8'>
                 <article>
                     <div className='font-bold flex items-center gap-3'>
                         <Image
-                            src={data?.metadata?.data['1']?.logo}
+                            src={logo}
                             width={32}
                             height={32}
                             alt="Coin logo"
