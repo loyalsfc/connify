@@ -28,9 +28,6 @@ async function getData(slug){
         }
     })
     const metadata = await metaDataRes.json()
-    // if(!res.ok){
-    //     throw new Error('Failed to fetch data')
-    // }
 
     return {coinData, metadata}
 }
