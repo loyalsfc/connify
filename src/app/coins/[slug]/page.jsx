@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 import { Metadata } from 'next'
 // import useSWR from 'swr'
@@ -29,7 +31,7 @@ async function getData(slug){
     })
     const metadata = await metaDataRes.json()
 
-    return {coinData, metadata}
+    return {coinData, metadata: metadata.data[coinData.id]}
 }
 
 async function Page({params}) {
@@ -37,7 +39,7 @@ async function Page({params}) {
     const data = await getData(params.slug)
     console.log(data)
 
-    const {logo} = data?.metadata?.data['1']
+    const {logo} = data?.metadata
 
     return (
         <main className='py-6'>
@@ -62,9 +64,6 @@ async function Page({params}) {
                         </span>
                     </div>
                 </article>
-                <div>
-                    {JSON.stringify(data)}
-                </div>
             </section>
         </main>
     )
