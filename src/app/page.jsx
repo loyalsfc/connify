@@ -40,7 +40,7 @@ function Home() {
     return (
         <main>
             <section className='mt-8 mb-12 px-4 sm:px-8'>
-                <h1 className='text-sm md:text-2xl font-bold mb-2'>Today's Cryptocurrency Prices by Market Cap</h1>
+                <h1 className='text-sm md:text-2xl font-bold mb-2'>Today&apos;s Cryptocurrency Prices by Market Cap</h1>
                 <p className='text-sm'>The global cryptocurrency market cap today is $1.17 Trillion, a {!metricsLoading && <span className={metrics?.data?.data?.quote?.USD.total_market_cap_yesterday_percentage_change > 0 ? "border-green-400" : "border-red-500"}>{metrics?.data?.data?.quote?.USD.total_market_cap_yesterday_percentage_change.toFixed(1)}%</span>} change in the last 24 hours</p>
                 {metricsLoading === false &&
                     <ul className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-3'>
@@ -144,7 +144,7 @@ function Home() {
                 <article className='md:text-center md:border border-dark-grey p'>
                     <div className='md:w-3/5 mx-auto'>
                         <h1 className='pt-4 sm:pt-16 pb-2 text-sm sm:text-3xl font-semibold'>Be the first to know about every crypto news every day</h1>
-                        <p className='mb-8 text-sm md:text-base'>Get crypto analysis, news and updates right to your inbox! Sign up here so you don't miss a single newsletter.</p>
+                        <p className='mb-8 text-sm md:text-base'>Get crypto analysis, news and updates right to your inbox! Sign up here so you don&apos;t miss a single newsletter.</p>
                         <div className='flex flex-col md:flex-row items-center gap-4 mb-4 sm:mb-16'>
                             <input type='email' placeholder='Enter your email' className='bg-transparent w-full flex-1 border border-dark-grey py-3 px-6 text-sm' />
                             <button className='text-sm font-semibold text-white w-full md:w-fit bg-green-600 rounded-md py-3 px-6'>Subscribe now</button>
