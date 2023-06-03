@@ -1,5 +1,6 @@
+'use client'
+
 import React from 'react'
-import { Metadata } from 'next'
 // import useSWR from 'swr'
 import { fetcher, numberToString, toTwoDecimalPlace } from '../../../../utils/utils'
 import Image from 'next/image'
@@ -11,38 +12,46 @@ export const metadata = {
 }
 
 async function getData(slug){
-    const res = await fetch(`http://192.168.0.192:5000/api/coin`, {
-        method: "POST",
-        body: JSON.stringify({slug}),
-        headers: {
-            "Content-type": "application/json; charset=UTF-8"
-        }
-    })
-    const coinData = await res.json()
+    // const res = await fetch(`http://192.168.0.192:5000/api/coin`, {
+    //     method: "POST",
+    //     body: JSON.stringify({slug}),
+    //     headers: {
+    //         "Content-type": "application/json; charset=UTF-8"
+    //     }
+    // })
+    // const coinData = await res.json()
 
-    const metaDataRes = await fetch(`http://localhost:5000/api`, {
-        method: "POST",
-        body: JSON.stringify({url: `v2/cryptocurrency/info?slug=${slug}`}),
-        headers: {
-            "Content-type": "application/json; charset=UTF-8"
-        }
-    })
-    const metadata = await metaDataRes.json()
+    // const metaDataRes = await fetch(`http://192.168.0.192:5000/api`, {
+    //     method: "POST",
+    //     body: JSON.stringify({url: `v2/cryptocurrency/info?slug=${slug}`}),
+    //     headers: {
+    //         "Content-type": "application/json; charset=UTF-8"
+    //     }
+    // })
+    // const metadata = await metaDataRes.json()
 
-    return {coinData, metadata: metadata.data[coinData.id]}
+    // return metadata
+
+    // return {coinData, metadata: metadata.data[coinData.id]}
+
+    const res = await fetch('https://dummyjson.com/products/1')
+    const product = await res.json()
+    return product
+
+    // return coinData
 }
 
 async function Page({params}) {
     const data = await getData(params.slug)
     console.log(data)
 
-    const {logo, name, symbol} = data?.metadata
-    const {quote} = data?.coinData
+    // const {logo, name, symbol} = data?.metadata
+    // const {quote} = data?.coinData
 
     return (
         <main className='py-6'>
             <section className='px-4 sm:px-8'>
-                <article>
+                {/* <article>
                     <div className='font-bold flex items-center gap-3'>
                         <Image
                             src={logo}
@@ -61,7 +70,7 @@ async function Page({params}) {
                             {quote.USD.percent_change_24h > 0 ? <FaAngleUp /> : <FaAngleDown/>} {toTwoDecimalPlace(quote.USD.percent_change_24h)}% 
                         </span>
                     </div>
-                </article>
+                </article> */}
             </section>
         </main>
     )

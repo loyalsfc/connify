@@ -86,7 +86,7 @@ function Home() {
                         </thead>
                         <tbody className='font-semibold'>
                             {isLoading === false && 
-                                coins?.data?.data.map((coin, index) => {
+                                coins?.data?.data?.map((coin, index) => {
                                     const {id, name, quote, symbol, circulating_supply, slug} = coin
                                     const {price, percent_change_1h, percent_change_24h, percent_change_7d, market_cap, volume_24h} = quote?.USD
                                     return(
