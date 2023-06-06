@@ -51,7 +51,6 @@ function Footer() {
 
 function ListComponent({title, children}){
     const handleClick = (e) => {
-        console.log(e.currentTarget.nextElementSibling.classList)
         e.currentTarget.nextElementSibling.classList.replace('hidden', 'flex')
     }
     return (

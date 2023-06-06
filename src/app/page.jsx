@@ -11,7 +11,7 @@ import Link from 'next/link'
 
 function Home() {
     const [pageIndex, setPageIndex] = useState(0)
-    const [limit, setLimit] = useState(10)
+    const [limit, setLimit] = useState(100)
     const {data: coins, error, isLoading} = useSWR(
         `v1/cryptocurrency/listings/latest?start=${(pageIndex * limit) + 1}&limit=${limit}&convert=USD`, 
         fetcher
