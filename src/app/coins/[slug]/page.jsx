@@ -6,6 +6,7 @@ import { coinFetcher, fetcher, numberToString, toTwoDecimalPlace } from '../../.
 import Image from 'next/image'
 import { FaAngleDown, FaAngleUp, FaRegFile, FaBattleNet, FaGithub, FaTwitter, FaRedditAlien, FaCommentDots } from 'react-icons/fa'
 import Link from 'next/link'
+import Loader from '@/components/loader'
 
 function CoinPage({params}) {
     const qtyField = useRef()
@@ -22,14 +23,7 @@ function CoinPage({params}) {
 
     if(metaLoading || coinLoading){
         return(
-            <div className='h-[80vh] flex items-center justify-center'>
-                <Image
-                    src="/loader.webp"
-                    height="150"
-                    width="150"
-                    alt="Loader"
-                />
-            </div>
+            <Loader />
         )
     }
 
@@ -52,8 +46,8 @@ function CoinPage({params}) {
         <main className='py-6'>
             <section className='px-4 sm:px-8 flex flex-col sm:flex-row'>
                 <article className='sm:pr-8 mb-8 sm:mb-0'>
-                    <span className='text-xs text-faded-grey bg-gray-950 rounded-md px-2 py-1 mb-2 block w-fit'>Rank #{cmc_rank}</span>
-                    <div className='font-bold flex items-center gap-3'>
+                    <span className='tag mb-2'>Rank #{cmc_rank}</span>
+                    <div className='font-bold flex items-center gap-3 my-4'>
                         <Image
                             src={logo}
                             width={32}
@@ -71,7 +65,7 @@ function CoinPage({params}) {
                             {quote.USD.percent_change_24h > 0 ? <FaAngleUp /> : <FaAngleDown/>} {toTwoDecimalPlace(quote.USD.percent_change_24h)}% 
                         </span>
                     </div>
-                    <p className='text-sm mt-4'>{description}</p>
+                    <p className='text-sm mt-4 leading-8'>{description}</p>
                     <div className='grid grid-cols-1 sm:grid-cols-2 gap-x-8 text-xs mt-8'>
                         <CoinInfo
                             title="Market Cap"
@@ -192,7 +186,7 @@ function CoinPage({params}) {
 
 function CoinInfo({title, value}){
     return(
-        <p className='flex justify-between py-2 border-b border-b-medium-grey text-medium-grey'>
+        <p className='flex justify-between py-3 border-b border-b-medium-grey text-medium-grey'>
             <span>{title}:</span>
             <span className='font-semibold'>{value}</span>
         </p>

@@ -12,6 +12,9 @@
   .sticky-item{
     @apply sticky bg-white p-2.5
   }
+  .tag{
+    @apply text-xs text-faded-grey bg-gray-950 rounded-md px-2 py-1 block w-fit
+  }
 }
 
 :root {
