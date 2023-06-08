@@ -15,6 +15,18 @@
   .tag{
     @apply text-xs text-faded-grey bg-gray-950 rounded-md px-2 py-1 block w-fit
   }
+  .display-less{
+    @apply max-h-64 relative overflow-hidden 
+  }
+}
+.display-less::before{
+  content: "";
+  position: absolute;
+  left: 0px;
+  bottom: 0px;
+  width: 100%;
+  height: 8em;
+  background: linear-gradient(180deg,rgba(255,255,255,0),rgba(255,255,255,1));
 }
 
 :root {

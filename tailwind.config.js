@@ -19,6 +19,7 @@ module.exports = {
         'dark-grey': '#6B7280',
         'medium-grey': '#58667E',
         'news-grey': "rgb(248, 250, 253)",
+        'blue-colour': "#3861FB",
       }
     },
   },

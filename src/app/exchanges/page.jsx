@@ -32,7 +32,7 @@ function Exchanges() {
                 <h4 className="text-center text-2xl font-bold mt-8">Exchanges</h4>
                 <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-8 text-center font-semibold py-8 text-sm'>
                     {
-                        exchanges?.data?.data.map((item, index) => {
+                        exchanges?.data?.data?.map((item, index) => {
                             if(index > limit) return;
                             return <Link href={`/exchanges/${item.slug}`} key={item.id}>
                                 <span className='hover:underline'>{item.name}</span>

@@ -40,6 +40,26 @@ function CoinPage({params}) {
     const handlePrice = (e) => {
         qtyField.current.value =(e.target.value / price).toFixed(5)
     }
+
+    function convertLinkToHyperlink(text) {
+        // Regular expression to match URLs
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+      
+        // Replace URLs with JSX hyperlinks
+        const replacedText = text.split(urlRegex).map((part, index) => {
+            if (part.match(urlRegex)) {
+                return (
+                <Link href={part} key={index} className='text-blue-colour' target="_blank" rel="noopener noreferrer">
+                    {part}
+                </Link>
+                );
+            } else {
+                return part;
+            }
+        });
+      
+        return replacedText;
+    }
     
 
     return (
@@ -65,7 +85,7 @@ function CoinPage({params}) {
                             {quote.USD.percent_change_24h > 0 ? <FaAngleUp /> : <FaAngleDown/>} {toTwoDecimalPlace(quote.USD.percent_change_24h)}% 
                         </span>
                     </div>
-                    <p className='text-sm mt-4 leading-8'>{description}</p>
+                    <p className='text-sm mt-4 leading-8'>{convertLinkToHyperlink(description)}</p>
                     <div className='grid grid-cols-1 sm:grid-cols-2 gap-x-8 text-xs mt-8'>
                         <CoinInfo
                             title="Market Cap"

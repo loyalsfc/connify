@@ -51,8 +51,16 @@ function Header() {
                 <Link href="/"><Logo /></Link>
                 <nav className='hidden lg:block' >
                     <ul className='flex gap-4'>
-                        <li>Cryptocurrencies</li>
-                        <li>Exchange</li>
+                        <li>
+                            <Link href="/">
+                                Cryptocurrencies
+                            </Link>
+                        </li>
+                        <li>
+                            <Link href="/exchanges">
+                                Exchange
+                            </Link>
+                        </li>
                         <li>Learn Crypto</li>
                         <li>NFT</li>
                         <li>Products</li>
@@ -84,7 +92,7 @@ function Header() {
 function Listing({title, value}){
     return <p className='text-xs font-medium shrink-0'>
         <span className='text-[#616E85]'>{title}: </span>
-        <span className='text-[#3861FB]'>{value}</span>
+        <span className='text-blue-colour'>{value}</span>
     </p>
 }
 
