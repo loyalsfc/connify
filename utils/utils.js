@@ -19,3 +19,7 @@ export function toTwoDecimalPlace(num){
 export const fetcher = (url) => axios.post(`http://192.168.0.192:5000/api`, {url})
 
 export const coinFetcher = (slug) => axios.post(`http://192.168.0.192:5000/api/coin`, {slug})
+
+export function getImage(id){
+    return `https://s2.coinmarketcap.com/static/img/coins/64x64/${id}.png`
+}

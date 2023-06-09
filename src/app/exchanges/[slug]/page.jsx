@@ -1,32 +1,41 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import useSWR from 'swr'
-import { fetcher, numberToString, toTwoDecimalPlace } from '../../../../utils/utils'
+import { fetcher, getImage, numberToString, toTwoDecimalPlace } from '../../../../utils/utils'
 import Loader from '@/components/loader'
 import Image from 'next/image'
-import { FaAngleDown, FaAngleUp, FaComment, FaDollarSign, FaLink, FaTwitter } from 'react-icons/fa'
+import { FaAngleDown, FaAngleUp, FaComment, FaDollarSign, FaLink, FaTwitter, FaWallet } from 'react-icons/fa'
 import Link from 'next/link'
+import axios from 'axios'
 
 function ExchangePage({params}) {
     const [showLess, setShowLess] = useState(true)
+    const [assets, setAssets] = useState([])
     const [assetLimits, setAssetsLimit] = useState(19)
     const {data: meta, error: metaError, isLoading: metaLoading} = useSWR(
         `v1/exchange/info?slug=${params.slug}`,
         fetcher
     )
     
-    const {data: asset, error: assetError, isLoading: assetLoading} = useSWR(
-        `v1/exchange/assets?id=${meta?.id}`,
-        fetcher
-    )
+    useEffect(()=>{
+        const url = `http://192.168.0.192:5000/api`
+        if(meta){
+            axios.post(url, {
+                url: `v1/exchange/assets?id=${meta.data.data[params.slug]?.id}`
+            })
+            .then(({data}) => {
+                setAssets(data?.data)
+            })
+        }
+    },[meta])
     
-    if(metaLoading || assetLoading){
+    if(metaLoading){
         return <Loader />
     }
 
     const {id, logo, name, urls, spot_volume_usd, weekly_visits, description} = meta.data.data[params.slug]
-    console.log(asset)
+    console.log(assets[0])
 
     const convertTextToHTML = (text) => {
         const linkRegex = /\[(.*?)\]\((.*?)\)/g;
@@ -110,6 +119,57 @@ function ExchangePage({params}) {
                             {showLess ? <span className='flex items-center'> Show More <FaAngleDown /></span> : <span className='flex items-center'> Show Less <FaAngleUp    /></span>}
                         </button>
                     </div>
+                </div>
+            </section>
+            <section className="px-4 sm:px-8 mb-8">
+                <h2 className='font-semibold text-2xl mb-4'>Financial reserves</h2>
+                <div className='bg-news-grey p-6 rounded-2xl relative w-fit'>
+                    <table className=''>
+                        <thead className='text-xs sticky top-0 border-y border-faded-grey'>
+                            <tr>
+                                <th className='py-2.5 bg-news-grey'>Token</th>
+                                <th className='py-2.5 bg-news-grey'>Balance</th>
+                                <th className='py-2.5 bg-news-grey'>Price</th>
+                                <th className='py-2.5 bg-news-grey'>value</th>
+                            </tr>
+                        </thead>
+                        <tbody className='text-sm font-semibold'>
+                            {assets.map((item, index) =>{
+                                if(index < assetLimits){
+                                    const {crypto_id, price_usd, name, symbol} = item.currency
+                                    console.log(price_usd)
+                                    return <tr key={crypto_id} className='border-b border-faded-grey last:border-b-0'>
+                                        <td className='flex items-center p-2.5 whitespace-nowrap'>
+                                            <div className='relative'>
+                                                <Image
+                                                    src={getImage(crypto_id)}
+                                                    height={24}
+                                                    width={24}
+                                                    alt='Icon'
+                                                    className='rounded-full object-cover'
+                                                />
+                                                <Image
+                                                    src={getImage(item.platform.crypto_id)}
+                                                    height={16}
+                                                    width={16}
+                                                    alt='Exchange Icon'
+                                                    className='absolute top-3.5 left-3.5 z-10 rounded-full object-cover'
+                                                />
+                                            </div>
+                                            <p className='ml-4'>
+                                                <span className="block text-sm font-semibold">{symbol}</span>
+                                                <span className="flex items-center gap-3 text-medium-grey text-xs"><FaWallet /> {item.wallet_address}</span>
+                                            </p>
+                                        </td>
+                                        <td className='text-end p-2.5'>{numberToString(item.balance)}</td>
+                                        <td className='text-end p-2.5'>${toTwoDecimalPlace(price_usd)}</td>
+                                        <td className='text-end p-2.5'>${toTwoDecimalPlace(price_usd * item.balance)}</td>
+                                    </tr>
+                                }
+                            })}
+                        </tbody>
+                    </table>
+                    <button onClick={()=>setAssetsLimit(assetLimits + 20)} className="w-full bg-faded-grey p-4 rounded-md text-center mt-4 font-bold">Load more</button>
                 </div>
             </section>
         </main>
