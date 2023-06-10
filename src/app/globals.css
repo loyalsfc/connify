@@ -55,3 +55,9 @@ button:disabled{
 tr:hover td{
   background-color: #F8FAFD;
 }
+.copy-icon{
+  visibility: hidden;
+}
+.contact-address-wrapper:hover .copy-icon{
+  visibility: visible;
+}

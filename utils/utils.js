@@ -11,6 +11,10 @@ export function getCoinVolume(volumeInUsd, coinPrice){
 }
 
 export function toTwoDecimalPlace(num){
+    let twoDecimal = Math.floor(num * 100) / 100
+    if(twoDecimal == 0.00){
+        return num.toFixed(5)
+    } 
     return numberToString(Math.floor(num * 100) / 100)
 }
 
