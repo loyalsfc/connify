@@ -11,13 +11,18 @@ function Exchanges() {
         `v1/exchange/map`,
         fetcher
     )
+    const {data: exchangeInfo, error: infoError, isLoading: infoLoading} = useSWR(
+        `v1/exchange/info?slug=binance,gdax`,
+        fetcher
+    )
     const [limit, setLimit] = useState(101);
 
     if(exchangeLoading){
         return <Loader />
     }
 
-    console.log(exchanges)
+    // console.log(exchanges)
+    console.log(exchangeInfo)
 
     const loadMore = () => {
         if(limit > exchanges.length) return;

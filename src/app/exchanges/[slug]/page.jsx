@@ -215,7 +215,7 @@ function ExchangePage({params}) {
                 <h2 className='font-semibold text-2xl mb-4'>Financial reserves</h2>
                 <div className='flex flex-col-reverse md:flex-row gap-8 items-start'>
                     <div className='bg-news-grey p-4 md:p-6 rounded-2xl overflow-scroll relative w-full  md:w-3/5 shrink-0'>
-                        <table className=''>
+                        <table className='table w-full'>
                             <thead className='text-xs sticky top-0 border-y border-faded-grey bg-news-grey'>
                                 <tr >
                                     <th className='py-2.5 z-10 top-0 bg-news-grey sticky left-0'>Token</th>
@@ -225,7 +225,7 @@ function ExchangePage({params}) {
                                 </tr>
                             </thead>
                             <tbody className='text-sm font-semibold'>
-                                {assets.map((item, index) =>{
+                                {assets.length ? assets.map((item, index) =>{
                                     if(index < assetLimits){
                                         const {crypto_id, price_usd, name, symbol} = item.currency
                                         return <tr key={index} className='border-b border-faded-grey last:border-b-0'>
@@ -262,7 +262,10 @@ function ExchangePage({params}) {
                                             <td className='text-end p-2.5'>${toTwoDecimalPlace(price_usd * item.balance)}</td>
                                         </tr>
                                     }
-                                })}
+                                }):<tr>
+                                    <td className='text-center italic py-20' colSpan={4}>No Data to show</td>
+                                </tr>
+                                }
                             </tbody>
                         </table>
                         <p className='mt-2 text-xs font-semibold text-medium-grey sticky left-0'>Only wallets with {'>'}500,000 USD balance are shown <br/>

@@ -4,10 +4,11 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import useSWR from 'swr'
 import { ExpandLess, ExpandMore, StarRateOutlined } from '@mui/icons-material'
-import { fetcher, getCoinVolume, numberToString, toTwoDecimalPlace } from '../../utils/utils'
+import { fetcher, getCoinVolume, getImage, numberToString, toTwoDecimalPlace } from '../../utils/utils'
 import Pagination from '@/components/pagination'
 import { FaRegStar, FaStar } from 'react-icons/fa'
 import Link from 'next/link'
+import Image from 'next/image'
 
 function Home() {
     const [pageIndex, setPageIndex] = useState(0)
@@ -96,7 +97,16 @@ function Home() {
                                             </td>
                                             <td className='sticky-item left-[34px]'>{(pageIndex * limit) + (index + 1)}</td>
                                             <td className='sticky-item left-[70px] sm:whitespace-nowrap text-left'>
-                                                <Link href={`/coins/${slug}`}>{name} <span className='text-dark-grey'>{symbol}</span></Link>
+                                                <div className='flex items-center'>
+                                                    <Image
+                                                        src={getImage(id)}
+                                                        height={24}
+                                                        width={24}
+                                                        alt="Logo"
+                                                        className='mr-1.5'
+                                                    />
+                                                    <Link href={`/coins/${slug}`}>{name} <span className='text-dark-grey'>{symbol}</span></Link>
+                                                </div>
                                             </td>
                                             <td className='p-2.5 text-right'>${price.toFixed(2)}</td>
                                             <PercentageChangeRow percentChange={percent_change_1h} />

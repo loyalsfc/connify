@@ -63,7 +63,11 @@ function Header() {
                         </li>
                         <li>Learn Crypto</li>
                         <li>NFT</li>
-                        <li>Products</li>
+                        <li>
+                            <Link href="/converter">
+                                Converter
+                            </Link>
+                        </li>
                     </ul>
                 </nav>
                 <div className='ml-auto hidden lg:block'>

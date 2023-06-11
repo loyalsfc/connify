@@ -65,28 +65,4 @@ function Pagination({c, m, handleClick}) {
     )
 }
 
-function BlaBlaBla(){
-    return (
-        <div >
-                    <button 
-                        disabled={pageIndex == 0 ? true : false}
-                        className='hover:bg-green-400 h-full block hover:text-white px-2.5 py-1 border-r border-faded-grey'
-                        onClick={() => setPageIndex(pageIndex - 1)}
-                    >
-                        <FaAngleLeft />
-                    </button>
-                    {!metricsLoading &&
-                        <Pagination handleClick={setPageIndex} c={pageIndex} m={Math.ceil(totalCoins / limit)}/>    
-                    }
-                    <button 
-                        disabled={pageIndex == (limit + 1) ? true : false}
-                        className='hover:bg-green-400 hover:text-white px-2.5 py-1 h-full block'
-                        onClick={() => setPageIndex(pageIndex + 1)}
-                    >
-                        <FaAngleRight />    
-                    </button>
-                </div>
-    )
-}
-
 export default Pagination
