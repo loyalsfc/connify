@@ -1,16 +1,45 @@
 'use client'
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import { fetcher } from '../../../utils/utils'
 import useSWR from 'swr'
+import { FaAngleDown } from 'react-icons/fa'
 
 function Converter() {
-    const {data, error, isLoading} = useSWR(
-        // `v2/tools/price-conversion?amount=100&id=1&convert=NGN`,
-        `v1/fiat/map`,
-        fetcher
-    )
+    const fromElement = useRef();
+    const [fromDisplay, setFromDisplay] = useState('Bitcoin (BTC)')
+    // const {data, error, isLoading} = useSWR(
+    //     // `v2/tools/price-conversion?amount=100&id=1&convert=NGN`,
+    //     `v1/fiat/map`,
+    //     fetcher
+    // )
 
-    console.log(data?.data)
+    // console.log(data?.data?.data)
+
+    // const fiats = data?.data?.data?.map(item => {
+    //     const {symbol} = item;
+    //     return <option value={symbol}></option>
+    // })
+
+    function handleClick(e, element){
+        element.current.focus();
+    }
+
+    function handleChange(e){
+        setFromDisplay('')
+        e.target.style.width = getTextWidth(e.value) + 'px';
+
+    }
+
+    function getTextWidth(text) {
+        const dummyElement = document.createElement('span');
+        dummyElement.style.visibility = 'hidden';
+        dummyElement.style.whiteSpace = 'pre';
+        dummyElement.textContent = text;
+        // inputContainer.appendChild(dummyElement);
+        const width = dummyElement.getBoundingClientRect().width;
+        // inputContainer.removeChild(dummyElement);
+        return width;
+      }
 
     return (
         <main className="pt-8">
@@ -30,16 +59,32 @@ function Converter() {
                             <div className='w-[calc(50%_-_25px)]'/>
                         </div>
                         <div className="flex items-center justify-center mb-5">
-                            <div className='w-[calc(50%_-_25px)]'>
-                                <select type="number" className='w-full border border-faded-grey bg-white rounded-lg text-black focus:outline-none px-4 h-10 text-sm'>
-                                    <option value="BTC">Bitcoin (BTC)</option>
-                                </select>
+                            <div className='w-[calc(50%_-_25px)]' onClick={(e)=>handleClick(e, fromElement)}>
+                                <div className='flex items-center py-0.5 relative overflow-hidden w-full border border-faded-grey bg-white rounded-lg text-black focus:outline-none h-10 text-sm'>
+                                    <div className='flex-1 flex items-center box-content'>
+                                        <div className='p-0.5'>
+                                            <input
+                                                className='w-0.5 block overflow-visible border-none focus:outline-none'
+                                                type="text" 
+                                                autoCapitalize='none' 
+                                                autoComplete='off' 
+                                                autoCorrect='off' 
+                                                ref={fromElement}
+                                                onChange={handleChange}
+                                            />
+                                        </div>
+                                        <span>{fromDisplay}</span>
+                                    </div>
+                                    <div className='flex shrink-0 text-gray-300 items-center border-l border-faded-grey justify-center p-2'>
+                                        <FaAngleDown />
+                                    </div>
+                                </div>
                             </div>
                             <div className='flex-1 '>
                                 <button className="bg-green-500 py-1.5 px-2.5 rounded-md text-white block w-fit mx-auto">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="#FFF" height="16px" width="16px" viewBox="0 0 24 24" className="sc-aef7b723-0 fINSSs">
-                                        <path d="M6 16H20M20 16L17 19M20 16L17 13" stroke="#FFF" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" strokeLinejoin="round"></path>
-                                        <path d="M18 8H4M4 8L7 11M4 8L7 5" stroke="#FFF" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" strokeLinejoin="round"></path>
+                                        <path d="M6 16H20M20 16L17 19M20 16L17 13" stroke="#FFF" strokeWidth="2" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"></path>
+                                        <path d="M18 8H4M4 8L7 11M4 8L7 5" stroke="#FFF" strokeWidth="2" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"></path>
                                     </svg>
                                 </button>
                             </div>
