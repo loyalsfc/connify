@@ -6,7 +6,10 @@ import { FaAngleDown } from 'react-icons/fa'
 
 function Converter() {
     const fromElement = useRef();
-    const [fromDisplay, setFromDisplay] = useState('Bitcoin (BTC)')
+    const fromDisplay = useRef();
+    const fromCurrencyElement = useRef();
+    const [fromCurrency, setFromCurrency] = useState('Bitcoin (BTC)')
+    const [quantity, setQuantity] = useState(1)
     // const {data, error, isLoading} = useSWR(
     //     // `v2/tools/price-conversion?amount=100&id=1&convert=NGN`,
     //     `v1/fiat/map`,
@@ -25,21 +28,15 @@ function Converter() {
     }
 
     function handleChange(e){
-        setFromDisplay('')
-        e.target.style.width = getTextWidth(e.value) + 'px';
-
+        fromCurrencyElement.current.classList.add('hidden')
+        fromDisplay.current.innerText = e.target.value;
+        // e.target.style.width = 
+        e.target.style.width = fromDisplay.current.getBoundingClientRect().width + 'px'
     }
 
-    function getTextWidth(text) {
-        const dummyElement = document.createElement('span');
-        dummyElement.style.visibility = 'hidden';
-        dummyElement.style.whiteSpace = 'pre';
-        dummyElement.textContent = text;
-        // inputContainer.appendChild(dummyElement);
-        const width = dummyElement.getBoundingClientRect().width;
-        // inputContainer.removeChild(dummyElement);
-        return width;
-      }
+    function handleBlur(e){
+        fromCurrencyElement.current.classList.remove('hidden')
+    }
 
     return (
         <main className="pt-8">
@@ -52,7 +49,8 @@ function Converter() {
                                 <input 
                                     type="number" 
                                     className='w-full border border-faded-grey bg-white rounded-lg text-black focus:outline-none px-4 h-10 text-sm' placeholder='Enter Amount to Convert'
-                                    value={1}
+                                    value={quantity}
+                                    onChange={(e)=>setQuantity(e.target.value)}
                                 />
                             </div>
                             <div className='flex-1'/>
@@ -60,20 +58,24 @@ function Converter() {
                         </div>
                         <div className="flex items-center justify-center mb-5">
                             <div className='w-[calc(50%_-_25px)]' onClick={(e)=>handleClick(e, fromElement)}>
-                                <div className='flex items-center py-0.5 relative overflow-hidden w-full border border-faded-grey bg-white rounded-lg text-black focus:outline-none h-10 text-sm'>
-                                    <div className='flex-1 flex items-center box-content'>
-                                        <div className='p-0.5'>
-                                            <input
-                                                className='w-0.5 block overflow-visible border-none focus:outline-none'
-                                                type="text" 
-                                                autoCapitalize='none' 
-                                                autoComplete='off' 
-                                                autoCorrect='off' 
-                                                ref={fromElement}
-                                                onChange={handleChange}
-                                            />
+                                <div className='flex items-center py-0.5 relative overflow-hidden w-full border border-faded-grey bg-white rounded-lg text-black h-10 text-sm'>
+                                    <div className='flex-1 overflow-hidden'>
+                                        <div className='w-full flex items-center py-0.5 px-2 flex-wrap overflow-hidden'>
+                                            <p ref={fromCurrencyElement} className='mx-0.5 max-w-[calc(100%_-_8px)] overflow-hidden absolute whitespace-nowrap text-ellipsis top-1/2 -translate-y-1/2'>{fromCurrency}</p>
+                                            <div className='m-0.5 py-0.5 visible '>
+                                                <input
+                                                    className='w-0.5 border-none focus:outline-none outline-none'
+                                                    type="text" 
+                                                    autoCapitalize='none' 
+                                                    autoComplete='off' 
+                                                    autoCorrect='off' 
+                                                    ref={fromElement}
+                                                    onChange={handleChange}
+                                                    onBlur={handleBlur}
+                                                />
+                                                <span ref={fromDisplay} className='absolute top-0 left-0 invisible h-0 px-px overflow-scroll whitespace-pre w-fit'></span>
+                                            </div>
                                         </div>
-                                        <span>{fromDisplay}</span>
                                     </div>
                                     <div className='flex shrink-0 text-gray-300 items-center border-l border-faded-grey justify-center p-2'>
                                         <FaAngleDown />
@@ -89,9 +91,11 @@ function Converter() {
                                 </button>
                             </div>
                             <div className='w-[calc(50%_-_25px)]'>
-                                <select type="number" className='w-full border border-faded-grey bg-white rounded-lg text-black focus:outline-none px-4 h-10 text-sm'>
-                                    <option value="USD">United States Dollar "$" (USD)</option>
-                                </select>
+                                <div className="flex-1 flex items-center box-content">
+                                    <select type="number" className='w-full border border-faded-grey bg-white rounded-lg text-black focus:outline-none px-4 h-10 text-sm'>
+                                        <option value="USD">United States Dollar "$" (USD)</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <div className='flex'>
@@ -102,7 +106,7 @@ function Converter() {
                                 =
                             </div>
                             <div className='w-[calc(50%_-_25px)]'>
-                                    <span >28,859 United States Dollar "$" (USD)</span>
+                                <span >28,859 United States Dollar "$" (USD)</span>
                             </div>
                         </div>
                     </div>
