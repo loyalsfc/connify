@@ -2,7 +2,7 @@
 
 import React, { useRef } from 'react'
 import useSWR from 'swr'
-import { coinFetcher, fetcher, numberToString, toTwoDecimalPlace } from '../../../../utils/utils'
+import { fetcher, numberToString, toTwoDecimalPlace } from '../../../../utils/utils'
 import Image from 'next/image'
 import { FaAngleDown, FaAngleUp, FaRegFile, FaBattleNet, FaGithub, FaTwitter, FaRedditAlien, FaCommentDots } from 'react-icons/fa'
 import Link from 'next/link'
@@ -17,8 +17,8 @@ function CoinPage({params}) {
     )
 
     const {data: coinData, error: coinError, isLoading: coinLoading} = useSWR(
-        params.slug,
-        coinFetcher
+        `v2/cryptocurrency/quotes/latest?slug=${params.slug}`,
+        fetcher
     )
 
     if(metaLoading || coinLoading){
@@ -27,9 +27,8 @@ function CoinPage({params}) {
         )
     }
 
-    const id = coinData?.data?.id
-    const coinInfo = {...metaData?.data?.data[id], ...coinData?.data}
-    console.log(id)
+    const id = Object.keys(coinData?.data?.data)[0]
+    const coinInfo = {...metaData?.data?.data[id], ...coinData?.data?.data[id]}
     const {logo, name, symbol, quote, cmc_rank, circulating_supply, total_supply, max_supply, infinite_supply, description, urls} = coinInfo
     const {market_cap, volume_24h, fully_diluted_market_cap, price} = quote?.USD
     const {technical_doc, website, source_code, twitter, reddit, message_board, explorer} = urls
