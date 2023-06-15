@@ -25,22 +25,38 @@ function Converter() {
         fetcher
     )
 
+    useEffect(()=>{
+        setFiatsList(data?.data?.data)
+        setCoinsList(coins?.data?.data)
+    },[data, coins])
+
     function handleClick(e, element){
         element.current.focus();
         setShowToList(true)
     }
 
     function handleChange(e){
+        const value = e.target.value.toLowerCase();
         fromCurrencyElement.current.classList.add('hidden')
-        fromDisplay.current.innerText = e.target.value; 
+        fromDisplay.current.innerText = value; 
         e.target.style.width = fromDisplay.current.getBoundingClientRect().width + 'px'
+
+        setCoinsList(coins?.data?.data.filter(item => item.name.toLowerCase().includes(value) || item.symbol.toLowerCase().includes(value)))
+        setFiatsList(data?.data?.data.filter(item => item.name.toLowerCase().includes(value) || item.symbol.toLowerCase().includes(value) || item.sign.includes(value) ))
     }
 
     function handleBlur(e){
         fromCurrencyElement.current.classList.remove('hidden')
         e.target.value = "";
         fromDisplay.current.innerText = '';
-        setShowToList(false)
+
+        setFiatsList(data?.data?.data)
+        setCoinsList(coins?.data?.data)
+    }
+
+    function changeCurrency(e, item){
+        setFromCurrency(`${item.name} ${item.sign ?? ''} ${item.symbol}`);
+        setShowToList(false);
     }
 
     return (
@@ -62,9 +78,9 @@ function Converter() {
                             <div className='w-[calc(50%_-_25px)]'/>
                         </div>
                         <div className="flex items-center justify-center mb-5">
-                            <div className='w-[calc(50%_-_25px)]' onClick={(e)=>handleClick(e, fromElement)}>
+                            <div className='w-[calc(50%_-_25px)]'>
                                 <div className="relative">
-                                    <div className='flex items-center py-0.5 relative overflow-hidden w-full border border-faded-grey bg-white rounded-lg text-black h-10 text-sm'>
+                                    <div onClick={(e)=>handleClick(e, fromElement)} className='flex items-center py-0.5 relative overflow-hidden w-full border border-faded-grey bg-white rounded-lg text-black h-10 text-sm'>
                                         <div className='flex-1 overflow-hidden'>
                                             <div className='w-full flex items-center py-0.5 px-2 flex-wrap overflow-hidden'>
                                                 <p ref={fromCurrencyElement} className='mx-0.5 max-w-[calc(100%_-_8px)] overflow-hidden absolute whitespace-nowrap text-ellipsis top-1/2 -translate-y-1/2'>{fromCurrency}</p>
@@ -89,38 +105,39 @@ function Converter() {
                                     </div>
                                     {showToList &&
                                         <div className="w-full top-12 bg-white shadow-md absolute pointer-events-none max-h-[300px] overflow-scroll">
-                                            {fiatsList ? (
+                                            {fiatsList?.length || coinsList?.length ? (
                                                 <div className='w-full py-4'>
-                                                    <div>
+                                                    {fiatsList?.length > 0 && <div>
                                                         <h3 className='text-medium-grey px-4 mb-1 font-semibold'>Fiat Currencies</h3>
                                                         <ul className='mb-4'>
-                                                            {data?.data?.data.map((item, index) =>{
+                                                            {fiatsList?.map((item, index) =>{
                                                                 if(index < 10){
                                                                     return <li 
                                                                         key={item.id}
                                                                         className='py-1 pointer-events-auto px-4 hover:bg-faded-grey cursor-pointer'
-                                                                        onClick={() => setFromCurrency(`${item.name} ${item.sign} ${item.symbol}`)}
+                                                                        onClick={(e)=>changeCurrency(e, item)}
                                                                     >
                                                                         {item.name} {item.sign} {item.symbol}</li>
                                                                 }
                                                             })}
                                                         </ul>
-                                                    </div>
-                                                    <div>
+                                                    </div>}
+                                                    {coinsList?.length > 0 && <div>
                                                         <h3 className='text-medium-grey px-4 mb-1 font-semibold'>Cryptocurrencies</h3>
                                                         <ul>
-                                                            {coins?.data?.data.map((item, index) => {
+                                                            {coinsList?.map((item, index) => {
                                                                 if(index < 10){
                                                                     return <li
                                                                         key={item.id}
                                                                         className='py-1 pointer-events-auto px-4 hover:bg-faded-grey cursor-pointer'
+                                                                        onClick={(e)=>changeCurrency(e, item)}
                                                                     >
                                                                         {item.name} {item.symbol}
                                                                     </li>
                                                                 }
                                                             })}
                                                         </ul>
-                                                    </div>
+                                                    </div>}
                                                 </div>
                                             ):(
                                                 <p className='font-bold text-medium-grey p-4 text-center pointer-events-none'>No options</p>
