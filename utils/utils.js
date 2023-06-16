@@ -14,8 +14,8 @@ export function toTwoDecimalPlace(num){
     if(!num) return 0;
     let twoDecimal = Math.floor(num * 100) / 100
     if(twoDecimal == 0.00){
-        return num?.toFixed(5)
-    } 
+        return num?.toFixed(7)
+    }
     return numberToString(Math.floor(num * 100) / 100)
 }
 

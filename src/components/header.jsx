@@ -62,7 +62,11 @@ function Header() {
                             </Link>
                         </li>
                         <li>Learn Crypto</li>
-                        <li>NFT</li>
+                        <li>
+                            <Link href="/trade-calculator">
+                                Trade Caculator
+                            </Link>
+                        </li>
                         <li>
                             <Link href="/converter">
                                 Converter

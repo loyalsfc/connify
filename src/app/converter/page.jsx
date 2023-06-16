@@ -1,21 +1,12 @@
 'use client'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { fetcher, toTwoDecimalPlace } from '../../../utils/utils'
 import useSWR from 'swr'
-import { FaAngleDown } from 'react-icons/fa'
 import Dropdown from '@/components/converter/dropdown'
 
 function Converter() {
-    const fromElement = useRef();
-    const fromDisplay = useRef();
-    const fromCurrencyElement = useRef();
     const [fromCurrency, setFromCurrency] = useState({ fullName: 'Bitcoin (BTC)', symbol: 'BTC', id: 1})
-
-    const toElement = useRef();
-    const toDisplay = useRef();
-    const toCurrencyElement = useRef();
     const [toCurrency, setToCurrency] = useState({ fullName: 'United States Dollar "$" (USD)', symbol: 'USD', id: 2781})
-
     const [quantity, setQuantity] = useState(1)
 
     const {data, isLoading, mutate} = useSWR(
@@ -23,10 +14,10 @@ function Converter() {
         fetcher
     )
 
-    useEffect(()=>{
+    useCallback(()=>{
         mutate()
     },[fromCurrency, toCurrency])
-
+    
     function swapCurrency(){
         setFromCurrency(toCurrency);
         setToCurrency(fromCurrency);
@@ -35,7 +26,7 @@ function Converter() {
     const handleChange = (e) => {
         const value = e.target.value
         setQuantity(value == "" ? 1 : value)
-    }    
+    }
 
     return (
         <main className="pt-8">
@@ -58,9 +49,6 @@ function Converter() {
                         </div>
                         <div className="flex items-center justify-center mb-5">
                             <Dropdown 
-                                itemElement={fromElement} 
-                                itemDisplay={fromDisplay} 
-                                itemCurrencyElement ={fromCurrencyElement} 
                                 itemCurrency={fromCurrency}
                                 setItemCurrency={setFromCurrency}
                             />
@@ -73,14 +61,11 @@ function Converter() {
                                 </button>
                             </div>
                             <Dropdown 
-                                itemElement={toElement} 
-                                itemDisplay={toDisplay} 
-                                itemCurrencyElement ={toCurrencyElement} 
                                 itemCurrency={toCurrency}
                                 setItemCurrency={setToCurrency}
                             />
                         </div>
-                        <div className='flex'>
+                        <div className='flex mb-5'>
                             <div className='w-[calc(50%_-_25px)] text-end'>
                                 <span value="BTC">{quantity} {fromCurrency.fullName}</span>
                             </div>
@@ -93,6 +78,9 @@ function Converter() {
                                     <div className=''>{toTwoDecimalPlace(data?.data?.data?.quote[toCurrency.symbol]?.price)}</div>} {toCurrency.fullName}
                                 </div>
                             </div>
+                        </div>
+                        <div className='flex justify-center' onClick={()=>mutate({...data})}>
+                            <button className='py-1.5 px-3.5 rounded-md border-faded-grey border bg-white text-sm'>Refresh</button>
                         </div>
                     </div>
                 </article>

@@ -4,7 +4,10 @@ import { fetcher } from '../../../utils/utils'
 import useSWR from 'swr'
 import { FaAngleDown } from 'react-icons/fa'
 
-function Dropdown({itemElement, itemDisplay, itemCurrencyElement, itemCurrency, setItemCurrency}) {
+function Dropdown({itemCurrency, setItemCurrency}) {
+    const itemDisplay = useRef(null)
+    const itemElement = useRef(null)
+    const itemCurrencyElement = useRef(null)
     const [showList, setShowList] = useState(false)
     const [fiatsList, setFiatsList] = useState([])
     const [coinsList, setCoinsList] = useState([])
@@ -16,7 +19,7 @@ function Dropdown({itemElement, itemDisplay, itemCurrencyElement, itemCurrency, 
         fetcher
     )
 
-    const {data: coins, error: coinsError, isLoading: coinsLoading} = useSWR(
+    const {data: coins} = useSWR(
         'v1/cryptocurrency/map?sort=cmc_rank',
         fetcher
     )

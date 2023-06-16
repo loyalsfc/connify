@@ -18,6 +18,12 @@
   .display-less{
     @apply max-h-64 relative overflow-hidden 
   }
+  .calc-wrapper{
+    @apply bg-faded-grey shadow-md p-4 flex flex-col gap-3 mb-6
+  }
+  .type-wrapper{
+    @apply block text-center rounded-[5px] text-sm p-1 w-full font-semibold
+  }
 }
 .display-less::before{
   content: "";
@@ -60,4 +66,53 @@ tr:hover td{
 }
 .contact-address-wrapper:hover .copy-icon{
   visibility: visible;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 1px;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #58667E;
+  background-color: #EFF2F5;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;  
+  border-radius: 50%;
+  border: 2px solid #58667E;
+  background-color: #EFF2F5;
+  cursor: pointer;
+}
+
+input[type="radio"]:checked + label.short-type {
+  /* Apply your desired styles for the label when the associated radio button is checked */
+  background-color: rgb(239 68 68);
+  color: #FFF;
+}
+
+input[type="radio"]:checked + label.long-type{
+  background-color: rgb(34 197 94);
+  color: #FFF;
+}
+
+input[type="radio"]:not(:checked) + label.short-type {
+  color: rgb(34 197 94);
+}
+
+input[type="radio"]:not(:checked) + label.long-type {
+  color: rgb(239 68 68);
 }
