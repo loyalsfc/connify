@@ -29,16 +29,16 @@ function Header() {
                     />
                     <Listing 
                         title="Market Cap"
-                        value={`$${numberToString(Math.floor(metrics?.data?.data?.quote?.USD.total_market_cap))}`}
+                        value={`$${numberToString(Math.floor(metrics?.data?.data?.quote?.USD.total_market_cap)) ?? ""}`}
                     />
                     <Listing 
                         title="24h Vol"
-                        value={`$${numberToString(Math.floor(metrics?.data?.data?.quote?.USD.total_volume_24h))}`}
+                        value={`$${numberToString(Math.floor(metrics?.data?.data?.quote?.USD.total_volume_24h)) ?? ""}`}
                     />
                     <Listing 
                         title="Dominance"
-                        value={`BTC: ${metrics?.data?.data?.btc_dominance.toFixed(1)}% 
-                            ETH: ${metrics?.data?.data?.eth_dominance.toFixed(1)}%
+                        value={`BTC: ${metrics?.data?.data?.btc_dominance.toFixed(1) ?? ""}% 
+                            ETH: ${metrics?.data?.data?.eth_dominance.toFixed(1) ?? ""}%
                         `}
                     />
                 </div>

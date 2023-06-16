@@ -11,9 +11,10 @@ export function getCoinVolume(volumeInUsd, coinPrice){
 }
 
 export function toTwoDecimalPlace(num){
+    if(!num) return 0;
     let twoDecimal = Math.floor(num * 100) / 100
     if(twoDecimal == 0.00){
-        return num.toFixed(5)
+        return num?.toFixed(5)
     } 
     return numberToString(Math.floor(num * 100) / 100)
 }
@@ -26,4 +27,8 @@ export const coinFetcher = (slug) => axios.post(`http://192.168.0.192:5000/api/c
 
 export function getImage(id){
     return `https://s2.coinmarketcap.com/static/img/coins/64x64/${id}.png`
+}
+
+export function getExchangeImage(id){
+    return `https://s2.coinmarketcap.com/static/img/exchanges/64x64/${id}.png`
 }

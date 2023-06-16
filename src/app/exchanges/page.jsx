@@ -2,17 +2,14 @@
 
 import React, { useState } from 'react'
 import useSWR from 'swr'
-import { fetcher } from '../../../utils/utils'
+import { fetcher, getExchangeImage } from '../../../utils/utils'
 import Loader from '@/components/loader'
 import Link from 'next/link'
+import Image from 'next/image'
 
 function Exchanges() {
     const {data: exchanges, error: exchangeError, isLoading: exchangeLoading} = useSWR(
-        `v1/exchange/map`,
-        fetcher
-    )
-    const {data: exchangeInfo, error: infoError, isLoading: infoLoading} = useSWR(
-        `v1/exchange/info?slug=binance,gdax`,
+        `v1/exchange/map?sort=volume_24h`,
         fetcher
     )
     const [limit, setLimit] = useState(101);
@@ -20,9 +17,6 @@ function Exchanges() {
     if(exchangeLoading){
         return <Loader />
     }
-
-    // console.log(exchanges)
-    console.log(exchangeInfo)
 
     const loadMore = () => {
         if(limit > exchanges.length) return;
@@ -35,12 +29,21 @@ function Exchanges() {
                 <h1 className='text-sm md:text-2xl font-bold mb-2'>Top Crypto Exchanges Ranked by Trust Score</h1>
                 <p className='text-sm'>As of today, we track 679 crypto exchanges with a total 24h trading volume of $56.8 Billion, a -2.66% change in the last 24 hours. Currently, the 3 largest cryptocurrency exchanges are Binance, Coinbase Exchange, and Bybit. Total tracked crypto exchange reserves currently stands at $105 Billion</p>
                 <h4 className="text-center text-2xl font-bold mt-8">Exchanges</h4>
-                <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-8 text-center font-semibold py-8 text-sm'>
+                <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 text-center font-semibold py-8 text-sm'>
                     {
                         exchanges?.data?.data?.map((item, index) => {
                             if(index > limit) return;
                             return <Link href={`/exchanges/${item.slug}`} key={item.id}>
-                                <span className='hover:underline'>{item.name}</span>
+                                <div className='flex flex-col items-center gap-4 hover:bg-news-grey p-2 md:p-4 rounded-lg'>
+                                    <Image
+                                        src={getExchangeImage(item.id)}
+                                        height={64}
+                                        width={64}
+                                        alt="Exchange logo"
+                                        className='rounded-full'
+                                    />
+                                    <span className='hover:underline'>{item.name}</span>
+                                </div>
                             </Link>
                         })
                     }
