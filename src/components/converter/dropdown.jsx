@@ -68,8 +68,11 @@ function Dropdown({itemCurrency, setItemCurrency}) {
     }
 
     function changeCurrency(e, item){
-
-        setItemCurrency({fullName: `${item.name} ${item.sign ?? ''} ${item.symbol}`, symbol: item.symbol, id: item.id});
+        setItemCurrency({
+            fullName: `${item.name} ${item.sign ?? ''} ${item.symbol}`, 
+            symbol: item.symbol, 
+            id: item.id
+        });
         setShowList(false);
     }
 

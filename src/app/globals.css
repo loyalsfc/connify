@@ -24,6 +24,15 @@
   .type-wrapper{
     @apply block text-center rounded-[5px] text-sm p-1 w-full font-semibold
   }
+  .nav-menu li{
+    @apply border-b border-medium-grey/50 pb-4 lg:border-b-0 lg:pb-0
+  }
+  .auth-input{
+    @apply border border-faded-grey text-sm rounded-lg p-4 focus:outline-green-500
+  }
+  .notification{
+    @apply w-fit px-8 py-3 rounded ml-auto text-white font-bold text-sm mb-4
+  }
 }
 .display-less::before{
   content: "";

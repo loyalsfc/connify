@@ -52,7 +52,7 @@ function Exchanges() {
                     <button 
                         className='disabled:opacity-40 bg-green-500 text-white font-bold text-xs py-2 px-4 rounded-md'
                         onClick={loadMore}
-                        disabled={limit > exchanges.length}
+                        disabled={limit > exchanges?.length}
                     >
                         Load more
                     </button>

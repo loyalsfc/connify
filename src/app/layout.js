@@ -2,6 +2,9 @@ import Header from '@/components/header'
 import './globals.css'
 import { Inter } from 'next/font/google'
 import Footer from '@/components/footer'
+import Auth from '@/components/authentication/auth'
+import { ContextProvider } from '../../context'
+import GeneralLayout from './generalLayout'
 
 const inter = Inter({
   weight: ['400', "500", "600", "700", "800"],
@@ -19,9 +22,14 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Header/>
-        {children}
-        <Footer />
+        <ContextProvider>
+          <Auth />
+          <Header/>
+            <GeneralLayout>
+              {children}
+            </GeneralLayout>
+          <Footer />
+        </ContextProvider>
       </body>
     </html>
   )
