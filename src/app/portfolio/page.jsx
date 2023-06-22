@@ -11,13 +11,16 @@ import Modal from '@/components/portfolio/modal'
 import { supabase } from '@/lib/supabaseClient'
 import useSWR from 'swr'
 import { PortfolioContext } from '../../context/portfolioContext'
+import Assets from '@/components/portfolio/assets'
+import DeletePortfolio from '@/components/portfolio/deleteAsset'
+import DeleteAsset from '@/components/portfolio/deleteAsset'
 
 function PortFolio() {
     const {setShowAuthModal, authLoading, user} = useContext(Context);
     const {data: data, isLoading, error, mutate} = useSWR(user?.id, fetchPortfolio)
     const [showCreateModal, setShowCreateModal] = useState(false)
-    const {setPortfolio} = useContext(PortfolioContext)
-    
+    const {setPortfolio, portfolio: {assets}} = useContext(PortfolioContext)
+
     useCallback(()=>{
         mutate();
     },[user])
@@ -25,6 +28,7 @@ function PortFolio() {
     if(authLoading || isLoading){
         return <Loader />
     }
+
     async function fetchPortfolio(id){
         const {data:portfolio, error} = await supabase.from('portfolio').select().eq('user_id', id)
         
@@ -44,7 +48,6 @@ function PortFolio() {
     }
 
     const portfolio = data?.portfolio.find(portfolio => portfolio.is_default === true);
-    
 
     return (
         <main>
@@ -61,16 +64,14 @@ function PortFolio() {
                             <button className='h-10 w-10 rounded-full grid place-content-center text-2xl hover:bg-green-500/30'>
                                 <FaEllipsisV />
                             </button>
-                            <button className="bg-green-500 p-3 flex items-center text-white rounded-md">
+                            <button onClick={()=>setShowCreateModal(true)} className="bg-green-500 p-3 flex items-center text-white rounded-md">
                                 <FaPlus /> Add Transaction
                             </button>
                         </div>
                     </div>
-                    <div className='flex gap-6'>
-                        <BalanceCard amount={'0.00'} note="Total Balance" />
-                        <BalanceCard amount={'0.00'} note="Total Profit / Loss (-)" />
-                    </div>
-                    {data?.assets?.length ? <p>Hello World</p> :
+                    {data?.assets?.length ? (
+                        <Assets assets={assets} />
+                    ):
                         <div className='text-center flex flex-col items-center py-8'>
                         <Image
                             src="/empty.svg"
@@ -87,15 +88,6 @@ function PortFolio() {
                 <LandingPage />
             )}
         </main>
-    )
-}
-
-function BalanceCard({amount, note}){
-    return(
-        <div className='rounded-lg shadow-md bg-white p-4 mb-4 mr-2 w-fit'>
-            <h5 className='text-xl font-medium'>${amount}</h5>
-            <p className='text-sm'>{note}</p>
-        </div>
     )
 }
 

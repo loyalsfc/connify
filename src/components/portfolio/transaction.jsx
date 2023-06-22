@@ -7,12 +7,12 @@ import { supabase } from '@/lib/supabaseClient'
 import { PortfolioContext } from '@/context/portfolioContext'
 import { Context } from '@/context/context'
 
-function Transaction({coin}) {
+function Transaction({coin, hideFunction}) {
     const [activeTab, setActiveTab] = useState("buy")
     
     return (
         <div>
-            <h2 className='text-2xl font-bold flex justify-between mt-4'>Add Transaction <button className='text-medium-grey/50'><FaTimes/></button></h2>
+            <h2 className='text-2xl font-bold flex justify-between mt-4'>Add Transaction <button onClick={()=>hideFunction(false)} className='text-medium-grey/50'><FaTimes/></button></h2>
             <div className='grid grid-cols-3 border-b border-medium-grey/50 pb-0.5 mb-4'>
                 <button 
                     onClick={()=>{setActiveTab('buy')}}
@@ -25,24 +25,24 @@ function Transaction({coin}) {
                     className={`transaction-btn ${activeTab === "transfer" ? "transaction-active" : ""}`}>Transfer</button>
             </div>
             <div>
-                {activeTab === "buy" && <BuySellComponent coin={coin} type="buy"/>}
-                {activeTab === "sell" && <BuySellComponent coin={coin} type="sell"/>}
-                {activeTab === "transfer" && <TransferComponent coin={coin} type="transfer"/>}
+                {activeTab === "buy" && <BuySellComponent hideFunction={hideFunction} coin={coin} type="buy"/>}
+                {activeTab === "sell" && <BuySellComponent hideFunction={hideFunction} coin={coin} type="sell"/>}
+                {activeTab === "transfer" && <TransferComponent hideFunction={hideFunction} coin={coin} type="transfer"/>}
             </div>
         </div>
     )
 }
 
-function BuySellComponent({type, coin}){
+function BuySellComponent({type, coin, hideFunction}){
     const {data: coinData, error} = useSWR(
         `v2/cryptocurrency/quotes/latest?slug=${coin.slug}`,
         fetcher
     )
-    console.log(coinData?.data?.data?.[coin.id])
+    
     const [pricePerCoin, setPricePerCoin] = useState()
     const [coinQuantity, setCoinQuantity] = useState()
     const [date, setDate] =useState(new Date().toISOString().slice(0, 16))
-    const {portfolioId} = useContext(PortfolioContext)
+    const {portfolioId, updatePortfolio} = useContext(PortfolioContext)
     const {user} = useContext(Context)
 
     useEffect(()=>{
@@ -57,10 +57,15 @@ function BuySellComponent({type, coin}){
     
     const createAsset = async() => {
         const {data: asset} = await supabase.from('assets')
-            .insert({coin_name: coin, portfolio: portfolioId, user_id: user?.id})
+            .insert({
+                coin_name: coin, 
+                portfolio: portfolioId, 
+                user_id: user?.id, 
+                holding: coinQuantity,
+                average_fee: pricePerCoin
+            })
             .select()
-        console.log(asset)
-        const {data: transaction, error} = await supabase.from('transactions')
+        await supabase.from('transactions')
             .insert({
                 date, 
                 price: pricePerCoin, 
@@ -69,8 +74,8 @@ function BuySellComponent({type, coin}){
                 asset: asset[0].id,
                 transaction_type: type
             })
-            .select()
-        console.log(transaction, error)
+        updatePortfolio(asset[0])
+        hideFunction(false)
     }
 
     return(

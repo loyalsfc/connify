@@ -5,6 +5,7 @@ import useSWR from 'swr'
 import Image from 'next/image'
 import { Context } from '../../context/context'
 import Transaction from './transaction'
+import ModalWrapper from '../modalWrapper'
 
 function Modal({hideModal}) {
     const [currentPage, setCurrentPage] = useState('coin-select')
@@ -19,16 +20,13 @@ function Modal({hideModal}) {
         setSelectedCoin(coin)
         setCurrentPage('transaction')
     }
-        // console.log(coins?.data?.data)
-    console.log(currentPage === "coin-select")
+    
     function filterFunction(item){
         return item.symbol.toLowerCase().includes(filter.toLowerCase()) || item.name.toLowerCase().includes(filter.toLowerCase())
     }
 
     return (
-        <div className='modal'>
-            <div onClick={()=>hideModal(false)} className='modal-overlay' />
-            <div className='modal-bg'>
+            <ModalWrapper hideModal={hideModal}>
                 {currentPage === "coin-select" && <div className='flex flex-col h-[534px]'>
                     <h2 className='text-2xl font-bold flex justify-between mt-4'>Select Coin <button onClick={()=>hideModal(false)} className='text-medium-grey/50'><FaTimes/></button></h2>
                     <div className='py-3'>
@@ -65,9 +63,8 @@ function Modal({hideModal}) {
                         </ul>):(<p className='font-bold text-medium-grey text-center mt-4'>No Option Match</p>)}
                     </div>
                 </div>}
-                {currentPage === "transaction" && <Transaction coin={selectedCoin} />}
-            </div>
-        </div>
+                {currentPage === "transaction" && <Transaction coin={selectedCoin} hideFunction={hideModal} />}
+            </ModalWrapper>
     )
 }
 

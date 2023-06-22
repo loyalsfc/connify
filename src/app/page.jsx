@@ -9,6 +9,7 @@ import Pagination from '@/components/pagination'
 import { FaRegStar, FaStar } from 'react-icons/fa'
 import Link from 'next/link'
 import Image from 'next/image'
+import PercentageChangeRow from '@/components/percentageChange'
 
 function Home() {
     const [pageIndex, setPageIndex] = useState(0)
@@ -164,15 +165,6 @@ function Home() {
             </section>
         </main>
     )
-}
-
-function PercentageChangeRow({percentChange}){
-    return <td className={percentChange > 0 ? "text-green-500 p-2.5" : "text-red-500 p-2.5"}>
-        <p className='flex items-center'>
-            <span>{percentChange > 0 ? <ExpandLess fontSize='small' /> : <ExpandMore fontSize='small' />}</span>
-            <span>{percentChange.toFixed(2)}%</span>
-        </p>
-    </td>
 }
 
 function CryptoInfo({title, submenu, borderColor}){
