@@ -8,7 +8,7 @@ import useSWR from 'swr'
 import { numberToString } from '../../utils/utils'
 import Logo from './Logo'
 import { usePathname } from 'next/navigation'
-import { Context } from '../../context'
+import { Context } from '../context/context'
 
 function Header() {
     const {data: metrics, error: metricsError, isLoading: metricsLoading} = useSWR(
@@ -120,7 +120,6 @@ function Navigations(){
                     Exchange
                 </Link>
             </li>
-            <li>Learn Crypto</li>
             <li>
                 <Link href="/trade-calculator">
                     Trade Caculator

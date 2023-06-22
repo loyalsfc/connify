@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useContext } from 'react'
-import { Context } from '../../context'
+import { Context } from '../context/context'
 
 function GeneralLayout({children}) {
     const {notificationRef} = useContext(Context)

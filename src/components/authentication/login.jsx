@@ -3,7 +3,7 @@
 import React, { useContext } from 'react'
 import LoginComponent from './loginComponent'
 import { supabase } from '@/lib/supabaseClient'
-import { Context } from '../../../context'
+import { Context } from '../../context/context'
 
 function Login() {
     const {showNotification, setUser, showAuthModal, setShowAuthModal} = useContext(Context)
@@ -16,9 +16,7 @@ function Login() {
             setShowAuthModal({...showAuthModal, isShown: false});
             return;
         }
-        let errorText = error.toString();
-        console.log(errorText)
-        
+        let errorText = error.toString();        
 
         if(errorText.includes('Email not confirmed')){
             showNotification('Email not confirmed', '#EF4444');
@@ -42,6 +40,10 @@ function Register() {
     const signUp = async(info) =>{
         const { data, error } = await supabase.auth.signUp(info);
         if(data?.user?.identities.length > 0){
+            const {data: damn, error} = await supabase
+                .from('portfolio')
+                .insert({name: "My Portfolio", user_id: data?.user?.id})
+            console.log(damn, error)
             showNotification('Check Email for Confirmation', '#22655E');
         } else if(data?.user?.identities.length === 0){
             showNotification('User already exist', '#EF4444');
@@ -49,6 +51,12 @@ function Register() {
             showNotification('An error occured', '#EF4444');
         }
         console.log(data, error);
+    }
+
+    async function initPortfolio(){
+        const {data, error} = await supabase
+            .from('portfolio')
+            .insert({name: "My Portfolio", id})
     }
 
     return (

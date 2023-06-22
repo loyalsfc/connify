@@ -33,6 +33,33 @@
   .notification{
     @apply w-fit px-8 py-3 rounded ml-auto text-white font-bold text-sm mb-4
   }
+  .modal{
+    @apply fixed top-0 left-0 h-screen w-full bg-black/20 z-50
+  }
+  .modal-bg{
+    @apply absolute z-50 top-1/2 max-h-[95%] left-1/2 w-[498px] overflow-scroll -translate-x-1/2 p-6 pt-0 -translate-y-1/2 bg-white shadow-md rounded-2xl transition-all
+  }
+  .modal-overlay{
+    @apply top-0 left-0 h-full w-full bg-black/20
+  }
+  .transaction-btn{
+    @apply py-3 border-b hover:border-medium-grey/50 border-faded-grey/0 focus:outline-none
+  }
+  .transaction-active{
+    @apply after:content-[''] after:w-full after:h-[3px] after:bg-green-500 after:absolute after:-bottom-[3px] after:left-0  font-semibold relative 
+  }
+  .transaction-label{
+    @apply rounded-md w-fit px-4 py-2 bg-faded-grey flex items-center gap-2 text-sm font-semibold
+  }
+  .transaction-input{
+    @apply border border-medium-grey/50 rounded-md overflow-hidden
+  }
+  .submit-button{
+    @apply p-4 rounded-md border border-green-500 hover:border-green-500/50 bg-green-500 hover:bg-green-500/80 text-white
+  }
+  .cancel-button{
+    @apply p-4 rounded-md border border-medium-grey/50 hover:border-green-500/50
+  }
 }
 .display-less::before{
   content: "";

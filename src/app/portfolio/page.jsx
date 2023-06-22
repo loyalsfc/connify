@@ -2,88 +2,99 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import React, { useContext } from 'react'
-import { Context } from '../../../context'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
+import { Context } from '../../context/context'
 import Loader from '@/components/loader'
-import { FaPlus } from 'react-icons/fa'
+import { FaEllipsisV, FaEye, FaPlus } from 'react-icons/fa'
+import LandingPage from '@/components/portfolio/landingPage'
+import Modal from '@/components/portfolio/modal'
+import { supabase } from '@/lib/supabaseClient'
+import useSWR from 'swr'
+import { PortfolioContext } from '../../context/portfolioContext'
 
 function PortFolio() {
     const {setShowAuthModal, authLoading, user} = useContext(Context);
-    if(authLoading){
+    const {data: data, isLoading, error, mutate} = useSWR(user?.id, fetchPortfolio)
+    const [showCreateModal, setShowCreateModal] = useState(false)
+    const {setPortfolio} = useContext(PortfolioContext)
+    
+    useCallback(()=>{
+        mutate();
+    },[user])
+    
+    if(authLoading || isLoading){
         return <Loader />
     }
+    async function fetchPortfolio(id){
+        const {data:portfolio, error} = await supabase.from('portfolio').select().eq('user_id', id)
+        
+        if(error){
+            console.log(error)
+            return;
+        }
+
+        const {data:assets, error: assetsError} = await supabase.from('assets').select().eq('portfolio', portfolio[0].id)
+        if(assetsError){
+            console.log(assetsError)
+            return;
+        }
+        setPortfolio({portfolio, assets})
+        return {portfolio, assets};
+
+    }
+
+    const portfolio = data?.portfolio.find(portfolio => portfolio.is_default === true);
+    
+
     return (
         <main>
+            {showCreateModal && <Modal hideModal={setShowCreateModal} />}
             {user ? (
                 <section className='px-4 sm:px-8 py-8'>
-                    <div>
-                        <span>My Portfolio</span>
+                    <div className='flex justify-between items-center'>
+                        <span className='text-2xl font-bold'>{portfolio?.name}</span>
 
-                        <div>
-                            <button className="bg-green-500 p-3">
+                        <div className='flex items-center gap-3'>
+                            <button className='h-10 w-10 rounded-full grid place-content-center text-2xl hover:bg-green-500/30'>
+                                <FaEye />
+                            </button>
+                            <button className='h-10 w-10 rounded-full grid place-content-center text-2xl hover:bg-green-500/30'>
+                                <FaEllipsisV />
+                            </button>
+                            <button className="bg-green-500 p-3 flex items-center text-white rounded-md">
                                 <FaPlus /> Add Transaction
                             </button>
                         </div>
                     </div>
+                    <div className='flex gap-6'>
+                        <BalanceCard amount={'0.00'} note="Total Balance" />
+                        <BalanceCard amount={'0.00'} note="Total Profit / Loss (-)" />
+                    </div>
+                    {data?.assets?.length ? <p>Hello World</p> :
+                        <div className='text-center flex flex-col items-center py-8'>
+                        <Image
+                            src="/empty.svg"
+                            height={200}
+                            width={200}
+                            alt='Empty'
+                        />
+                        <h4 className='text-xl font-semibold mt-4'>This portfolio requires a few finishing touches...</h4>
+                        <button onClick={()=>setShowCreateModal(true)} className='text-green-500'>Add a new coin to get started!</button>
+                    </div>
+                }
                 </section>
             ):(
-                <section className='px-4 sm:px-8'>
-                    <div className='flex flex-col-reverse md:flex-row items-center gap-8 '>
-                        <article className='w-full md:w-1/2 mb-10 md:mb-0'>
-                            <h2 className='text-green-500 font-semibold text-2xl'>Free and Powerful</h2>
-                            <h1 className='text-3xl font-bold my-4'>Crypto Portfolio Manager</h1>
-                            <p className='font-semibold text-lg mb-10 sm:max-w-md'>Effortlessly monitor your gains, losses, and portfolio value using our intuitive platform</p>
-                            <div className='text-lg flex gap-4 text-center'>
-                                <button onClick={()=>setShowAuthModal({isShown: true, type: 'sign-up'})} className='border rounded-md border-green-500 p-3 w-32 text-white bg-green-500/80 hover:bg-green-500' href="">Sign Up</button>
-                                <button onClick={()=>setShowAuthModal({isShown: true, type: 'login'})} className='border rounded-md border-medium-grey p-3 w-32 hover:border-green-500' href="">Log in</button>
-                            </div>
-                        </article>
-                        <div className='w-full md:w-1/2 py-20'>
-                            <div className='relative w-full h-full'>
-                                <Image
-                                    src="/manager.svg"
-                                    height={400}
-                                    width={400}
-                                    alt='manager'
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <article className='grid grid-cols-1 sm:grid-cols-2 gap-8 mb-8 max-w-4xl mx-auto'>
-                        <Cards 
-                            icon="📈" 
-                            title="Real-time Price Data" 
-                            text="Real-time updates around the clock, utilizing price data from top-tier exchanges."
-                        />
-                        <Cards 
-                            icon="📲" 
-                            title="Synced across Web & Mobile App" 
-                            text="Seamless portfolio tracking right at your fingertips, accessible anytime and anywhere."
-                        />
-                        <Cards 
-                            icon="💲" 
-                            title="Free to use" 
-                            text="Premium-grade crypto portfolio tracking, completely free of charge."
-                        />
-                        <Cards 
-                            icon="🛡️" 
-                            title="Your data is protected " 
-                            text="Ensuring utmost data security and privacy is our top priority."
-                        />
-                    </article>
-                </section>
+                <LandingPage />
             )}
         </main>
     )
 }
 
-function Cards({icon, title, text}){
+function BalanceCard({amount, note}){
     return(
-        <div className='bg-faded-grey rounded-xl p-8'>
-            <p className='text-4xl mb-4'>{icon}</p>
-            <h4 className='text-2xl font-semibold'> {title}</h4>
-            <p>{text}</p>
+        <div className='rounded-lg shadow-md bg-white p-4 mb-4 mr-2 w-fit'>
+            <h5 className='text-xl font-medium'>${amount}</h5>
+            <p className='text-sm'>{note}</p>
         </div>
     )
 }

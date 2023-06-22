@@ -24,14 +24,14 @@ const ContextProvider = ({children}) => {
 
     useEffect(()=>{
         fetchSession();
-    },[])
 
-    console.log(user)
-    supabase.auth.onAuthStateChange((event, session) => {
-        if (event == 'SIGNED_IN') {
-            setUser(session.user)
-        }
-    })
+        supabase.auth.onAuthStateChange((event, session) => {
+            if (event == 'SIGNED_IN') {
+                setUser(session.user)
+            }
+        })
+        
+    },[])
 
     const fetchSession = async() => {
         const { data: {session}, error } = await supabase.auth.getSession()
