@@ -6,10 +6,15 @@ import Image from 'next/image'
 import { Context } from '../../context/context'
 import Transaction from './transaction'
 import ModalWrapper from '../modalWrapper'
+import { PortfolioContext } from '@/context/portfolioContext'
+import { supabase } from '@/lib/supabaseClient'
 
 function Modal({hideModal}) {
     const [currentPage, setCurrentPage] = useState('coin-select')
     const [selectedCoin, setSelectedCoin] = useState()
+    const {user} = useContext(Context)
+    const {updatePortfolio, portfolioId} = useContext(PortfolioContext)
+
     const {data: coins} = useSWR(
         'v1/cryptocurrency/map?sort=cmc_rank',
         fetcher
@@ -23,6 +28,31 @@ function Modal({hideModal}) {
     
     function filterFunction(item){
         return item.symbol.toLowerCase().includes(filter.toLowerCase()) || item.name.toLowerCase().includes(filter.toLowerCase())
+    }
+
+    const createAsset = async(coinQuantity, pricePerCoin, date, type) => {
+        const {data: asset} = await supabase.from('assets')
+            .insert({
+                coin_name: selectedCoin, 
+                portfolio: portfolioId, 
+                user_id: user?.id, 
+                holding: coinQuantity,
+                average_fee: pricePerCoin,
+                slug: selectedCoin.slug
+            })
+            .select()
+        await supabase.from('transactions')
+            .insert({
+                date, 
+                price: pricePerCoin, 
+                quantity: coinQuantity, 
+                total_spent: pricePerCoin * coinQuantity,
+                asset: asset[0].id,
+                transaction_type: type,
+                asset_slug: selectedCoin.slug,
+            })
+        updatePortfolio(asset[0])
+        hideModal(false)
     }
 
     return (
@@ -63,7 +93,7 @@ function Modal({hideModal}) {
                         </ul>):(<p className='font-bold text-medium-grey text-center mt-4'>No Option Match</p>)}
                     </div>
                 </div>}
-                {currentPage === "transaction" && <Transaction coin={selectedCoin} hideFunction={hideModal} />}
+                {currentPage === "transaction" && <Transaction callbackFunc={createAsset} coin={selectedCoin} />}
             </ModalWrapper>
     )
 }

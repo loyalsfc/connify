@@ -32,3 +32,36 @@ export function getImage(id){
 export function getExchangeImage(id){
     return `https://s2.coinmarketcap.com/static/img/exchanges/64x64/${id}.png`
 }
+
+export function getPrice(id, data){
+    return data?.data?.data[id]?.quote.USD.price
+}
+
+export function formatPrice(price){
+    if(!price){
+        return 0
+    }
+    if(price > 999){
+        return price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    } else if(price > 1){
+        return price.toFixed(2)
+    } else if (price > 0.001){
+        return price.toFixed(6)
+    } else {
+        return price.toFixed(8)
+    }
+}
+
+export function getDurationChange(id, duration, data){
+    return data?.data?.data[id]?.quote.USD[`percent_change_${duration}`]
+}
+
+export function calculateProfitLoss(currentPrice, averagePrice){
+    return currentPrice - averagePrice
+}
+
+export function getProfitPercentage(currentPrice, averagePrice){
+    const priceDiff = currentPrice - averagePrice
+    const percent = (priceDiff / averagePrice ) * 100
+    return percent.toFixed(2)
+}

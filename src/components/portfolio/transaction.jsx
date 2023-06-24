@@ -7,7 +7,7 @@ import { supabase } from '@/lib/supabaseClient'
 import { PortfolioContext } from '@/context/portfolioContext'
 import { Context } from '@/context/context'
 
-function Transaction({coin, hideFunction}) {
+function Transaction({coin, hideFunction, callbackFunc}) {
     const [activeTab, setActiveTab] = useState("buy")
     
     return (
@@ -25,15 +25,15 @@ function Transaction({coin, hideFunction}) {
                     className={`transaction-btn ${activeTab === "transfer" ? "transaction-active" : ""}`}>Transfer</button>
             </div>
             <div>
-                {activeTab === "buy" && <BuySellComponent hideFunction={hideFunction} coin={coin} type="buy"/>}
-                {activeTab === "sell" && <BuySellComponent hideFunction={hideFunction} coin={coin} type="sell"/>}
-                {activeTab === "transfer" && <TransferComponent hideFunction={hideFunction} coin={coin} type="transfer"/>}
+                {activeTab === "buy" && <BuySellComponent callbackFunc={callbackFunc} coin={coin} type="buy"/>}
+                {activeTab === "sell" && <BuySellComponent callbackFunc={callbackFunc} coin={coin} type="sell"/>}
+                {activeTab === "transfer" && <TransferComponent callbackFunc={callbackFunc} coin={coin} type="transfer"/>}
             </div>
         </div>
     )
 }
 
-function BuySellComponent({type, coin, hideFunction}){
+function BuySellComponent({type, coin, callbackFunc}){
     const {data: coinData, error} = useSWR(
         `v2/cryptocurrency/quotes/latest?slug=${coin.slug}`,
         fetcher
@@ -42,8 +42,6 @@ function BuySellComponent({type, coin, hideFunction}){
     const [pricePerCoin, setPricePerCoin] = useState()
     const [coinQuantity, setCoinQuantity] = useState()
     const [date, setDate] =useState(new Date().toISOString().slice(0, 16))
-    const {portfolioId, updatePortfolio} = useContext(PortfolioContext)
-    const {user} = useContext(Context)
 
     useEffect(()=>{
         const data = coinData?.data?.data?.[coin.id]
@@ -52,30 +50,7 @@ function BuySellComponent({type, coin, hideFunction}){
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        createAsset();
-    }
-    
-    const createAsset = async() => {
-        const {data: asset} = await supabase.from('assets')
-            .insert({
-                coin_name: coin, 
-                portfolio: portfolioId, 
-                user_id: user?.id, 
-                holding: coinQuantity,
-                average_fee: pricePerCoin
-            })
-            .select()
-        await supabase.from('transactions')
-            .insert({
-                date, 
-                price: pricePerCoin, 
-                quantity: coinQuantity, 
-                total_spent: pricePerCoin * coinQuantity,
-                asset: asset[0].id,
-                transaction_type: type
-            })
-        updatePortfolio(asset[0])
-        hideFunction(false)
+        callbackFunc(coinQuantity, pricePerCoin, date, type);
     }
 
     return(

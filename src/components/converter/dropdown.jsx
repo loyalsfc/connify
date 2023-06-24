@@ -11,6 +11,7 @@ function Dropdown({itemCurrency, setItemCurrency}) {
     const [showList, setShowList] = useState(false)
     const [fiatsList, setFiatsList] = useState([])
     const [coinsList, setCoinsList] = useState([])
+    const [filter, setFilter] = useState('')
     const popupRef = useRef(null);
     const wrapper = useRef(null)
 
@@ -33,6 +34,8 @@ function Dropdown({itemCurrency, setItemCurrency}) {
         const handleOutsideClick = (event) => {
             if (popupRef.current && !popupRef.current.contains(event.target)  && !wrapper.current.contains(event.target) && wrapper.current != event.target) {
                 setShowList(false);
+                setFilter('');
+                filtering('');
             }
         };
     
@@ -51,20 +54,24 @@ function Dropdown({itemCurrency, setItemCurrency}) {
     function handleChange(e){
         const value = e.target.value.toLowerCase();
         itemCurrencyElement.current.classList.add('hidden')
-        itemDisplay.current.innerText = value; 
+        setFilter(value)
+        // itemDisplay.current.innerText = value; 
         e.target.style.width = itemDisplay.current.getBoundingClientRect().width + 'px'
+        filtering(value);
+    }
 
+    function filtering(value){
         setCoinsList(coins?.data?.data.filter(item => item.name.toLowerCase().includes(value) || item.symbol.toLowerCase().includes(value)))
         setFiatsList(data?.data?.data.filter(item => item.name.toLowerCase().includes(value) || item.symbol.toLowerCase().includes(value) || item.sign.includes(value) ))
     }
 
     function handleBlur(e){
         itemCurrencyElement.current.classList.remove('hidden')
-        e.target.value = "";
-        itemDisplay.current.innerText = '';
+        // e.target.value = "";
+        // itemDisplay.current.innerText = '';
 
-        setFiatsList(data?.data?.data)
-        setCoinsList(coins?.data?.data)
+        // setFiatsList(data?.data?.data)
+        // setCoinsList(coins?.data?.data)
     }
 
     function changeCurrency(e, item){
@@ -74,6 +81,8 @@ function Dropdown({itemCurrency, setItemCurrency}) {
             id: item.id
         });
         setShowList(false);
+        setFilter('')
+        filtering('')
     }
 
     return (
@@ -93,8 +102,9 @@ function Dropdown({itemCurrency, setItemCurrency}) {
                                     ref={itemElement}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
+                                    value={filter}
                                 />
-                                <span ref={itemDisplay} className='absolute top-0 left-0 invisible h-0 px-px overflow-scroll whitespace-pre w-fit'></span>
+                                <span ref={itemDisplay} className='absolute top-0 left-0 invisible h-0 px-px overflow-scroll whitespace-pre w-fit'>{filter}</span>
                             </div>
                         </div>
                     </div>
@@ -110,14 +120,14 @@ function Dropdown({itemCurrency, setItemCurrency}) {
                                     <h3 className='text-medium-grey px-4 mb-1 font-semibold'>Fiat Currencies</h3>
                                     <ul className='mb-4'>
                                         {fiatsList?.map((item, index) =>{
-                                            if(index < 10){
-                                                return <li 
-                                                    key={item.id}
-                                                    className={`${item.id == itemCurrency.id ? "bg-green-500 text-white" : ""} py-1 px-4 hover:bg-faded-grey cursor-pointer`}
-                                                    onClick={(e)=>changeCurrency(e, item)}
-                                                >
-                                                    {item.name} {item.sign} {item.symbol}</li>
-                                            }
+                                            if(index > 10) return
+                                            return <li 
+                                                key={item.id}
+                                                className={`${item.id == itemCurrency.id ? "bg-green-500 text-white" : ""} py-1 px-4 hover:bg-faded-grey cursor-pointer`}
+                                                onClick={(e)=>changeCurrency(e, item)}
+                                            >
+                                                {item.name} {item.sign} {item.symbol}
+                                            </li>
                                         })}
                                     </ul>
                                 </div>}
@@ -125,15 +135,14 @@ function Dropdown({itemCurrency, setItemCurrency}) {
                                     <h3 className='text-medium-grey px-4 mb-1 font-semibold'>Cryptocurrencies</h3>
                                     <ul>
                                         {coinsList?.map((item, index) => {
-                                            if(index < 10){
-                                                return <li
-                                                    key={item.id}
-                                                    className={`${item.id == itemCurrency.id ? "bg-green-500 text-white" : ""} py-1 px-4 hover:bg-faded-grey cursor-pointer`}
-                                                    onClick={(e)=>changeCurrency(e, item)}
-                                                >
-                                                    {item.name} {item.symbol}
-                                                </li>
-                                            }
+                                            if(index > 10) return
+                                            return <li
+                                                key={item.id}
+                                                className={`${item.id == itemCurrency.id ? "bg-green-500 text-white" : ""} py-1 px-4 hover:bg-faded-grey cursor-pointer`}
+                                                onClick={(e)=>changeCurrency(e, item)}
+                                            >
+                                                {item.name} {item.symbol}
+                                            </li>
                                         })}
                                     </ul>
                                 </div>}

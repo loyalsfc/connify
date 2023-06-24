@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import React, { useEffect, useRef, useState } from 'react'
-import { fetcher, getImage, toTwoDecimalPlace } from '../../../utils/utils'
+import { calculateProfitLoss, fetcher, getImage, getProfitPercentage, toTwoDecimalPlace } from '../../../utils/utils'
 import { FaAngleRight, FaEllipsisV, FaPlus, FaTrash } from 'react-icons/fa'
 import Link from 'next/link'
 import useSWR from 'swr'
@@ -44,16 +44,6 @@ function Assets({assets}) {
         } else {
             return price.toFixed(8)
         }
-    }
-    
-    function calculateProfitLoss(currentPrice, averagePrice){
-        return currentPrice - averagePrice
-    }
-
-    function getProfitPercentage(currentPrice, averagePrice){
-        const priceDiff = currentPrice - averagePrice
-        const percent = (priceDiff / averagePrice ) * 100
-        return percent.toFixed(2)
     }
 
     const showMenu =(e, id) => {
@@ -157,7 +147,7 @@ function Assets({assets}) {
                                     <td className='p-2 py-4'>
                                         <div className='flex gap-2 items-center relative'>
                                             <button className='opacity-40' onClick={(e)=>showMenu(e, item.id)}><FaEllipsisV/></button>
-                                            <RowMenu id={item.id} showDeleteModal={setShowDeleteModal}/>    
+                                            <RowMenu slug={item.slug} showDeleteModal={setShowDeleteModal}/>    
                                         </div>
                                     </td>
                                 </tr>
@@ -171,7 +161,7 @@ function Assets({assets}) {
     )
 }
 
-function RowMenu({id, showDeleteModal}){
+function RowMenu({slug, showDeleteModal}){
     const menu = useRef(null)
     
     useEffect(()=>{
@@ -199,7 +189,7 @@ function RowMenu({id, showDeleteModal}){
                     className='flex p-2 hover:bg-faded-grey items-center gap-2 cursor-pointer'
                 >
                     <Link 
-                        href={`/portfolio/${id}`}
+                        href={`/portfolio/${slug}`}
                         className='flex p-2 hover:bg-faded-grey items-center gap-2 cursor-pointer'
                     >
                         <FaAngleRight /> View Transactions
