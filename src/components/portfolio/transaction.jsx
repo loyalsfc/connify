@@ -25,15 +25,15 @@ function Transaction({coin, hideFunction, callbackFunc}) {
                     className={`transaction-btn ${activeTab === "transfer" ? "transaction-active" : ""}`}>Transfer</button>
             </div>
             <div>
-                {activeTab === "buy" && <BuySellComponent callbackFunc={callbackFunc} coin={coin} type="buy"/>}
-                {activeTab === "sell" && <BuySellComponent callbackFunc={callbackFunc} coin={coin} type="sell"/>}
-                {activeTab === "transfer" && <TransferComponent callbackFunc={callbackFunc} coin={coin} type="transfer"/>}
+                {activeTab === "buy" && <BuySellComponent hideFunction={hideFunction} callbackFunc={callbackFunc} coin={coin} type="buy"/>}
+                {activeTab === "sell" && <BuySellComponent hideFunction={hideFunction} callbackFunc={callbackFunc} coin={coin} type="sell"/>}
+                {activeTab === "transfer" && <TransferComponent hideFunction={hideFunction} callbackFunc={callbackFunc} coin={coin} type="transfer"/>}
             </div>
         </div>
     )
 }
 
-function BuySellComponent({type, coin, callbackFunc}){
+function BuySellComponent({type, coin, callbackFunc, hideFunction}){
     const {data: coinData, error} = useSWR(
         `v2/cryptocurrency/quotes/latest?slug=${coin.slug}`,
         fetcher
@@ -100,7 +100,7 @@ function BuySellComponent({type, coin, callbackFunc}){
                 <p className="text-2xl font-bold">${pricePerCoin && coinQuantity ? pricePerCoin * coinQuantity : 0}</p>
             </div>
             <div className='grid grid-cols-2 gap-4'>
-                <button type='button' className='cancel-button'>Cancel</button>
+                <button onClick={()=>hideFunction(false)} type='button' className='cancel-button'>Cancel</button>
                 <button className='submit-button'>Submit</button>
             </div>
         </form>

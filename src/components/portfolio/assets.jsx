@@ -178,7 +178,7 @@ function RowMenu({slug, showDeleteModal}){
     },[])
 
     return(
-        <div ref={menu} className='w-48 px-2 py-4 z-10 rounded-lg shadow-2xl text-sm absolute right-0 hidden top-full bg-white font-semibold'>
+        <div ref={menu} className='w-48 px-2 py-4 z-10 text-left rounded-lg shadow-2xl text-sm absolute right-0 hidden top-full bg-white font-semibold'>
             <ul>
                 <li 
                     className='flex p-2 hover:bg-faded-grey items-center gap-2 cursor-pointer'
@@ -186,11 +186,11 @@ function RowMenu({slug, showDeleteModal}){
                     <FaPlus /> Add Transactions
                 </li>
                 <li 
-                    className='flex p-2 hover:bg-faded-grey items-center gap-2 cursor-pointer'
+                    className='p-2 hover:bg-faded-grey cursor-pointer'
                 >
                     <Link 
                         href={`/portfolio/${slug}`}
-                        className='flex p-2 hover:bg-faded-grey items-center gap-2 cursor-pointer'
+                        className='flex items-center gap-2'
                     >
                         <FaAngleRight /> View Transactions
                     </Link>

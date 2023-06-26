@@ -93,7 +93,7 @@ function Modal({hideModal}) {
                         </ul>):(<p className='font-bold text-medium-grey text-center mt-4'>No Option Match</p>)}
                     </div>
                 </div>}
-                {currentPage === "transaction" && <Transaction callbackFunc={createAsset} coin={selectedCoin} />}
+                {currentPage === "transaction" && <Transaction hideFunction={hideModal} callbackFunc={createAsset} coin={selectedCoin} />}
             </ModalWrapper>
     )
 }

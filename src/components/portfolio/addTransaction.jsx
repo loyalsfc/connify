@@ -35,12 +35,6 @@ function AddTransaction({hideModal, transactions}) {
         hideModal(false);
     }
 
-    
-
-    // const newTransaction = async(coinQuantity, pricePerCoin, date, type) => {
-        
-    // }
-
     async function updateAsset(updateObj){
         await supabase.from('assets')
             .update(updateObj)
@@ -48,10 +42,21 @@ function AddTransaction({hideModal, transactions}) {
     }
 
     function getAverageBuy(pricePerCoin, coinQuantity){
-        const initialVal = 0
-        let totalBuy = transactions.reduce((incr, val) => val.transaction_type === "buy" && incr + val.total_spent, initialVal) 
+        let totalBuy = 0
+        transactions.forEach(item => {
+            if(item.transaction_type === "buy"){
+                return totalBuy += item.total_spent
+            }
+        })
         totalBuy += (pricePerCoin * coinQuantity)
-        const totalQty = coin.holding + coinQuantity
+        let totalQty = 0;
+        transactions.forEach(item => {
+            if(item.transaction_type === "buy"){
+                return totalQty += item.quantity
+            }
+        })
+        totalQty += coinQuantity
+        console.log(totalBuy, totalQty)
         return totalBuy / totalQty;
     }
 

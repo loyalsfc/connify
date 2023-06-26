@@ -7,8 +7,9 @@ import { FaAngleLeft, FaPen, FaPlus, FaTrash } from 'react-icons/fa'
 import useSWR from 'swr'
 import { calculateProfitLoss, fetcher, formatPrice, getImage, getProfitPercentage } from '../../../../utils/utils'
 import Image from 'next/image'
-import BalanceCard from '@/components/portfolio/balanceCard'
+import BalanceCard, { ProfitCard } from '@/components/portfolio/balanceCard'
 import AddTransaction from '@/components/portfolio/addTransaction'
+import Link from 'next/link'
 
 function Transactions() {
     const {slug} = useParams()
@@ -18,19 +19,24 @@ function Transactions() {
         `v2/cryptocurrency/quotes/latest?slug=${slug}`,
         fetcher
     )
+    
     if(transactionLoading || isLoading){
-        return <p>I dey load</p>
+        return <p className='px-8 py-40 text-center'>I dey load</p>
+    }
+
+    if(!transaction?.length){
+        return <p className='px-8 py-40 text-center'>An error occured</p>
     }
     // const {assets, date, fee, id: transactionId, note, price, quantity, total_spent, transaction_type, transfer_type } = transaction
-    // console.log(transaction, data)
+    console.log(transaction)
     async function fetchTransaction(){
         const {data, error} = await supabase.from('transactions')
             .select(`*, assets(*)`)
             .eq('asset_slug', slug)
+            .order("created_at", {ascending: false})
         return data;
     }   
     const {id: assetId, coin_name, holding, average_fee} = transaction[0].assets
-    console.log(transaction[0].assets)
 
     function getPrice(id){
         return data?.data?.data[id]?.quote.USD.price
@@ -41,9 +47,13 @@ function Transactions() {
     }
 
     function totalCost(){
-        const initialValue = 0
-        const totalCost = transaction.reduce((incr, val) => incr + val.total_spent, initialValue)
-        return totalCost
+        let initialValue = 0
+        transaction.forEach(item => {
+            if(item.transaction_type === "buy"){
+                return initialValue += item.total_spent
+            }
+        })
+        return initialValue
     }
 
     function holdingValue(){
@@ -63,8 +73,8 @@ function Transactions() {
         }
     }
 
-    function transactionProfit(price, quantity, cost){
-        const currentCost = price * quantity
+    function transactionProfit(quantity, cost){
+        const currentCost = getPrice(coin_name.id) * quantity
         return formatPrice(currentCost - cost)
     }
 
@@ -86,7 +96,9 @@ function Transactions() {
         <main>
             {showAddTransaction && <AddTransaction hideModal={setShowAddTransaction } transactions={transaction} />}
             <section className='px-4 sm:px-8 py-8'>
-                <button className='px-3 py-2 rounded-md bg-faded-grey flex items-center gap-3'> <FaAngleLeft/> Back</button>
+                <Link href="/portfolio">
+                    <button className='px-3 py-2 rounded-md bg-faded-grey flex items-center gap-3'> <FaAngleLeft/> Back</button>
+                </Link> 
                 <article className='mt-3'>
                     <h1>
                         <span className='text-xs text-medium-grey'>{coin_name.name} ({coin_name.symbol}) Balance</span>
@@ -109,7 +121,7 @@ function Transactions() {
                         <BalanceCard amount={holding} note='Quantity' />
                         <BalanceCard amount={`$${formatPrice(totalCost())}`} note='Total costs' />
                         <BalanceCard amount={`$${formatPrice(average_fee)}`} note='Average Buying Costs' />
-                        <BalanceCard amount={`$${profit()}`} note={`Profit / Loss (${getProfitPercentage(holdingValue(), totalCost())}%)`} />
+                        <ProfitCard amount={`$${profit()}`} percentage={getProfitPercentage(holdingValue(), totalCost())} />
                     </div>
                 </article>
                 <div className='pt-8 pb-4 flex items-center justify-between'>
@@ -132,7 +144,7 @@ function Transactions() {
                         <tbody className='font-semibold'>
                             {transaction.map(item => {
                                 return(
-                                    <tr className='text-sm border-b border-faded-grey'>
+                                    <tr key={item.id} className='text-sm border-b border-faded-grey'>
                                         <td className='text-left'>
                                             <div className='flex items-center gap-3'>
                                                 <div className='capitalize  text-white h-6 w-6 rounded-full grid place-content-center bg-medium-grey/50'>{item.transaction_type[0]}</div>
@@ -154,7 +166,11 @@ function Transactions() {
                                             </div>
                                         </td>
                                         <td>{item.fee ?? '--'}</td>
-                                        <td>{transactionProfit(item.price, item.quantity, item.cost)}</td>
+                                        <td>
+                                            {item.transaction_type === "buy" ? <p className={transactionProfit(item.quantity, item.total_spent) > 0 ? "text-green-500":"text-red-500"}>
+                                                ${transactionProfit(item.quantity, item.total_spent)}
+                                            </p> : "-"}
+                                        </td>
                                         <td></td>
                                         <td className='text-green-500'>
                                             <div className='p-2.5 flex gap-3 justify-end'>

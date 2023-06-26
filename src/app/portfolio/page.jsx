@@ -23,7 +23,7 @@ function PortFolio() {
 
     useCallback(()=>{
         mutate();
-    },[user])
+    },[user, assets])
     
     if(authLoading || isLoading){
         return <Loader />
