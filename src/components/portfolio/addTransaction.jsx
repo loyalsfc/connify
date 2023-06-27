@@ -7,17 +7,17 @@ import { Context } from '@/context/context'
 function AddTransaction({hideModal, transactions}) {
     let coin = transactions[0].assets
     const {showNotification} = useContext(Context)
-    // console.log(
 
-    async function newTransaction(coinQuantity, pricePerCoin, date, type){
+    async function newTransaction(coinQuantity, pricePerCoin, date, type, transferType){
         const {error} = await supabase.from('transactions')
             .insert({
                 date, 
                 price: pricePerCoin, 
                 quantity: coinQuantity, 
-                total_spent: pricePerCoin * coinQuantity,
+                total_spent: pricePerCoin * coinQuantity ?? null,
                 asset: coin.id,
                 transaction_type: type,
+                transfer_type: transferType ?? "",
                 asset_slug: coin.slug
             })
             .select()
@@ -28,10 +28,16 @@ function AddTransaction({hideModal, transactions}) {
                 holding: coin.holding + parseFloat(coinQuantity), 
                 average_fee: getAverageBuy(pricePerCoin, parseFloat(coinQuantity))
             })
-        }else {
+        }else if (type === "sell"){
             await updateAsset({holding: coin.holding - parseFloat(coinQuantity)}) 
+        } else {
+            if(transferType === "in"){
+                await updateAsset({holding: coin.holding + parseFloat(coinQuantity)})
+            } else {
+                await updateAsset({holding: coin.holding - parseFloat(coinQuantity)}) 
+            }
         }
-        showNotification("Transaction Added", "#22C55E")
+        showNotification("Transaction Added", "#22C55E");
         hideModal(false);
     }
 
@@ -55,12 +61,9 @@ function AddTransaction({hideModal, transactions}) {
                 return totalQty += item.quantity
             }
         })
-        totalQty += coinQuantity
-        console.log(totalBuy, totalQty)
+        totalQty += coinQuantity;
         return totalBuy / totalQty;
     }
-
-    
 
     return (
         <ModalWrapper hideModal={hideModal}>

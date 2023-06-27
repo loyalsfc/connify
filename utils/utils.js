@@ -41,6 +41,15 @@ export function formatPrice(price){
     if(!price){
         return 0
     }
+    if(price < 1){
+        if(price < -0.001){
+            return price.toFixed(2);
+        } else if( price < -0.0000001){
+            return price.toFixed(6)
+        } else {
+            return price.toFixed(8)
+        }
+    }
     if(price > 999){
         return price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     } else if(price > 1){

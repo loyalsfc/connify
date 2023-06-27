@@ -16,7 +16,7 @@ function Assets({assets}) {
         `v2/cryptocurrency/quotes/latest?id=${assetsId.join()}`,
         fetcher
     )
-    // console.log(data)
+    
     if(isLoading) return 'hi'
 
     function getFormatedPrice(id){

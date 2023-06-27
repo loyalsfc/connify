@@ -1,11 +1,8 @@
 import Image from 'next/image'
-import React, { useCallback, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { FaDollarSign, FaPen, FaTimes } from 'react-icons/fa'
-import { fetcher, getImage } from '../../../utils/utils'
+import { fetcher, formatPrice, getImage } from '../../../utils/utils'
 import useSWR from 'swr'
-import { supabase } from '@/lib/supabaseClient'
-import { PortfolioContext } from '@/context/portfolioContext'
-import { Context } from '@/context/context'
 
 function Transaction({coin, hideFunction, callbackFunc}) {
     const [activeTab, setActiveTab] = useState("buy")
@@ -39,7 +36,7 @@ function BuySellComponent({type, coin, callbackFunc, hideFunction}){
         fetcher
     )
     
-    const [pricePerCoin, setPricePerCoin] = useState()
+    const [pricePerCoin, setPricePerCoin] = useState('')
     const [coinQuantity, setCoinQuantity] = useState()
     const [date, setDate] =useState(new Date().toISOString().slice(0, 16))
 
@@ -97,7 +94,7 @@ function BuySellComponent({type, coin, callbackFunc, hideFunction}){
             />
             <div className='bg-faded-grey rounded-md p-4 mb-4'>
                 <span className='text-sm text-medium-grey'>Total {type === "buy" ? "Spent" : "Received"}</span>
-                <p className="text-2xl font-bold">${pricePerCoin && coinQuantity ? pricePerCoin * coinQuantity : 0}</p>
+                <p className="text-2xl font-bold">${pricePerCoin && coinQuantity ? formatPrice(pricePerCoin * coinQuantity) : 0}</p>
             </div>
             <div className='grid grid-cols-2 gap-4'>
                 <button onClick={()=>hideFunction(false)} type='button' className='cancel-button'>Cancel</button>
@@ -107,12 +104,18 @@ function BuySellComponent({type, coin, callbackFunc, hideFunction}){
     )
 }
 
-function TransferComponent({coin}){
+function TransferComponent({coin, callbackFunc, hideFunction}){
     const [transferType, setTransferType] = useState('in')
-    const [coinQuantity, setCoinQuantity] = useState()
+    const [coinQuantity, setCoinQuantity] = useState('')
     const [date, setDate] =useState(new Date().toISOString().slice(0, 16))
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        callbackFunc(coinQuantity, null, date, 'transfer', transferType);
+    }
+
     return(
-        <form>
+        <form onSubmit={handleSubmit}>
             <div className='mb-4'>
                 <label htmlFor="transfer-type" className='font-semibold text-sm mb-0.5'>Transfer</label>
                 <div className='transaction-input pe-2'>
@@ -150,7 +153,7 @@ function TransferComponent({coin}){
             </div>
             <DateComp date={date} setDate={setDate} />
             <div className='grid grid-cols-2 gap-4'>
-                <button type='button' className='cancel-button'>Cancel</button>
+                <button onClick={()=>hideFunction(false)} type='button' className='cancel-button'>Cancel</button>
                 <button className='submit-button'>Submit</button>
             </div>
         </form>

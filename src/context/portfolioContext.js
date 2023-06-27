@@ -1,6 +1,5 @@
 'use client'
 
-import { supabase } from "@/lib/supabaseClient"
 import { createContext, useEffect, useRef, useState } from "react"
 
 const PortfolioContext = createContext(null)
@@ -14,7 +13,6 @@ const PortfolioContextProvider = ({children}) => {
         setPortfolioId(portfolio.portfolio.find(portfolio => portfolio.is_default === true)?.id)
     },[portfolio])
 
-    console.log(portfolio)
     const updatePortfolio = (newItem) => {
         setPortfolio(prevItem => {
             return {...prevItem, assets: [...prevItem.assets, newItem]}
