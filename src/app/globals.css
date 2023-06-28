@@ -55,10 +55,13 @@
     @apply border border-medium-grey/50 rounded-md overflow-hidden
   }
   .submit-button{
-    @apply p-4 rounded-md border border-green-500 hover:border-green-500/50 bg-green-500 hover:bg-green-500/80 text-white
+    @apply p-4 rounded-md border border-green-500 hover:border-green-500/50 bg-green-500 hover:bg-green-500/80 text-white flex items-center justify-center gap-2
   }
   .cancel-button{
     @apply p-4 rounded-md border border-medium-grey/50 hover:border-green-500/50
+  }
+  .loader{
+    @apply h-3.5 w-3.5 rounded-full border-2 border-faded-grey border-t-medium-grey animate-spin
   }
 }
 .display-less::before{

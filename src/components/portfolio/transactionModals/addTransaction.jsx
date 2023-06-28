@@ -1,10 +1,10 @@
 import React, { useContext } from 'react'
-import ModalWrapper from '../modalWrapper'
-import Transaction from './transaction'
+import ModalWrapper from '../../modalWrapper'
+import Transaction from '../transaction'
 import { supabase } from '@/lib/supabaseClient'
 import { Context } from '@/context/context'
 
-function AddTransaction({hideModal, transactions}) {
+function AddTransaction({hideModal, transactions, mutate}) {
     let coin = transactions[0].assets
     const {showNotification} = useContext(Context)
 
@@ -39,6 +39,7 @@ function AddTransaction({hideModal, transactions}) {
         }
         showNotification("Transaction Added", "#22C55E");
         hideModal(false);
+        mutate()
     }
 
     async function updateAsset(updateObj){

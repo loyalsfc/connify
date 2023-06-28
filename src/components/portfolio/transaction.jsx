@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { FaDollarSign, FaPen, FaTimes } from 'react-icons/fa'
 import { fetcher, formatPrice, getImage } from '../../../utils/utils'
 import useSWR from 'swr'
@@ -30,14 +30,15 @@ function Transaction({coin, hideFunction, callbackFunc}) {
     )
 }
 
-function BuySellComponent({type, coin, callbackFunc, hideFunction}){
+export function BuySellComponent({type, coin, callbackFunc, hideFunction}){
+    const submitBtn = useRef()
     const {data: coinData, error} = useSWR(
         `v2/cryptocurrency/quotes/latest?slug=${coin.slug}`,
         fetcher
     )
     
     const [pricePerCoin, setPricePerCoin] = useState('')
-    const [coinQuantity, setCoinQuantity] = useState()
+    const [coinQuantity, setCoinQuantity] = useState('')
     const [date, setDate] =useState(new Date().toISOString().slice(0, 16))
 
     useEffect(()=>{
@@ -45,9 +46,12 @@ function BuySellComponent({type, coin, callbackFunc, hideFunction}){
         setPricePerCoin(data?.quote.USD.price)
     },[coinData])
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async(e) => {
         e.preventDefault();
-        callbackFunc(coinQuantity, pricePerCoin, date, type);
+        if(!coinQuantity || !pricePerCoin) return;
+        submitBtn.current.disabled = true;
+        await callbackFunc(coinQuantity, pricePerCoin, date, type);
+        submitBtn.current.disabled = false;
     }
 
     return(
@@ -98,7 +102,10 @@ function BuySellComponent({type, coin, callbackFunc, hideFunction}){
             </div>
             <div className='grid grid-cols-2 gap-4'>
                 <button onClick={()=>hideFunction(false)} type='button' className='cancel-button'>Cancel</button>
-                <button className='submit-button'>Submit</button>
+                <button ref={submitBtn} className='submit-button group'>
+                    <p className="loader hidden group-disabled:block"></p>
+                    Submit
+                </button>
             </div>
         </form>
     )
@@ -108,6 +115,7 @@ function TransferComponent({coin, callbackFunc, hideFunction}){
     const [transferType, setTransferType] = useState('in')
     const [coinQuantity, setCoinQuantity] = useState('')
     const [date, setDate] =useState(new Date().toISOString().slice(0, 16))
+    const submitBtn = useRef()
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -154,13 +162,16 @@ function TransferComponent({coin, callbackFunc, hideFunction}){
             <DateComp date={date} setDate={setDate} />
             <div className='grid grid-cols-2 gap-4'>
                 <button onClick={()=>hideFunction(false)} type='button' className='cancel-button'>Cancel</button>
-                <button className='submit-button'>Submit</button>
+                <button className='submit-button group'>
+                <p ref={submitBtn} className="loader hidden group-disabled:block"></p>
+                    Submit
+                </button>
             </div>
         </form>
     )
 }
 
-function DateComp({date, setDate}){
+export function DateComp({date, setDate}){
     return(
         <div className='flex gap-4 items-center mb-4'>
             <p className='transaction-label'>

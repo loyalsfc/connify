@@ -2,23 +2,26 @@
 
 import { supabase } from '@/lib/supabaseClient'
 import { useParams } from 'next/navigation'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { FaAngleLeft, FaArrowDown, FaArrowUp, FaPen, FaPlus, FaTrash } from 'react-icons/fa'
 import useSWR from 'swr'
 import { fetcher, formatPrice, getImage } from '../../../../utils/utils'
 import Image from 'next/image'
 import BalanceCard, { ProfitCard } from '@/components/portfolio/balanceCard'
-import AddTransaction from '@/components/portfolio/addTransaction'
+import AddTransaction from '@/components/portfolio/transactionModals/addTransaction'
 import Link from 'next/link'
 import DeleteModal from '@/components/portfolio/deleteModal'
 import { Context } from '@/context/context'
+import Loader from '@/components/loader'
+import EditTransaction from '@/components/portfolio/transactionModals/editTransaction'
 
 function Transactions() {
     const {slug} = useParams()
-    const {data: transaction, isLoading: transactionLoading} = useSWR('transactions', fetchTransaction)
+    const {data: transaction, isLoading: transactionLoading, mutate} = useSWR('transactions', fetchTransaction)
     const [showAddTransaction, setShowAddTransaction] = useState(false);
     const [showDeleteTransaction, setShowDeleteTransaction] = useState(false);
-    const [selectedId, setSelectedId] = useState({})
+    const [showEditTransaction, setShowEditTransaction] = useState(false);
+    const [selectedId, setSelectedId] = useState()
     const {showNotification} = useContext(Context)
     const {data, isLoading} = useSWR(
         `v2/cryptocurrency/quotes/latest?slug=${slug}`,
@@ -26,7 +29,7 @@ function Transactions() {
     )
     
     if(transactionLoading || isLoading){
-        return <p className='px-8 py-40 text-center'>I dey load</p>
+        return <Loader />
     }
 
     if(!transaction?.length){
@@ -37,11 +40,10 @@ function Transactions() {
         const {data} = await supabase.from('transactions')
             .select(`*, assets(*)`)
             .eq('asset_slug', slug)
-            .order("created_at", {ascending: false})
+            .order("date", {ascending: false})
         return data;
     }   
     const {id: assetId, coin_name, holding, average_fee} = transaction[0].assets
-    // console.log(transaction[0].assets);
 
     function getPrice(){
         return data?.data?.data[coin_name.id]?.quote.USD.price
@@ -158,7 +160,6 @@ function Transactions() {
         const {data, error} = await supabase.from('transactions')
             .delete()
             .eq('id', selectedId)
-        console.log(data, error)
 
         if(error) {
             showNotification("An error occured", "#EF4444");
@@ -166,41 +167,37 @@ function Transactions() {
         }
 
         if(transactionItem.transaction_type === "buy"){
-            const {data, error} = await supabase.from('assets')
-                .update({average_fee: newAverageBuy(), holding: holding - transactionItem.quantity })
-                .eq('id', assetId)
-            console.log(data, error)
+            updateAsset({average_fee: newAverageBuy(), holding: holding - transactionItem.quantity })
         } else if (transactionItem.transaction_type === "sell"){
-            const {data, error} = await supabase.from('assets')
-                .update({holding: holding + transactionItem.quantity})
-                .eq('id', assetId)
-            console.log(data, error)
+            updateAsset({holding: holding + transactionItem.quantity})
         } else {
             if(transactionItem.transfer_type === "in"){
-                const {data, error} = await supabase.from('assets')
-                    .update({holding: holding - transactionItem.quantity})
-                    .eq('id', assetId)
-                console.log(data, error)
+                updateAsset({holding: holding - transactionItem.quantity})
             } else {
-                const {data, error} = await supabase.from('assets')
-                    .update({holding: holding + transactionItem.quantity})
-                    .eq('id', assetId)
-                console.log(data, error)
+                updateAsset({holding: holding + transactionItem.quantity})
             }
         }
         showNotification("Delete Successful", "#EF4444");
+        setShowDeleteTransaction(false);
+        mutate()
+    }
 
+    async function updateAsset(updateObj){
+        await supabase.from('assets')
+            .update(updateObj)
+            .eq('id', assetId)
     }
 
     function newAverageBuy(){
-        const totalBuy = transaction.reduce((incr, item) => {
+        const filteredTransaction = transaction.filter(item => item.id !== selectedId);
+        const totalBuy = filteredTransaction.reduce((incr, item) => {
             if(item.transaction_type === "buy" && item.id !== selectedId.id){
                 return incr + item.total_spent
             }
             return incr
         }, 0)
         
-        const totalQty = transaction.reduce((incr, item) => {
+        const totalQty = filteredTransaction.reduce((incr, item) => {
             if(item.transaction_type === "buy" && item.id !== selectedId.id){
                 return incr + item.quantity
             }
@@ -214,18 +211,30 @@ function Transactions() {
         setShowDeleteTransaction(true);
     }
 
+    function showEdit(id){
+        setSelectedId(id)
+        setShowEditTransaction(true)
+    }
+
     return (
         <main>
-            {showAddTransaction && <AddTransaction hideModal={setShowAddTransaction } transactions={transaction} />}
+            {showAddTransaction && <AddTransaction mutate={mutate} hideModal={setShowAddTransaction } transactions={transaction} />}
             {showDeleteTransaction && <DeleteModal
                 hideModal={setShowDeleteTransaction}
                 heading="Delete Transaction?"
                 content="Are you sure you want to remove this transaction?"
                 deleteFunc={deleteTransaction}
             />}
+            {showEditTransaction && <EditTransaction 
+                id={selectedId}
+                coin={transaction[0].assets}
+                callbackFunc={mutate} 
+                hideFunction={setShowEditTransaction} 
+                transaction={transaction}
+            />}
             <section className='px-4 sm:px-8 py-8'>
-                <Link href="/portfolio">
-                    <button className='px-3 py-2 rounded-md bg-faded-grey flex items-center gap-3'> <FaAngleLeft/> Back</button>
+                <Link className='px-3 py-2 rounded-md bg-faded-grey flex w-fit items-center gap-3' href="/portfolio">
+                     <FaAngleLeft/> Back
                 </Link> 
                 <article className='mt-3'>
                     <h1>
@@ -241,7 +250,7 @@ function Transactions() {
                             <span 
                                 className={`${getDurationChange(coin_name.id, '24h') > 1 ?"bg-green-500" : "bg-red-500"} p-1 text-white rounded-md`}
                             >
-                                {getDurationChange(coin_name.id, '24h').toFixed(2)}%
+                                {getDurationChange(coin_name.id, '24h')?.toFixed(2)}%
                             </span>
                         </div>
                     </h1>
@@ -317,7 +326,7 @@ function Transactions() {
                                         <td></td>
                                         <td className='text-green-500'>
                                             <div className='p-2.5 flex gap-3 justify-end'>
-                                                <button className='hover:bg-faded-grey'><FaPen /></button>
+                                                <button onClick={()=>showEdit(item.id)} className='hover:bg-faded-grey'><FaPen /></button>
                                                 <button onClick={()=>showModal(item.id)} className='hover:bg-faded-grey'><FaTrash /></button>
                                             </div>
                                         </td>

@@ -21,7 +21,7 @@ export function toTwoDecimalPlace(num){
 
 // export const fetcher = (url) => axios.get(`http://192.168.0.192:5000/api/${url}`)
 
-export const fetcher = (url) => axios.post(`http://192.168.0.192:5000/api`, {url})
+export const fetcher = (url) => axios.post(process.env.NEXT_PUBLIC_FETCH_URL, {url})
 
 export const coinFetcher = (slug) => axios.post(`http://192.168.0.192:5000/api/coin`, {slug})
 
