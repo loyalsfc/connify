@@ -1,34 +1,29 @@
 import Image from 'next/image'
 import React, { useEffect, useRef, useState } from 'react'
-import { calculateProfitLoss, fetcher, getImage, getProfitPercentage, toTwoDecimalPlace } from '../../../utils/utils'
+import { calculateProfitLoss, fetcher, getImage, getProfitPercentage, profit, toTwoDecimalPlace, totalCost, totalProfit, totalProfitPercentage } from '../../../utils/utils'
 import { FaAngleRight, FaEllipsisV, FaPlus, FaTrash } from 'react-icons/fa'
 import Link from 'next/link'
 import useSWR from 'swr'
 import PercentageChangeRow from '../percentageChange'
 import DeleteAsset from './deleteAsset'
-import BalanceCard from './balanceCard'
+import BalanceCard, { ProfitCard } from './balanceCard'
 
-function Assets({assets}) {
+function Assets({assets, prices}) {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const assetsId = assets.map(item => item.coin_name.id);
     const [selectedId, setSelectedId] = useState(null);
-    const {data, isLoading, error} = useSWR(
-        `v2/cryptocurrency/quotes/latest?id=${assetsId.join()}`,
-        fetcher
-    )
     
-    if(isLoading) return 'hi'
+    // if(isLoading) return 'hi'ffhfhffhjh 
 
     function getFormatedPrice(id){
         return formatePrice(getPrice(id))
     }
 
     function getPrice(id){
-        return data?.data?.data[id]?.quote.USD.price
+        return prices?.data?.data[id]?.quote.USD.price
     }
 
     function getDurationChange(id, duration){
-        return data?.data?.data[id]?.quote.USD[`percent_change_${duration}`]
+        return prices?.data?.data[id]?.quote.USD[`percent_change_${duration}`]
     }
 
     function formatePrice(price){
@@ -62,14 +57,12 @@ function Assets({assets}) {
         return accumulator + itemCurrentValue;
     }
 
-    const totalProfit = () => {
-        const profits = assets.map(item => calculateProfitLoss(getPrice(item.coin_name.id), item.average_fee))
-        let initialValue = 0;
+    const generalProfit = () => {
+        const profits = assets.map(item => totalProfit(item.transactions, item.average_fee, getPrice(item.coin_name.id)))
         let total = profits.reduce(
-            (accumulator, currentValue) => accumulator + currentValue,
-            initialValue
+            (accumulator, currentValue) => accumulator + parseFloat(currentValue),0
         )
-        return formatePrice(total);
+        return total;
     }
 
     const totalAverageBuy = () => {
@@ -82,35 +75,52 @@ function Assets({assets}) {
         return total;
     }
 
+    function totalPurchase(){
+        const costs = assets.reduce((incr, item) =>{
+            return incr + totalCost(item.transactions)
+        },0)
+        return costs
+    }
+
+    const profitPercentage = () => {
+        const percent = (generalProfit() / totalPurchase()) * 100;
+        return percent.toFixed(2)
+    }
+
     return (
     <>
-        <div className='flex gap-6'>
-            <BalanceCard amount={formatePrice(totalBalance())} note="Total Balance" />
-            <BalanceCard 
-                amount={totalProfit()} 
-                note={`Total Profit / Loss (${getProfitPercentage(totalBalance(), totalAverageBuy())}%)`} 
+        <div className='flex flex-col sm:flex-row gap-3 sm:gap-6 mt-4'>
+            <BalanceCard amount={`$${formatePrice(totalBalance())}`} note="Total Balance" />
+            <ProfitCard 
+                amount={`$${formatePrice(generalProfit())}`}
+                percentage={profitPercentage()}
             />
+
         </div>
         <section>
             {showDeleteModal && <DeleteAsset hideModal={setShowDeleteModal} id={selectedId} />}
-            <h3 className='font-semibold text-xl mb-4'>Assets</h3>
+            <h3 className='font-semibold text-xl mb-4'>
+                Assets
+                <button><FaPlus/> New Transaction</button>
+            </h3>
             <div className="relative">
                 <table className='w-full text-sm'>
                     <thead className='border-y border-faded-grey text-end sticky top-0 bg-white'>
                         <tr>
                             <th className='p-2 text-center'>Name</th>
                             <th className='p-2'>Price</th>
-                            <th className='p-2 text-center'>1h</th>
-                            <th className='p-2 text-center'>24h</th>
-                            <th className='p-2 text-center'>7d</th>
+                            <th className='p-2 text-center hidden sm:table-cell'>1h</th>
+                            <th className='p-2 text-center hidden lg:table-cell'>24h</th>
+                            <th className='p-2 text-center hidden lg:table-cell'>7d</th>
                             <th className='p-2'>Holdings</th>
-                            <th className='p-2'>Avg. Buy Price</th>
-                            <th className='p-2'>PNL</th>
+                            <th className='p-2 hidden md:table-cell'>Avg. Buy Price</th>
+                            <th className='p-2 hidden sm:table-cell'>PNL</th>
                             <th className='p-2'></th>
                         </tr>
                     </thead>
                     <tbody className='text-end'>
                         {assets.map(item => {
+                            let profitPercent = totalProfitPercentage(item.transactions, item.average_fee, getPrice(item.coin_name.id))
                             return(
                                 <tr key={item.id} className='border-b border-faded-grey'>
                                     <td>
@@ -122,26 +132,28 @@ function Assets({assets}) {
                                                     width={24}
                                                     alt='Logo'
                                                 />
-                                                <span>{item.coin_name.name}</span>
-                                                <span className='opacity-50'>{item.coin_name.symbol}</span>
+                                                <p className='flex flex-col sm:flex-row sm:gap-3 text-left'>
+                                                    <span>{item.coin_name.name}</span>
+                                                    <span className='opacity-50'>{item.coin_name.symbol}</span>
+                                                </p>
                                             </div>
                                         </Link>
                                     </td>
                                     <td className='px-3'>${getFormatedPrice(item.coin_name.id)}</td>
-                                    <PercentageChangeRow percentChange={getDurationChange(item.coin_name.id, '1h')} />
-                                    <PercentageChangeRow percentChange={getDurationChange(item.coin_name.id, '24h')} />
-                                    <PercentageChangeRow percentChange={getDurationChange(item.coin_name.id, '7d')} />
+                                    <PercentageChangeRow hideSm={true} percentChange={getDurationChange(item.coin_name.id, '1h')} />
+                                    <PercentageChangeRow hide={true} percentChange={getDurationChange(item.coin_name.id, '24h')} />
+                                    <PercentageChangeRow hide={true} percentChange={getDurationChange(item.coin_name.id, '7d')} />
                                     <td>
                                         <div>
                                             <p>${formatePrice(item.holding * getPrice(item.coin_name.id))}</p>
                                             <p>{item.holding} {item.coin_name.symbol}</p>
                                         </div>
                                     </td>
-                                    <td>${formatePrice(item.average_fee)}</td>
-                                    <td className='p-2'> 
-                                        <p>${formatePrice(calculateProfitLoss(getPrice(item.coin_name.id), item.average_fee))}</p>
-                                        <p className={getProfitPercentage(getPrice(item.coin_name.id), item.average_fee) > 0 ? "text-green-500" : "text-red-500"}>
-                                            {getProfitPercentage(getPrice(item.coin_name.id), item.average_fee)}%
+                                    <td className='hidden md:table-cell'>${formatePrice(item.average_fee)}</td>
+                                    <td className='p-2 hidden sm:table-cell'> 
+                                        <p>{profit(item.transactions, item.average_fee, getPrice(item.coin_name.id))}</p>
+                                        <p className={profitPercent > 0 ? "text-green-500" : "text-red-500"}>
+                                            {profitPercent}%
                                         </p>
                                     </td>
                                     <td className='p-2 py-4'>

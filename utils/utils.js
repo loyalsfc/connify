@@ -74,3 +74,84 @@ export function getProfitPercentage(currentPrice, averagePrice){
     const percent = (priceDiff / averagePrice ) * 100
     return percent.toFixed(2)
 }
+
+export function soldCoinProfit(transaction, average_fee){
+    let profit = 0;
+    transaction.forEach(item => {
+        // console.log(item.quantity)
+        if(item.transaction_type === "sell"){
+            let cost = item.quantity * average_fee;
+            profit += (item.total_spent - cost)
+        }
+    })
+    return profit;
+}
+
+export function calculateAssetProfits(transaction, average_fee, getPrice){
+    const purchasedAssets = transaction.reduce((acc, item) => {
+        if (item.transaction_type === 'buy') {
+            return acc + item.quantity;
+        } else if (item.transaction_type === 'sell'){
+            return acc - item.quantity
+        }
+        return acc;
+      }, 0);
+    const currentAssetCost = purchasedAssets * average_fee;
+    const currentAssetPrice = purchasedAssets * getPrice
+    let profit = currentAssetPrice - currentAssetCost;
+    return profit;
+}
+
+export function calculateTransferInProfit(transaction, getPrice){
+    const transferIn = transaction.reduce((acc, item) => {
+        if (item.transfer_type === 'in') {
+            return acc + item.quantity;
+        }
+        return acc;
+      }, 0);
+      return transferIn * getPrice;
+}
+
+export function calculateTransferOutCost(transaction, getPrice){
+    const transferOut = transaction.reduce((acc, item) => {
+        if (item.transfer_type === 'out') {
+            return acc + item.quantity;
+        }
+        return acc;
+    }, 0);
+    return transferOut * getPrice;
+}
+
+export function totalProfitPercentage(transaction, average_fee, getPrice){
+    const profit = totalProfit(transaction, average_fee, getPrice);
+    const percentage = (profit / totalCost(transaction)) * 100;
+    return percentage.toFixed(2);
+}
+
+export function profit(transaction, average_fee, getPrice){
+    let profit = totalProfit(transaction, average_fee, getPrice)
+    
+    if(profit > 0){
+        return formatPrice(profit);
+    } else {
+        if(profit < -1){
+            return profit.toFixed(2);
+        } else {
+            return profit.toFixed(8);
+        }
+    }
+}
+
+export function totalProfit(transaction, average_fee, getPrice){
+    return (soldCoinProfit(transaction, average_fee) + calculateAssetProfits(transaction, average_fee, getPrice) + calculateTransferInProfit(transaction, getPrice)) - calculateTransferOutCost(transaction, getPrice)
+}
+
+export function totalCost(transaction){
+    let cost = 0
+    transaction.forEach(item => {
+        if(item.transaction_type === "buy"){
+            return cost += item.total_spent
+        }
+    })
+    return cost;
+}

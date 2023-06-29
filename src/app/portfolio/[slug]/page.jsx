@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation'
 import React, { useContext, useEffect, useState } from 'react'
 import { FaAngleLeft, FaArrowDown, FaArrowUp, FaPen, FaPlus, FaTrash } from 'react-icons/fa'
 import useSWR from 'swr'
-import { fetcher, formatPrice, getImage } from '../../../../utils/utils'
+import { calculateAssetProfits, calculateTransferInProfit, calculateTransferOutCost, fetcher, formatPrice, getImage, profit, soldCoinProfit, totalCost, totalProfitPercentage } from '../../../../utils/utils'
 import Image from 'next/image'
 import BalanceCard, { ProfitCard } from '@/components/portfolio/balanceCard'
 import AddTransaction from '@/components/portfolio/transactionModals/addTransaction'
@@ -53,88 +53,8 @@ function Transactions() {
         return data?.data?.data[id]?.quote.USD[`percent_change_${duration}`]
     }
 
-    function totalCost(){
-        let cost = 0
-        transaction.forEach(item => {
-            if(item.transaction_type === "buy"){
-                return cost += item.total_spent
-            }
-        })
-        return cost;
-    }
-
     function holdingValue(){
         return holding * getPrice()
-    }
-
-    function soldCoinProfit(){
-        let profit = 0;
-        transaction.forEach(item => {
-            if(item.transaction_type === "sell"){
-                let cost = item.quantity * average_fee;
-                profit += (item.total_spent - cost)
-            }
-        })
-        return profit;
-    }
-
-    function calculateAssetProfits(){
-        const purchasedAssets = transaction.reduce((acc, item) => {
-            if (item.transaction_type === 'buy') {
-                return acc + item.quantity;
-            } else if (item.transaction_type === 'sell'){
-                return acc - item.quantity
-            }
-            return acc;
-          }, 0);
-        const currentAssetCost = purchasedAssets * average_fee;
-        const currentAssetPrice = purchasedAssets * getPrice()
-        let profit = currentAssetPrice - currentAssetCost;
-        return profit;
-    }
-
-    function calculateTransferInProfit(){
-        const transferIn = transaction.reduce((acc, item) => {
-            if (item.transfer_type === 'in') {
-                return acc + item.quantity;
-            }
-            return acc;
-          }, 0);
-          return transferIn * getPrice();
-    }
-
-    function calculateTransferOutCost(){
-        const transferOut = transaction.reduce((acc, item) => {
-            if (item.transfer_type === 'out') {
-                return acc + item.quantity;
-            }
-            return acc;
-        }, 0);
-        return transferOut * getPrice();
-    }
-
-    function totalProfit(){
-        return (soldCoinProfit() + calculateAssetProfits() + calculateTransferInProfit()) - calculateTransferOutCost()
-    }
-
-    function profit(){
-        let profit = totalProfit()
-        
-        if(profit > 0){
-            return formatPrice(profit);
-        } else {
-            if(profit < -1){
-                return profit.toFixed(2);
-            } else {
-                return profit.toFixed(8);
-            }
-        }
-    }
-
-    function totalProfitPercentage(){
-        const profit = totalProfit();
-        const percentage = (profit / totalCost()) * 100;
-        return percentage.toFixed(2);
     }
 
     function transactionProfit(quantity, cost){
@@ -256,9 +176,9 @@ function Transactions() {
                     </h1>
                     <div className='flex gap-4'>
                         <BalanceCard amount={holding} note='Quantity' />
-                        <BalanceCard amount={`$${formatPrice(totalCost())}`} note='Total costs' />
+                        <BalanceCard amount={`$${formatPrice(totalCost(transaction))}`} note='Total costs' />
                         <BalanceCard amount={`$${formatPrice(average_fee)}`} note='Average Buying Costs' />
-                        <ProfitCard amount={`$${profit()}`} percentage={totalProfitPercentage()} />
+                        <ProfitCard amount={`$${profit(transaction, average_fee, getPrice())}`} percentage={totalProfitPercentage(transaction, average_fee, getPrice())} />
                     </div>
                 </article>
                 <div className='pt-8 pb-4 flex items-center justify-between'>

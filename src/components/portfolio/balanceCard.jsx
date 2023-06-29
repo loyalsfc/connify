@@ -2,7 +2,7 @@ import React from 'react'
 
 function BalanceCardWrapper({amount, children}){
     return(
-        <div className='rounded-lg shadow-md bg-white p-4 mb-4 mr-2 w-fit'>
+        <div className='rounded-lg shadow-md bg-white p-4 mb-4 mr-2 w-full sm:w-fit text-center sm:text-left'>
             <h5 className='text-xl font-medium'>{amount}</h5>
             {children}
         </div>

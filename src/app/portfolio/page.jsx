@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import React, { useCallback, useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { Context } from '../../context/context'
 import Loader from '@/components/loader'
 import { FaEllipsisV, FaEye, FaPlus } from 'react-icons/fa'
@@ -14,18 +14,26 @@ import { PortfolioContext } from '../../context/portfolioContext'
 import Assets from '@/components/portfolio/assets'
 import DeletePortfolio from '@/components/portfolio/deleteAsset'
 import DeleteAsset from '@/components/portfolio/deleteAsset'
+import { fetcher } from '../../../utils/utils'
 
 function PortFolio() {
     const {setShowAuthModal, authLoading, user} = useContext(Context);
-    const {data: data, isLoading, error, mutate} = useSWR(user?.id, fetchPortfolio)
+    const {data: data, isLoading, mutate} = useSWR(user?.id, fetchPortfolio)
     const [showCreateModal, setShowCreateModal] = useState(false)
     const {setPortfolio, portfolio: {assets}} = useContext(PortfolioContext)
+    const assetsId = useMemo(()=>{
+        return assets.map(item => item.coin_name.id)
+    },[assets])
+    const {data: coinPrices, isLoading: coinPricesLoading, error} = useSWR(
+        `v2/cryptocurrency/quotes/latest?id=${assetsId.join()}`,
+        fetcher
+    )
 
     useCallback(()=>{
         mutate();
     },[user, assets])
     
-    if(authLoading || isLoading){
+    if(authLoading || isLoading || coinPricesLoading){
         return <Loader />
     }
 
@@ -37,7 +45,7 @@ function PortFolio() {
             return;
         }
 
-        const {data:assets, error: assetsError} = await supabase.from('assets').select().eq('portfolio', portfolio[0].id)
+        const {data:assets, error: assetsError} = await supabase.from('assets').select(`*, transactions(*)`).eq('portfolio', portfolio[0].id)
         if(assetsError){
             console.log(assetsError)
             return;
@@ -70,7 +78,7 @@ function PortFolio() {
                         </div>
                     </div>
                     {data?.assets?.length ? (
-                        <Assets assets={assets} />
+                        <Assets assets={assets} prices={coinPrices} />
                     ):
                         <div className='text-center flex flex-col items-center py-8'>
                         <Image
