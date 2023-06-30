@@ -7,9 +7,9 @@ import Image from 'next/image'
 import { supabase } from '@/lib/supabaseClient'
 import { Context } from '@/context/context'
 
-function EditTransaction({id, callbackFunc, hideFunction, transaction}) {
+function EditTransaction({id, callbackFunc, hideFunction, transaction, assets}) {
     const currentTransaction = transaction.find(item => item.id === id)
-    const {transaction_type: type, transfer_type, price, quantity, date: initialDate, assets} = currentTransaction
+    const {transaction_type: type, transfer_type, price, quantity, date: initialDate} = currentTransaction
     const {id: assetId, coin_name, holding, average_fee} = assets
     const [pricePerCoin, setPricePerCoin] = useState(price)
     const [coinQuantity, setCoinQuantity] = useState(quantity)
@@ -79,7 +79,7 @@ function EditTransaction({id, callbackFunc, hideFunction, transaction}) {
     return (
         <ModalWrapper hideModal={hideFunction}>
             <div>
-                <h1 className="text-xl font-semibold flex items-center justify-between py-4">
+                <h1 className="text-lg sm:text-xl font-semibold flex items-center justify-between py-4">
                     Edit Transaction
                     <button onClick={()=>hideFunction(false)}><FaTimes/> </button>
                 </h1>

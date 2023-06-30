@@ -57,8 +57,8 @@ function Modal({hideModal}) {
 
     return (
             <ModalWrapper hideModal={hideModal}>
-                {currentPage === "coin-select" && <div className='flex flex-col h-[534px]'>
-                    <h2 className='text-2xl font-bold flex justify-between mt-4'>Select Coin <button onClick={()=>hideModal(false)} className='text-medium-grey/50'><FaTimes/></button></h2>
+                {currentPage === "coin-select" && <div className='flex flex-col h-full sm:h-[534px]'>
+                    <h2 className='text-lg sm:text-2xl font-bold flex justify-between mt-4'>Select Coin <button onClick={()=>hideModal(false)} className='text-medium-grey/50'><FaTimes/></button></h2>
                     <div className='py-3'>
                         <input 
                             type="search" 

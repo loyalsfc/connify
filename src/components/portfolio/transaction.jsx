@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { FaDollarSign, FaPen, FaTimes } from 'react-icons/fa'
 import { fetcher, formatPrice, getImage } from '../../../utils/utils'
 import useSWR from 'swr'
@@ -9,7 +9,7 @@ function Transaction({coin, hideFunction, callbackFunc}) {
     
     return (
         <div>
-            <h2 className='text-2xl font-bold flex justify-between mt-4'>Add Transaction <button onClick={()=>hideFunction(false)} className='text-medium-grey/50'><FaTimes/></button></h2>
+            <h2 className='text-lg sm:text-2xl font-bold flex justify-between mt-4'>Add Transaction <button onClick={()=>hideFunction(false)} className='text-medium-grey/50'><FaTimes/></button></h2>
             <div className='grid grid-cols-3 border-b border-medium-grey/50 pb-0.5 mb-4'>
                 <button 
                     onClick={()=>{setActiveTab('buy')}}
@@ -59,7 +59,7 @@ export function BuySellComponent({type, coin, callbackFunc, hideFunction}){
             <div className='mb-4'>
                 <label htmlFor="price-per-coin" className='font-semibold text-sm mb-0.5'>Price Per Coin</label>
                 <div className='flex transaction-input'>
-                    <span className='p-3 flex items-center bg-faded-grey font-semibold gap-2'>
+                    <span className='p-3 flex items-center bg-faded-grey font-semibold gap-2 text-sm sm:text-base'>
                         USD
                     </span>
                     <input 
@@ -74,7 +74,7 @@ export function BuySellComponent({type, coin, callbackFunc, hideFunction}){
             <div className='mb-4'>
                 <label htmlFor="coin-quantity" className='font-semibold text-sm mb-0.5'>Quantity</label>
                 <div className='flex flex-row-reverse transaction-input'>
-                    <span className='p-3 flex items-center bg-faded-grey font-semibold gap-2'>
+                    <span className='p-3 flex items-center bg-faded-grey text-sm sm:text-base font-semibold gap-2'>
                         <Image
                             src={getImage(coin.id)}
                             height={24}
@@ -141,7 +141,7 @@ function TransferComponent({coin, callbackFunc, hideFunction}){
             <div className='mb-4'>
                 <label htmlFor="coin-quantity" className='font-semibold text-sm mb-0.5'>Quantity</label>
                 <div className='flex flex-row-reverse transaction-input'>
-                    <span className='p-3 flex items-center bg-faded-grey font-semibold gap-2'>
+                    <span className='p-3 flex text-sm sm:text-base items-center bg-faded-grey font-semibold gap-2'>
                         <Image
                             src={getImage(coin.id)}
                             height={24}
@@ -173,7 +173,7 @@ function TransferComponent({coin, callbackFunc, hideFunction}){
 
 export function DateComp({date, setDate}){
     return(
-        <div className='flex gap-4 items-center mb-4'>
+        <div className='flex gap-4 items-center flex-wrap sm:flex-nowrap mb-4'>
             <p className='transaction-label'>
                 <input 
                     type='datetime-local' 

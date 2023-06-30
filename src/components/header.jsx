@@ -55,7 +55,15 @@ function Header() {
                         `}
                     />
                 </div>
-                {user? <div className='py-2'><FaUser /> </div>: <div className='hidden gap-3 text-center lg:flex'>
+                {user? 
+                    <div className='py-2'>
+                        <FaUser /> 
+                        <div>
+                            <ul>
+                                <li>Logout</li>
+                            </ul>
+                        </div>
+                    </div>:<div className='hidden gap-3 text-center lg:flex'>
                     <button onClick={()=>setShowAuthModal({isShown: true, type: 'login'})} className='auth-btn text-green-400' href="">Login</button>
                     <button onClick={()=>setShowAuthModal({isShown: true, type: 'sign-up'})} className='auth-btn bg-green-400 text-white' href="">Sign Up</button>
                 </div>

@@ -1,18 +1,15 @@
 import Image from 'next/image'
 import React, { useEffect, useRef, useState } from 'react'
-import { calculateProfitLoss, fetcher, getImage, getProfitPercentage, profit, toTwoDecimalPlace, totalCost, totalProfit, totalProfitPercentage } from '../../../utils/utils'
+import { getImage, profit, totalCost, totalProfit, totalProfitPercentage } from '../../../utils/utils'
 import { FaAngleRight, FaEllipsisV, FaPlus, FaTrash } from 'react-icons/fa'
 import Link from 'next/link'
-import useSWR from 'swr'
 import PercentageChangeRow from '../percentageChange'
 import DeleteAsset from './deleteAsset'
 import BalanceCard, { ProfitCard } from './balanceCard'
 
-function Assets({assets, prices}) {
+function Assets({assets, prices, showAddModal}) {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedId, setSelectedId] = useState(null);
-    
-    // if(isLoading) return 'hi'ffhfhffhjh 
 
     function getFormatedPrice(id){
         return formatePrice(getPrice(id))
@@ -65,16 +62,6 @@ function Assets({assets, prices}) {
         return total;
     }
 
-    const totalAverageBuy = () => {
-        const buyprices = assets.map(item => item.holding * item.average_fee)
-        let initialValue = 0;
-        let total = buyprices.reduce(
-            (accumulator, currentValue) => accumulator + currentValue,
-            initialValue
-        )
-        return total;
-    }
-
     function totalPurchase(){
         const costs = assets.reduce((incr, item) =>{
             return incr + totalCost(item.transactions)
@@ -99,15 +86,15 @@ function Assets({assets, prices}) {
         </div>
         <section>
             {showDeleteModal && <DeleteAsset hideModal={setShowDeleteModal} id={selectedId} />}
-            <h3 className='font-semibold text-xl mb-4'>
+            <h3 className='font-semibold text-lg py-2 sm:text-xl mb-4 flex items-between justify-between gap-2'>
                 Assets
-                <button><FaPlus/> New Transaction</button>
+                <button onClick={()=>showAddModal(true)} className='bg-green-500 p-2 rounded flex sm:hidden items-center gap-2 text-sm text-white'><FaPlus/> Add New Coin</button>
             </h3>
             <div className="relative">
                 <table className='w-full text-sm'>
                     <thead className='border-y border-faded-grey text-end sticky top-0 bg-white'>
                         <tr>
-                            <th className='p-2 text-center'>Name</th>
+                            <th className='p-2 text-center sticky left-0 bg-white'>Name</th>
                             <th className='p-2'>Price</th>
                             <th className='p-2 text-center hidden sm:table-cell'>1h</th>
                             <th className='p-2 text-center hidden lg:table-cell'>24h</th>
@@ -122,8 +109,8 @@ function Assets({assets, prices}) {
                         {assets.map(item => {
                             let profitPercent = totalProfitPercentage(item.transactions, item.average_fee, getPrice(item.coin_name.id))
                             return(
-                                <tr key={item.id} className='border-b border-faded-grey'>
-                                    <td>
+                                <tr key={item.id} className='border-b border-faded-grey '>
+                                    <td className='sticky left-0 bg-white pr-2'>
                                         <Link href={`/coins/${item.coin_name.slug}`}>
                                             <div className='flex items-center gap-3 font-semibold px-2 py-3'>
                                                 <Image
@@ -144,10 +131,10 @@ function Assets({assets, prices}) {
                                     <PercentageChangeRow hide={true} percentChange={getDurationChange(item.coin_name.id, '24h')} />
                                     <PercentageChangeRow hide={true} percentChange={getDurationChange(item.coin_name.id, '7d')} />
                                     <td>
-                                        <div>
+                                        <Link href={`/portfolio/${item.slug}`}>
                                             <p>${formatePrice(item.holding * getPrice(item.coin_name.id))}</p>
                                             <p>{item.holding} {item.coin_name.symbol}</p>
-                                        </div>
+                                        </Link>
                                     </td>
                                     <td className='hidden md:table-cell'>${formatePrice(item.average_fee)}</td>
                                     <td className='p-2 hidden sm:table-cell'> 
@@ -190,7 +177,7 @@ function RowMenu({slug, showDeleteModal}){
     },[])
 
     return(
-        <div ref={menu} className='w-48 px-2 py-4 z-10 text-left rounded-lg shadow-2xl text-sm absolute right-0 hidden top-full bg-white font-semibold'>
+        <div ref={menu} className='w-48 px-2 py-4 z-20 text-left rounded-lg shadow-2xl text-sm absolute right-0 hidden top-full bg-white font-semibold'>
             <ul>
                 <li 
                     className='flex p-2 hover:bg-faded-grey items-center gap-2 cursor-pointer'

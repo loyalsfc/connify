@@ -37,7 +37,7 @@
     @apply fixed top-0 left-0 h-screen w-full bg-black/20 z-50
   }
   .modal-bg{
-    @apply absolute z-50 top-1/2 max-h-[95%] left-1/2 w-[498px] overflow-scroll -translate-x-1/2 p-6 pt-0 -translate-y-1/2 bg-white shadow-md rounded-2xl transition-all
+    @apply absolute z-50 top-1/2 h-full sm:h-fit sm:max-h-[95%] left-1/2 w-full sm:max-w-[498px] overflow-scroll -translate-x-1/2 p-4 sm:p-6 pt-0 -translate-y-1/2 bg-white shadow-md sm:rounded-2xl transition-all
   }
   .modal-overlay{
     @apply top-0 left-0 h-full w-full bg-black/20
@@ -62,6 +62,15 @@
   }
   .loader{
     @apply h-3.5 w-3.5 rounded-full border-2 border-faded-grey border-t-medium-grey animate-spin
+  }
+  .transaction-details{
+    @apply flex justify-between px-1 py-2.5 text-medium-grey/90 border-b border-faded-grey
+  }
+  .full-btn{
+    @apply p-3 flex items-center justify-center gap-3 w-full rounded-md font-bold text-sm text-white
+  }
+  .add-transaction{
+    @apply bg-green-500 text-white text-xs sm:text-base font-semibold flex items-center gap-2 p-2 rounded-md
   }
 }
 .display-less::before{

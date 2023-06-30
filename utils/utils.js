@@ -78,7 +78,6 @@ export function getProfitPercentage(currentPrice, averagePrice){
 export function soldCoinProfit(transaction, average_fee){
     let profit = 0;
     transaction.forEach(item => {
-        // console.log(item.quantity)
         if(item.transaction_type === "sell"){
             let cost = item.quantity * average_fee;
             profit += (item.total_spent - cost)
@@ -125,12 +124,12 @@ export function calculateTransferOutCost(transaction, getPrice){
 export function totalProfitPercentage(transaction, average_fee, getPrice){
     const profit = totalProfit(transaction, average_fee, getPrice);
     const percentage = (profit / totalCost(transaction)) * 100;
+    if(isNaN(percentage)) return 0;
     return percentage.toFixed(2);
 }
 
 export function profit(transaction, average_fee, getPrice){
     let profit = totalProfit(transaction, average_fee, getPrice)
-    
     if(profit > 0){
         return formatPrice(profit);
     } else {
@@ -154,4 +153,17 @@ export function totalCost(transaction){
         }
     })
     return cost;
+}
+
+export function formatDate(date){
+    const dateObj = new Date(date)
+    const formattedDate = dateObj.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true
+    });
+    return formattedDate;
 }

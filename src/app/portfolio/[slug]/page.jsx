@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation'
 import React, { useContext, useEffect, useState } from 'react'
 import { FaAngleLeft, FaArrowDown, FaArrowUp, FaPen, FaPlus, FaTrash } from 'react-icons/fa'
 import useSWR from 'swr'
-import { calculateAssetProfits, calculateTransferInProfit, calculateTransferOutCost, fetcher, formatPrice, getImage, profit, soldCoinProfit, totalCost, totalProfitPercentage } from '../../../../utils/utils'
+import { fetcher, formatDate, formatPrice, getImage, profit, totalCost, totalProfitPercentage } from '../../../../utils/utils'
 import Image from 'next/image'
 import BalanceCard, { ProfitCard } from '@/components/portfolio/balanceCard'
 import AddTransaction from '@/components/portfolio/transactionModals/addTransaction'
@@ -14,36 +14,54 @@ import DeleteModal from '@/components/portfolio/deleteModal'
 import { Context } from '@/context/context'
 import Loader from '@/components/loader'
 import EditTransaction from '@/components/portfolio/transactionModals/editTransaction'
+import TransactionDetails from '@/components/portfolio/transactionModals/TransactionDetails'
+import LandingPage from '@/components/portfolio/landingPage'
 
 function Transactions() {
     const {slug} = useParams()
-    const {data: transaction, isLoading: transactionLoading, mutate} = useSWR('transactions', fetchTransaction)
+    const {authLoading, user} = useContext(Context)
+    const {data: asset, isLoading: transactionLoading, mutate} = useSWR(user?.id, fetchTransaction)
     const [showAddTransaction, setShowAddTransaction] = useState(false);
     const [showDeleteTransaction, setShowDeleteTransaction] = useState(false);
     const [showEditTransaction, setShowEditTransaction] = useState(false);
+    const [showTransactionDetails, setShowTransactionDetails] = useState(false)
     const [selectedId, setSelectedId] = useState()
     const {showNotification} = useContext(Context)
     const {data, isLoading} = useSWR(
         `v2/cryptocurrency/quotes/latest?slug=${slug}`,
         fetcher
     )
-    
-    if(transactionLoading || isLoading){
+
+    if(authLoading || transactionLoading || isLoading){
         return <Loader />
     }
 
-    if(!transaction?.length){
-        return <p className='px-8 py-40 text-center'>An error occured</p>
+    // console.log(transaction)
+
+    if(!asset){
+        return (
+            <div className='px-8 py-40 text-center flex flex-col items-center justify-center'>
+                <p>An error occured</p>
+                <Link className='px-3 py-2 rounded-md bg-faded-grey mt-8 ml-4 flex w-fit items-center gap-3' href="/portfolio">
+                     <FaAngleLeft/> Back
+                </Link>
+            </div>
+        )
     }
     
-    async function fetchTransaction(){
-        const {data} = await supabase.from('transactions')
-            .select(`*, assets(*)`)
-            .eq('asset_slug', slug)
-            .order("date", {ascending: false})
+    async function fetchTransaction(id){
+        const {data} = await supabase.from('assets')
+            .select(`*, transactions(*)`)
+            .eq('slug', slug)
+            .eq('user_id', id)
+            .limit(1)
+            .single()
+            // .order("date", {ascending: false})
+        
         return data;
-    }   
-    const {id: assetId, coin_name, holding, average_fee} = transaction[0].assets
+    }
+    const transaction = asset.transactions 
+    const {id: assetId, coin_name, holding, average_fee} = asset
 
     function getPrice(){
         return data?.data?.data[coin_name.id]?.quote.USD.price
@@ -62,24 +80,12 @@ function Transactions() {
         return formatPrice(currentCost - cost);
     }
 
-    function formatDate(date){
-        const dateObj = new Date(date)
-        const formattedDate = dateObj.toLocaleString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: true
-        });
-        return formattedDate;
-    }
-
     const deleteTransaction = async() => {
-        const transactionItem = transaction.find(item => item.id === selectedId)
+        setShowTransactionDetails(false);
+        const transactionItem = transaction.find(item => item.id === selectedId);
         const {data, error} = await supabase.from('transactions')
             .delete()
-            .eq('id', selectedId)
+            .eq('id', selectedId);
 
         if(error) {
             showNotification("An error occured", "#EF4444");
@@ -126,19 +132,38 @@ function Transactions() {
         return totalBuy / totalQty;
     }
 
-    function showModal(id){
+    function showDelete(e, id){
+        e.stopPropagation();
         setSelectedId(id);
         setShowDeleteTransaction(true);
     }
 
-    function showEdit(id){
+    function showEdit(e, id){
+        e.stopPropagation();
         setSelectedId(id)
         setShowEditTransaction(true)
     }
 
+    function showDetails(id){
+        setSelectedId(id)
+        setShowTransactionDetails(true)
+    }
+    
     return (
         <main>
-            {showAddTransaction && <AddTransaction mutate={mutate} hideModal={setShowAddTransaction } transactions={transaction} />}
+            {showTransactionDetails && <TransactionDetails 
+                hideModal={setShowTransactionDetails}
+                transaction={transaction.filter(item => item.id === selectedId)}
+                showDelete={setShowDeleteTransaction}
+                showEdit={setShowEditTransaction}
+                coin_name={asset.coin_name}
+            />}
+            {showAddTransaction && <AddTransaction 
+                mutate={mutate} 
+                hideModal={setShowAddTransaction } 
+                transactions={transaction} 
+                coin={asset}
+            />}
             {showDeleteTransaction && <DeleteModal
                 hideModal={setShowDeleteTransaction}
                 heading="Delete Transaction?"
@@ -151,8 +176,9 @@ function Transactions() {
                 callbackFunc={mutate} 
                 hideFunction={setShowEditTransaction} 
                 transaction={transaction}
+                assets={asset}
             />}
-            <section className='px-4 sm:px-8 py-8'>
+            {user ? (<section className='px-4 sm:px-8 py-8'>
                 <Link className='px-3 py-2 rounded-md bg-faded-grey flex w-fit items-center gap-3' href="/portfolio">
                      <FaAngleLeft/> Back
                 </Link> 
@@ -168,13 +194,13 @@ function Transactions() {
                             />
                             <p className='text-3xl'>${formatPrice(holdingValue())}</p>
                             <span 
-                                className={`${getDurationChange(coin_name.id, '24h') > 1 ?"bg-green-500" : "bg-red-500"} p-1 text-white rounded-md`}
+                                className={`${getDurationChange(coin_name.id, '24h') > 1 ?"bg-green-500" : "bg-red-500"} ml-auto sm:ml-0 p-1 text-white rounded-md`}
                             >
                                 {getDurationChange(coin_name.id, '24h')?.toFixed(2)}%
                             </span>
                         </div>
                     </h1>
-                    <div className='flex gap-4'>
+                    <div className='flex flex-col sm:flex-row gap-4 mt-2'>
                         <BalanceCard amount={holding} note='Quantity' />
                         <BalanceCard amount={`$${formatPrice(totalCost(transaction))}`} note='Total costs' />
                         <BalanceCard amount={`$${formatPrice(average_fee)}`} note='Average Buying Costs' />
@@ -182,40 +208,45 @@ function Transactions() {
                     </div>
                 </article>
                 <div className='pt-8 pb-4 flex items-center justify-between'>
-                    <h4 className='text-xl font-semibold'>{coin_name.name} Transactions</h4>
-                    <button onClick={()=>setShowAddTransaction(true)} className="bg-green-500 text-white font-semibold flex items-center gap-2 p-2 rounded-md"><FaPlus/> Add Transaction</button>
+                    <h4 className='sm:text-xl font-semibold'><span className='hidden sm:inline'>{coin_name.name}</span> Transactions</h4>
+                    <button 
+                        onClick={()=>setShowAddTransaction(true)} 
+                        className="add-transaction"
+                    >
+                        <FaPlus/> Add Transaction
+                    </button>
                 </div>
                 <div className='py-4'>
                     <table className='w-full text-right border-faded-grey'>
                         <thead className='border-y'>
                             <tr className='text-sm'>
                                 <th className='text-left p-2.5'>Type</th>
-                                <th>Price</th>
-                                <th>Amount</th>
-                                <th>Fees</th>
-                                <th>PNL</th>
-                                <th>Notes</th>
-                                <th>Action</th>
+                                <th className='hidden sm:table-cell'>Price</th>
+                                <th >Amount</th>
+                                <th className='hidden sm:table-cell'>Fees</th>
+                                <th className='hidden md:table-cell'>PNL</th>
+                                <th className='hidden md:table-cell'>Notes</th>
+                                <th className='hidden sm:table-cell'>Action</th>
                             </tr>
                         </thead>
                         <tbody className='font-semibold'>
                             {transaction.map(item => {
                                 return(
-                                    <tr key={item.id} className='text-sm border-b border-faded-grey'>
+                                    <tr onClick={()=>showDetails(item.id)} key={item.id} className='text-sm border-b border-faded-grey'>
                                         <td className='text-left'>
                                             <div className='flex items-center gap-3'>
-                                                <div className='capitalize  text-white h-6 w-6 rounded-full grid place-content-center bg-medium-grey/50'>
+                                                <div className='capitalize shrink-0  text-white h-6 w-6 rounded-full grid place-content-center bg-medium-grey/50'>
                                                     {item.transaction_type !== "transfer" && item.transaction_type[0]}
                                                     {item.transfer_type === "in" && <FaArrowDown />}
                                                     {item.transfer_type === "out" && <FaArrowUp />}
                                                 </div>
                                                 <div>
                                                     <p className='capitalize'>{item.transaction_type} {item.transfer_type}</p>
-                                                    <p>{formatDate(item.date)}</p>
+                                                    <p className='text-ellipsis whitespace-nowrap overflow-hidden'>{formatDate(item.date)}</p>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td>{item.transaction_type === "transfer" ? "--" : `${formatPrice(item.price)}`}</td>
+                                        <td className='hidden sm:table-cell'>{item.transaction_type === "transfer" ? "--" : `${formatPrice(item.price)}`}</td>
                                         <td>
                                             <div className='p-2.5'>
                                                 {item.transaction_type !== "transfer" ? <p>
@@ -237,17 +268,17 @@ function Transactions() {
                                                 )}
                                             </div>
                                         </td>
-                                        <td>{item.fee ?? '--'}</td>
-                                        <td>
+                                        <td className='hidden sm:table-cell'>{item.fee ?? '--'}</td>
+                                        <td className='hidden md:table-cell'>
                                             {item.transaction_type === "buy" ? <p className={transactionProfit(item.quantity, item.total_spent) > 0 ? "text-green-500":"text-red-500"}>
                                                 ${transactionProfit(item.quantity, item.total_spent)}
                                             </p> : "-"}
                                         </td>
-                                        <td></td>
-                                        <td className='text-green-500'>
-                                            <div className='p-2.5 flex gap-3 justify-end'>
-                                                <button onClick={()=>showEdit(item.id)} className='hover:bg-faded-grey'><FaPen /></button>
-                                                <button onClick={()=>showModal(item.id)} className='hover:bg-faded-grey'><FaTrash /></button>
+                                        <td className='hidden sm:table-cell'></td>
+                                        <td className='text-green-500 hidden sm:table-cell'>
+                                            <div className='flex flex-col sm:flex-row gap-3 items-center justify-end'>
+                                                <button onClick={(e)=>showEdit(e, item.id)} className='hover:bg-faded-grey p-2.5 rounded-full'><FaPen /></button>
+                                                <button onClick={(e)=>showDelete(e, item.id)} className='hover:bg-faded-grey p-2.5 rounded-full'><FaTrash /></button>
                                             </div>
                                         </td>
                                     </tr>
@@ -256,7 +287,9 @@ function Transactions() {
                         </tbody>
                     </table>
                 </div>
-            </section>
+            </section>):(
+                <LandingPage />
+            )}
         </main>
     )
 }

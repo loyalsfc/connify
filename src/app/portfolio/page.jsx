@@ -1,8 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useContext, useMemo, useState } from 'react'
 import { Context } from '../../context/context'
 import Loader from '@/components/loader'
 import { FaEllipsisV, FaEye, FaPlus } from 'react-icons/fa'
@@ -12,8 +11,6 @@ import { supabase } from '@/lib/supabaseClient'
 import useSWR from 'swr'
 import { PortfolioContext } from '../../context/portfolioContext'
 import Assets from '@/components/portfolio/assets'
-import DeletePortfolio from '@/components/portfolio/deleteAsset'
-import DeleteAsset from '@/components/portfolio/deleteAsset'
 import { fetcher } from '../../../utils/utils'
 
 function PortFolio() {
@@ -63,22 +60,22 @@ function PortFolio() {
             {user ? (
                 <section className='px-4 sm:px-8 py-8'>
                     <div className='flex justify-between items-center'>
-                        <span className='text-2xl font-bold'>{portfolio?.name}</span>
+                        <span className='text-xl sm:text-2xl font-bold'>{portfolio?.name}</span>
 
-                        <div className='flex items-center gap-3'>
-                            <button className='h-10 w-10 rounded-full grid place-content-center text-2xl hover:bg-green-500/30'>
+                        <div className='flex items-center gap-2 sm:gap-3'>
+                            <button className='h-6 w-6 sm:h-10 sm:w-10 rounded-full grid place-content-center  sm:text-2xl hover:bg-green-500/30'>
                                 <FaEye />
                             </button>
-                            <button className='h-10 w-10 rounded-full grid place-content-center text-2xl hover:bg-green-500/30'>
+                            <button className='h-6 w-6 sm:h-10 sm:w-10 rounded-full grid place-content-center  sm:text-2xl hover:bg-green-500/30'>
                                 <FaEllipsisV />
                             </button>
-                            <button onClick={()=>setShowCreateModal(true)} className="bg-green-500 p-3 flex items-center text-white rounded-md">
+                            <button onClick={()=>setShowCreateModal(true)} className="bg-green-500 p-3 hidden sm:flex items-center text-white rounded-md">
                                 <FaPlus /> Add Transaction
                             </button>
                         </div>
                     </div>
                     {data?.assets?.length ? (
-                        <Assets assets={assets} prices={coinPrices} />
+                        <Assets assets={assets} prices={coinPrices} showAddModal={setShowCreateModal} />
                     ):
                         <div className='text-center flex flex-col items-center py-8'>
                         <Image

@@ -20,6 +20,7 @@ module.exports = {
         'medium-grey': '#58667E',
         'news-grey': "rgb(248, 250, 253)",
         'blue-colour': "#3861FB",
+        'main-color': "#222531"
       }
     },
   },

@@ -4,9 +4,8 @@ import Transaction from '../transaction'
 import { supabase } from '@/lib/supabaseClient'
 import { Context } from '@/context/context'
 
-function AddTransaction({hideModal, transactions, mutate}) {
-    let coin = transactions[0].assets
-    const {showNotification} = useContext(Context)
+function AddTransaction({hideModal, transactions, mutate, coin}) {
+    const {showNotification, user} = useContext(Context)
 
     async function newTransaction(coinQuantity, pricePerCoin, date, type, transferType){
         const {error} = await supabase.from('transactions')
@@ -18,7 +17,8 @@ function AddTransaction({hideModal, transactions, mutate}) {
                 asset: coin.id,
                 transaction_type: type,
                 transfer_type: transferType ?? "",
-                asset_slug: coin.slug
+                asset_slug: coin.slug,
+                user_id: user.id,
             })
             .select()
         if(error) return;

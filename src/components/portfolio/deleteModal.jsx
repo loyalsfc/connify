@@ -14,7 +14,7 @@ function DeleteModal({hideModal, heading, content, deleteFunc}) {
                 <h2 className='font-bold text-2xl mb-2'>{heading}</h2>
                 <p className='text-sm font-semibold mb-4'>{content}</p>
                 <div className='flex flex-col gap-3'>
-                    <button onClick={deleteAsset} className='group p-3 flex items-center justify-center gap-3 w-full rounded-md font-bold text-sm bg-red-500 text-white'>
+                    <button onClick={deleteAsset} className='group full-btn bg-red-500'>
                         <p className="loader hidden group-disabled:block"></p>
                         Delete
                     </button>
