@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useContext, useEffect, useRef } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import {FaBars, FaSearch, FaTimes, FaUser} from "react-icons/fa"
 import { fetcher } from '../../utils/utils'
@@ -9,6 +9,7 @@ import { numberToString } from '../../utils/utils'
 import Logo from './Logo'
 import { usePathname } from 'next/navigation'
 import { Context } from '../context/context'
+import { supabase } from '@/lib/supabaseClient'
 
 function Header() {
     const {data: metrics, error: metricsError, isLoading: metricsLoading} = useSWR(
@@ -17,16 +18,37 @@ function Header() {
     )
     const {setShowAuthModal, user} = useContext(Context)
     const mobileMenu = useRef(null)
+    const menu = useRef(null)
+    const menuBtn = useRef(null)
     const pathname = usePathname()
+    const [showMenu, setShowMenu] = useState(false)
 
     const toggleMenu = (from, to) => {
         mobileMenu.current.classList.replace(from, to);
-        // document.querySelector('body').classList.toggle('overflow-hidden')
+    }
+
+    const signOut = async() => {
+        const { error } = await supabase.auth.signOut()
+        setShowMenu(false)
     }
 
     useEffect(() => {
         toggleMenu('left-0', '-left-full')
     }, [pathname]);
+
+    useEffect(()=>{
+        const handleClick = (e) => {
+            if(menu.current && !menu.current.contains(e.target) && !menuBtn.current.contains(e.target) ){
+                setShowMenu(false)
+            }
+        }
+
+        document.addEventListener('click', handleClick)
+
+        return () => {
+            document.removeEventListener('click', handleClick)
+        }
+    },[])
 
     return (
         <header className='flex flex-col-reverse lg:flex-col'>
@@ -56,13 +78,15 @@ function Header() {
                     />
                 </div>
                 {user? 
-                    <div className='py-2'>
-                        <FaUser /> 
-                        <div>
-                            <ul>
-                                <li>Logout</li>
+                    <div className='py-2 relative'>
+                        <button ref={menuBtn} onClick={()=>setShowMenu(!showMenu)}><FaUser /></button>
+                        {showMenu && <div ref={menu} className='absolute right-0 bg-white shadow-xl rounded-md overflow-hidden border border-faded-grey'>
+                            <ul className='py-2'>
+                                <li className='py-2 px-4 hover:bg-faded-grey pr-16 cursor-pointer'><Link href="/portfolio">Portfolio</Link></li>
+                                <li className='py-2 px-4 hover:bg-faded-grey pr-16 cursor-pointer'><Link href="/watchlist">Watchlist</Link></li>
+                                <li onClick={signOut} className='py-2 px-4 hover:bg-faded-grey pr-16 cursor-pointer'>Logout</li>
                             </ul>
-                        </div>
+                        </div>}
                     </div>:<div className='hidden gap-3 text-center lg:flex'>
                     <button onClick={()=>setShowAuthModal({isShown: true, type: 'login'})} className='auth-btn text-green-400' href="">Login</button>
                     <button onClick={()=>setShowAuthModal({isShown: true, type: 'sign-up'})} className='auth-btn bg-green-400 text-white' href="">Sign Up</button>
@@ -97,17 +121,27 @@ function Header() {
                     <FaBars />
                 </button>
             </div>
-            <div ref={mobileMenu} className="h-screen bg-white lg:hidden w-full z-50 fixed -left-100 -left-full top-0 transition-all">
+            <div ref={mobileMenu} className="h-screen bg-white lg:hidden w-full z-[49] fixed -left-100 -left-full top-0 transition-all">
                 <div className='header-item py-2 shadow-lg'>
                     <Link href="/"><Logo /></Link>
                     <button onClick={()=>toggleMenu('left-0', '-left-full')} className='ms-auto'><FaTimes /></button>
                 </div>
                 <div className='px-4 pt-8'>
                     <Navigations />
-                    <div className='gap-3 text-center flex flex-col-reverse mt-8'>
-                        <Link className='w-full text-sm rounded-md py-2.5 font-bold border border-green-400 text-green-400' href="">Login</Link>
-                        <Link className='w-full text-sm rounded-md py-2.5 font-bold bg-green-400 text-white' href="">Sign Up</Link>
-                    </div>
+                    {!user ? <div className='gap-3 text-center flex flex-col-reverse mt-8'>
+                        <button 
+                            onClick={()=>setShowAuthModal({isShown: true, type: 'login'})}  
+                            className='w-full text-sm rounded-md py-2.5 font-bold border border-green-400 text-green-400' 
+                        >
+                            Login
+                        </button>
+                        <button 
+                            onClick={()=>setShowAuthModal({isShown: true, type: 'sign-up'})} 
+                            className='w-full text-sm rounded-md py-2.5 font-bold bg-green-400 text-white' 
+                        >
+                            Sign Up
+                        </button>
+                    </div> : <div className='p-4'><FaUser/></div>}
                 </div>
                
             </div>

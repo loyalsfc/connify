@@ -10,7 +10,7 @@ function Auth() {
 
     return (
         <>
-            {showAuthModal.isShown && <div className='modal'>
+            {showAuthModal.isShown && <div className='modal z-[9999]'>
                 <div onClick={()=>setShowAuthModal({...showAuthModal, isShown: false})} className='modal-overlay' />
                 <div className='modal-bg'>
                     <button onClick={()=>setShowAuthModal({...showAuthModal, isShown: false})} className="fixed right-6 top-6 z-50"><FaTimes /></button>
