@@ -1,10 +1,12 @@
 'use client'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { fetcher } from '../../../utils/utils'
 import useSWR from 'swr'
 import { FaAngleDown } from 'react-icons/fa'
+import { Context } from '@/context/context'
 
 function Dropdown({itemCurrency, setItemCurrency}) {
+    const {coins} = useContext(Context)
     const itemDisplay = useRef(null)
     const itemElement = useRef(null)
     const itemCurrencyElement = useRef(null)
@@ -17,11 +19,6 @@ function Dropdown({itemCurrency, setItemCurrency}) {
 
     const {data, error, isLoading} = useSWR(
         `v1/fiat/map`,
-        fetcher
-    )
-
-    const {data: coins} = useSWR(
-        'v1/cryptocurrency/map?sort=cmc_rank',
         fetcher
     )
 

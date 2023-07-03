@@ -13,6 +13,39 @@ import { Doughnut } from 'react-chartjs-2'
 
 ChartJS.register(ArcElement, Tooltip);
 
+const allocations = [
+    {
+        id: 1,
+        symbol: 'BTC',
+        percentage: 26.46
+    },
+    {
+        id: 825,
+        symbol: 'USDT',
+        percentage: 26.39
+    },
+    {
+        id: 1839,
+        symbol: 'BNB',
+        percentage: 14.00
+    },
+    {
+        id: 1027,
+        symbol: 'ETH',
+        percentage: 11.43
+    },
+    {
+        id: 4687,
+        symbol: 'BUSD',
+        percentage: 4.71
+    },
+    {
+        id: 1111,
+        symbol: 'OTHER',
+        percentage: 26.39
+    },
+]
+
 function ExchangePage({params}) {
     const [showLess, setShowLess] = useState(true)
     const [assets, setAssets] = useState([])
@@ -24,7 +57,7 @@ function ExchangePage({params}) {
     )
     
     useEffect(()=>{
-        const url = `http://192.168.0.192:5000/api`
+        const url = process.env.NEXT_PUBLIC_FETCH_URL
         if(meta){
             axios.post(url, {
                 url: `v1/exchange/assets?id=${meta.data.data[params.slug]?.id}`
@@ -39,8 +72,7 @@ function ExchangePage({params}) {
         return <Loader />
     }
 
-    const {id, logo, name, urls, spot_volume_usd, weekly_visits, description} = meta.data.data[params.slug]
-    console.log(assets)
+    const {id, logo, name, urls, spot_volume_usd, weekly_visits, description} = meta?.data?.data[params.slug]
 
     const convertTextToHTML = (text) => {
         const linkRegex = /\[(.*?)\]\((.*?)\)/g;
@@ -73,45 +105,12 @@ function ExchangePage({params}) {
         });
     };
 
-    const allocations = [
-        {
-            id: 1,
-            symbol: 'BTC',
-            percentage: 26.46
-        },
-        {
-            id: 825,
-            symbol: 'USDT',
-            percentage: 26.39
-        },
-        {
-            id: 1839,
-            symbol: 'BNB',
-            percentage: 14.00
-        },
-        {
-            id: 1027,
-            symbol: 'ETH',
-            percentage: 11.43
-        },
-        {
-            id: 4687,
-            symbol: 'BUSD',
-            percentage: 4.71
-        },
-        {
-            id: 1111,
-            symbol: 'OTHER',
-            percentage: 26.39
-        },
-    ]
-
     const coinData = {
-        labels: allocations.map(item => item.symbol), //['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        labels: allocations.map(item => item.symbol),
         datasets: [
             {
                 label: '% of Assets',
-                data: allocations.map(item => item.percentage), //[12, 19, 3, 5, 2, 3],
+                data: allocations.map(item => item.percentage),
                 backgroundColor: [
                     'rgba(255, 99, 132, 1)',
                     'rgba(54, 162, 235, 1)',
@@ -275,23 +274,26 @@ function ExchangePage({params}) {
                     <div className='bg-news-grey p-6 rounded-2xl w-full md:w-2/5'>
                         <h3 className="text-xl font-semibold mb-4">Token Allocation</h3>
                         <div className='w-2/3 mx-auto'>
-                            <Doughnut data={coinData} options={options} />
-                            <ul className='py-4'>
-                                {allocations.map(item=>{
-                                    return <li key={item.id} className='p-1.5 flex items-center gap-4 rounded-lg font-semibold hover:bg-faded-grey'>
-                                        <div className='shrink-0 h-5 w-5'>
-                                            <Image
-                                                src={getImage(item.id)}
-                                                height={20}
-                                                width={20}
-                                                alt='Coin Logo'
-                                            />
-                                        </div>
-                                        <span>{item.symbol}</span>
-                                        <span className='ml-auto'>{item.percentage.toFixed(2)}%</span>
-                                    </li>
-                                })}
-                            </ul>
+                            {assets.length ?<div>
+                                <Doughnut data={coinData} options={options} />
+                                <ul className='py-4'>
+                                    {allocations.map(item=>{
+                                        return <li key={item.id} className='p-1.5 flex items-center gap-4 rounded-lg font-semibold hover:bg-faded-grey'>
+                                            <div className='shrink-0 h-5 w-5'>
+                                                <Image
+                                                    src={getImage(item.id)}
+                                                    height={20}
+                                                    width={20}
+                                                    alt='Coin Logo'
+                                                />
+                                            </div>
+                                            <span>{item.symbol}</span>
+                                            <span className='ml-auto'>{item.percentage.toFixed(2)}%</span>
+                                        </li>
+                                    })}
+                                </ul>
+                            </div>
+                            : <div className='py-20 text-center italic'>No data to show</div>}
                         </div>
                     </div>
                 </div>

@@ -2,7 +2,7 @@
 
 import React, { useRef } from 'react'
 import useSWR from 'swr'
-import { fetcher, numberToString, toTwoDecimalPlace } from '../../../../utils/utils'
+import { fetcher, formatPrice, numberToString, toTwoDecimalPlace } from '../../../../utils/utils'
 import Image from 'next/image'
 import { FaAngleDown, FaAngleUp, FaRegFile, FaBattleNet, FaGithub, FaTwitter, FaRedditAlien, FaCommentDots } from 'react-icons/fa'
 import Link from 'next/link'
@@ -77,7 +77,7 @@ function CoinPage({params}) {
                         <span className='text-sm py-0.5 px-1.5 bg-faded-grey text-medium-grey rounded'>{symbol}</span>
                     </div> 
                     <div className='flex gap-4 items-center'>
-                        <h2 className='font-bold text-2xl text-black'>${numberToString(price)}</h2>
+                        <h2 className='font-bold text-2xl text-black'>${formatPrice(price)}</h2>
                         <span 
                             className={`border-md ${quote.USD.percent_change_24h > 0 ? "bg-green-500" :'bg-red-500'} text-white py-[5px] flex items-center font-medium gap-1 rounded-md px-2.5 text-sm'`}
                         >

@@ -1,6 +1,8 @@
 'use client'
 import { supabase } from "@/lib/supabaseClient"
 import { createContext, useEffect, useRef, useState } from "react"
+import useSWR from 'swr'
+import { fetcher } from "../../utils/utils"
 
 const Context = createContext(null)
 
@@ -9,6 +11,10 @@ const ContextProvider = ({children}) => {
     const notificationRef = useRef(null)
     const [user, setUser]  = useState(null)  
     const [authLoading, setAuthLoading] = useState(true)
+    const {data: coins} = useSWR(
+        'v1/cryptocurrency/map?sort=cmc_rank',
+        fetcher
+    )
     
     const showNotification = (text, color) => {
         const wrapper = document.createElement('div')
@@ -26,7 +32,6 @@ const ContextProvider = ({children}) => {
         fetchSession();
 
         supabase.auth.onAuthStateChange((event, session) => {
-            console.log(event)
             if (event == 'SIGNED_IN') {
                 setUser(session.user)
             } else if (event == "SIGNED_OUT"){
@@ -44,7 +49,7 @@ const ContextProvider = ({children}) => {
     }
 
     return(
-        <Context.Provider value={{showAuthModal, setShowAuthModal, notificationRef, showNotification, user, setUser, authLoading}}>
+        <Context.Provider value={{showAuthModal, setShowAuthModal, notificationRef, showNotification, user, setUser, authLoading, coins}}>
             {children}
         </Context.Provider>
     )
