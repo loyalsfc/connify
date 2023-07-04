@@ -23,10 +23,11 @@ function Header() {
     const menuBtn = useRef(null)
     const searchBox = useRef(null)
     const searchInput = useRef(null)
+    const mobileSearchBtn = useRef(null)
     const pathname = usePathname()
     const [showMenu, setShowMenu] = useState(false)
     const [showSearch, setShowSearch] = useState(false)
-    // console.log(searchBox, menu)
+    
     const toggleMenu = (from, to) => {
         mobileMenu.current.classList.replace(from, to);
     }
@@ -37,7 +38,9 @@ function Header() {
     }
 
     useEffect(() => {
-        toggleMenu('left-0', '-left-full')
+        toggleMenu('left-0', '-left-full');
+        setShowMenu(false);
+        setShowSearch(false);
     }, [pathname]);
 
     useEffect(()=>{
@@ -56,7 +59,7 @@ function Header() {
 
     useEffect(()=>{
         const closeSearch = (e) => {
-            if(searchBox.current && !searchBox.current.contains(e.target) && searchInput.current != e.target){
+            if(searchBox.current && !searchBox.current.contains(e.target) && searchInput.current != e.target && !mobileSearchBtn.current.contains(e.target)){
                 setShowSearch(false)
             }
         }
@@ -71,7 +74,6 @@ function Header() {
     const showMobileDropdown = (e) => {
         e.currentTarget.nextElementSibling.classList.toggle('hidden')
         e.currentTarget.lastElementChild.classList.toggle('rotate-180')
-        // console.log(e.currentTarget.lastElementChild)
     }
 
     return (
@@ -139,7 +141,7 @@ function Header() {
                     </ul>
                 </div>
                 {showSearch && <div ref={searchBox}><Search close={setShowSearch} /></div>}
-                <button className='ml-auto text-2xl block lg:hidden'>
+                <button ref={mobileSearchBtn} onClick={()=>setShowSearch(true)} className='ml-auto text-2xl block lg:hidden'>
                     <FaSearch />
                 </button>
                 <button onClick={()=>toggleMenu('-left-full', 'left-0')} className='block text-2xl lg:hidden'>
@@ -177,7 +179,6 @@ function Header() {
                         </div>
                     </div>)}
                 </div>
-               
             </div>
         </header>
     )

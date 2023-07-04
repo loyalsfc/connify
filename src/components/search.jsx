@@ -9,7 +9,7 @@ import Image from 'next/image'
 function Search({close}) {
     const [searchQuary, setSearchQuary] = useState('')
     const {coins} = useContext(Context)
-    const {data: exchanges, error: exchangeError, isLoading: exchangeLoading} = useSWR(
+    const {data: exchanges} = useSWR(
         `v1/exchange/map?sort=volume_24h`,
         fetcher
     )
@@ -19,9 +19,10 @@ function Search({close}) {
     }
 
     return (
-        <section className='w-full max-w-[400px] bg-white z-[501] top-4 pb-4 rounded-md border border-faded-grey absolute right-8 shadow-xl'>
-            <div className='p-4 flex items-center gap-2'>
-                <FaSearch className='opacity-50'/> <input 
+        <section className='w-full h-screen md:h-fit md:max-w-[400px] bg-white z-[501] top-0 md:top-4 pb-4 rounded-md border border-faded-grey absolute right-0 md:right-8 shadow-xl'>
+            <div className='py-5 md:py-4 p-4 flex items-center gap-2 shadow-md md:shadow-none mb-4 md:mb-0'>
+                <FaSearch className='opacity-50'/> 
+                <input
                     type="text" 
                     className='focus:outline-none flex-1' 
                     value={searchQuary}
@@ -52,9 +53,7 @@ function Search({close}) {
                                             </p>
                                             <span className='opacity-50'>#{item.rank}</span>
                                         </Link>
-                                    </li>
-                                )
-                            })}
+                                    </li>)})}
                         </ul>
                     </div>}
                     {searchQuary !== "" && exchanges?.data?.data?.filter(filter).length !== 0 && <div className='mt-4'>

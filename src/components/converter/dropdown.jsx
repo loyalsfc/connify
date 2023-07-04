@@ -52,7 +52,6 @@ function Dropdown({itemCurrency, setItemCurrency}) {
         const value = e.target.value.toLowerCase();
         itemCurrencyElement.current.classList.add('hidden')
         setFilter(value)
-        // itemDisplay.current.innerText = value; 
         e.target.style.width = itemDisplay.current.getBoundingClientRect().width + 'px'
         filtering(value);
     }
@@ -64,11 +63,6 @@ function Dropdown({itemCurrency, setItemCurrency}) {
 
     function handleBlur(e){
         itemCurrencyElement.current.classList.remove('hidden')
-        // e.target.value = "";
-        // itemDisplay.current.innerText = '';
-
-        // setFiatsList(data?.data?.data)
-        // setCoinsList(coins?.data?.data)
     }
 
     function changeCurrency(e, item){
@@ -83,7 +77,7 @@ function Dropdown({itemCurrency, setItemCurrency}) {
     }
 
     return (
-        <div ref={wrapper} className='w-[calc(50%_-_25px)]'>
+        <div ref={wrapper} className='w-full sm:w-[calc(50%_-_25px)]'>
             <div className="relative">
                 <div onClick={(e)=>handleClick(e, itemElement)} className='flex items-center py-0.5 relative overflow-hidden w-full border border-faded-grey bg-white rounded-lg text-black h-10 text-sm'>
                     <div className='flex-1 overflow-hidden'>
@@ -101,7 +95,12 @@ function Dropdown({itemCurrency, setItemCurrency}) {
                                     onBlur={handleBlur}
                                     value={filter}
                                 />
-                                <span ref={itemDisplay} className='absolute top-0 left-0 invisible h-0 px-px overflow-scroll whitespace-pre w-fit'>{filter}</span>
+                                <span 
+                                    ref={itemDisplay} 
+                                    className='absolute top-0 left-0 invisible h-0 px-px overflow-scroll whitespace-pre w-fit'
+                                >
+                                    {filter}
+                                </span>
                             </div>
                         </div>
                     </div>

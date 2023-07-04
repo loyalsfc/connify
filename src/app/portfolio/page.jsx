@@ -13,6 +13,17 @@ import { PortfolioContext } from '../../context/portfolioContext'
 import Assets from '@/components/portfolio/assets'
 import { fetcher } from '../../../utils/utils'
 
+import { Chart as ChartJS, ArcElement, Tooltip } from 'chart.js';
+import { Doughnut } from 'react-chartjs-2'
+
+ChartJS.register(ArcElement, Tooltip);
+
+const options = {
+    legend: {
+      display: true
+    }
+};
+
 function PortFolio() {
     const {setShowAuthModal, authLoading, user} = useContext(Context);
     const {data: data, isLoading, mutate} = useSWR(user?.id, fetchPortfolio)
@@ -52,7 +63,42 @@ function PortFolio() {
 
     }
 
+    function getPrice(id){
+        console.log(coinPrices?.data?.data[id]?.quote.USD.price)
+        return coinPrices?.data?.data[id]?.quote.USD.price
+    }
+
     const portfolio = data?.portfolio.find(portfolio => portfolio.is_default === true);
+    
+    const assetsData = {
+        labels: assets.map(item => item.coin_name.name),
+        datasets: [
+            {
+                label: '% of Assets',
+                data: assets.map(item => item.holding * getPrice(item.coin_name.id)),
+                backgroundColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                ],
+                borderWidth: 1,
+            },
+        ],
+    };
+
+    console.log(assetsData.datasets[0].data)
+    console.log(assets)
 
     return (
         <main>
@@ -72,6 +118,14 @@ function PortFolio() {
                             <button onClick={()=>setShowCreateModal(true)} className="bg-green-500 p-3 hidden sm:flex items-center text-white rounded-md">
                                 <FaPlus /> Add Transaction
                             </button>
+                        </div>
+                    </div>
+                    <div className='flex'>
+                        <div className="w-1/2 py-2 pr-8">
+                            <Doughnut data={assetsData} options={options} /> 
+                        </div>
+                        <div>
+                            
                         </div>
                     </div>
                     {data?.assets?.length ? (

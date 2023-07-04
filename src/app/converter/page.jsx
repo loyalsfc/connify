@@ -47,7 +47,7 @@ function Converter() {
                             <div className='flex-1'/>
                             <div className='w-[calc(50%_-_25px)]'/>
                         </div>
-                        <div className="flex items-center justify-center mb-5">
+                        <div className="flex flex-col sm:flex-row gap-4 sm:gap-0 items-center justify-center mb-5">
                             <Dropdown 
                                 itemCurrency={fromCurrency}
                                 setItemCurrency={setFromCurrency}
@@ -75,11 +75,11 @@ function Converter() {
                             <div className='w-[calc(50%_-_25px)]'>
                                 <div className='flex gap-1 items-center'>{isLoading ? 
                                     <div className='h-4 w-4 border-2 border-medium-grey rounded-full border-t-[#F8F8F8] animate-spin'></div>:
-                                    <div className=''>{toTwoDecimalPlace(data?.data?.data?.quote[toCurrency.symbol]?.price)}</div>} {toCurrency.fullName}
+                                    <div className='whitespace-pre-wrap'>{toTwoDecimalPlace(data?.data?.data?.quote[toCurrency.symbol]?.price)}</div>} {toCurrency.fullName}
                                 </div>
                             </div>
                         </div>
-                        <div className='flex justify-center' onClick={()=>mutate({...data})}>
+                        <div className='flex justify-center' onClick={()=>mutate()}>
                             <button className='py-1.5 px-3.5 rounded-md border-faded-grey border bg-white text-sm'>Refresh</button>
                         </div>
                     </div>
