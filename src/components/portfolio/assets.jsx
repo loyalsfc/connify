@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { getImage, profit, totalCost, totalProfit, totalProfitPercentage } from '../../../utils/utils'
 import { FaAngleRight, FaEllipsisV, FaPlus, FaTrash } from 'react-icons/fa'
 import Link from 'next/link'
@@ -7,9 +7,24 @@ import PercentageChangeRow from '../percentageChange'
 import DeleteAsset from './deleteAsset'
 import BalanceCard, { ProfitCard } from './balanceCard'
 
+import { Chart as ChartJS, ArcElement, Tooltip } from 'chart.js';
+import { Doughnut } from 'react-chartjs-2'
+
+ChartJS.register(ArcElement, Tooltip);
+
+const options = {
+    legend: {
+      display: true
+    }
+};
+
 function Assets({assets, prices, showAddModal}) {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedId, setSelectedId] = useState(null);
+
+    const colors = useMemo(()=>{
+        return assets?.map(item => getRandomRGBA())
+    },[assets])
 
     function getFormatedPrice(id){
         return formatePrice(getPrice(id))
@@ -74,8 +89,54 @@ function Assets({assets, prices, showAddModal}) {
         return percent.toFixed(2)
     }
 
+    function getRandomRGBA() {
+        const red = Math.floor(Math.random() * 256);
+        const green = Math.floor(Math.random() * 256);
+        const blue = Math.floor(Math.random() * 256);
+      
+        return `rgba(${red}, ${green}, ${blue}, ${1})`;
+    }
+
+    const assetsData = {
+        labels: assets.map(item => item.coin_name.name),
+        datasets: [
+            {
+                label: '% of Assets',
+                data: assets.map(item => item.holding * getPrice(item.coin_name.id)),
+                backgroundColor: colors,
+            },
+        ],
+    };
+
+    function calculatePercentage(item){
+        const totalAssets = totalBalance();
+        const assetPrice = item.holding * getPrice(item.coin_name.id)
+        const percentage = (assetPrice / totalAssets) * 100;
+        return percentage.toFixed(2)
+    }
+
     return (
     <>
+        <div className='flex'>
+            <div className='flex flex-col sm:flex-row items-center w-full  mt-4 md:mt-1 md:w-1/2 bg-news-grey gap-8 p-8 rounded-md'>
+                <div className="w-full sm:w-1/2 py-2">
+                    <Doughnut data={assetsData} options={options} /> 
+                </div>
+                <ul className='flex-1'>
+                    {
+                        assets.map((item, index) =>{
+                            return (
+                                <li key={index} className='flex font-medium items-center gap-2 mb-2 last:mb-0'>
+                                    <div className='h-4 w-4 rounded-full' style={{backgroundColor: colors[index]}}/>
+                                    {item.coin_name.name}
+                                    <span className='ml-auto'>{calculatePercentage(item)}%</span>
+                                </li>
+                            )
+                        })
+                    }
+                </ul>
+            </div>
+        </div>
         <div className='flex flex-col sm:flex-row gap-3 sm:gap-6 mt-4'>
             <BalanceCard amount={`$${formatePrice(totalBalance())}`} note="Total Balance" />
             <ProfitCard 
