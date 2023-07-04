@@ -14,7 +14,7 @@ import Assets from '@/components/portfolio/assets'
 import { fetcher } from '../../../utils/utils'
 
 function PortFolio() {
-    const {setShowAuthModal, authLoading, user} = useContext(Context);
+    const { authLoading, user} = useContext(Context);
     const {data: data, isLoading, mutate} = useSWR(user?.id, fetchPortfolio)
     const [showCreateModal, setShowCreateModal] = useState(false)
     const {setPortfolio, portfolio: {assets}} = useContext(PortfolioContext)

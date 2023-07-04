@@ -81,7 +81,7 @@ function LoginComponent({isLogin, auth}) {
                 </LoginInput>
                 {!isLogin && <div className='flex gap-3 items-center text-sm font-bold mb-2'>
                     <input type="checkbox" name="subscribe" id="subscribe" />
-                    <label htmlFor="subscribe">I would like to subscribe to Connify's daily newsletter.</label>
+                    <label htmlFor="subscribe">I would like to subscribe to Connify&apos;s daily newsletter.</label>
                 </div>}
                 {isLogin && <p className='text-xs font-semibold text-right mb-2'>Forget password</p>}
                 <button 
