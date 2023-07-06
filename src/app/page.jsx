@@ -1,18 +1,21 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
 import useSWR from 'swr'
-import { ExpandLess, ExpandMore, StarRateOutlined } from '@mui/icons-material'
 import { fetcher, getCoinVolume, getImage, numberToString, toTwoDecimalPlace } from '../../utils/utils'
 import Pagination from '@/components/pagination'
 import { FaRegStar, FaStar } from 'react-icons/fa'
 import Link from 'next/link'
 import Image from 'next/image'
 import PercentageChangeRow from '@/components/percentageChange'
+import { useSearchParams  } from 'next/navigation'
+import TableWrapper from '@/components/tableWrapper'
+import NewsLetter from '@/components/newsLetter'
 
 function Home() {
-    const [pageIndex, setPageIndex] = useState(0)
+    const searchParams = useSearchParams()
+    const pageSearchParam = searchParams.get('page')
+    const [pageIndex, setPageIndex] = useState((pageSearchParam - 1) ?? 0)
     const [limit, setLimit] = useState(100)
     const {data: coins, error, isLoading} = useSWR(
         `v1/cryptocurrency/listings/latest?start=${(pageIndex * limit) + 1}&limit=${limit}&convert=USD`, 
@@ -28,7 +31,19 @@ function Home() {
     useEffect(()=>{
         setTotalCoins(metrics?.data?.data?.active_cryptocurrencies)
     },[metrics])
-    
+
+    useEffect(()=>{
+        if(pageSearchParam){
+            setPageIndex((pageSearchParam - 1) ?? 0);
+        } else {
+            setPageIndex(0)
+        }
+    }, [pageSearchParam])
+
+    useEffect(()=>{
+        localStorage.setItem('favorites', JSON.stringify(favorites))
+    },[favorites])
+
     const handleFavorites = (id) => {
         if(favorites.some(item => item == id)){
             setFavorites(prevItems => {
@@ -69,65 +84,44 @@ function Home() {
                     </ul>
                 }
             </section>
-            <section className='px-4 sm:px-8 overflow-hidden'>
-                <div className='relative overflow-x-scroll'>
-                    <table className='text-sm border-collapse w-full mb-1 sm:mb-4'>
-                        <thead className="sticky top-0 bg-white">
-                            <tr className='border-y border-faded-grey'>
-                                <th className='sticky-item left-0 cursor-pointer'></th>
-                                <th className='sticky-item left-[34px] cursor-pointer'>#</th>
-                                <th className='sticky-item left-[70px] cursor-pointer'>Name</th>
-                                <th className='p-2.5 cursor-pointer'>Price</th>
-                                <th className='p-2.5 cursor-pointer'>1h%</th>
-                                <th className='p-2.5 cursor-pointer'>24h%</th>
-                                <th className='p-2.5 cursor-pointer'>7d%</th>
-                                <th className='p-2.5 cursor-pointer'>Market Cap</th>
-                                <th className='p-2.5 cursor-pointer'>Volume (24h)</th>
-                                <th className='p-2.5 cursor-pointer'>Circulating Supply</th>
+            <TableWrapper>
+                {isLoading === false && 
+                    coins?.data?.data?.map((coin, index) => {
+                        const {id, name, quote, symbol, circulating_supply, slug} = coin
+                        const {price, percent_change_1h, percent_change_24h, percent_change_7d, market_cap, volume_24h} = quote?.USD
+                        return(
+                            <tr className="border-b border-faded-grey" key={id}>
+                                <td onClick={()=>handleFavorites(id)} className='sticky-item left-0'>
+                                    {favorites.some(item => item == id) ? <FaStar/> : <FaRegStar/>}
+                                </td>
+                                <td className='sticky-item left-[34px]'>{(pageIndex * limit) + (index + 1)}</td>
+                                <td className='sticky-item left-[70px] sm:whitespace-nowrap text-left'>
+                                    <div className='flex items-center'>
+                                        <Image
+                                            src={getImage(id)}
+                                            height={24}
+                                            width={24}
+                                            alt="Logo"
+                                            className='mr-1.5'
+                                        />
+                                        <Link href={`/coins/${slug}`}>{name} <span className='text-dark-grey'>{symbol}</span></Link>
+                                    </div>
+                                </td>
+                                <td className='p-2.5 text-right'>${price.toFixed(2)}</td>
+                                <PercentageChangeRow percentChange={percent_change_1h} />
+                                <PercentageChangeRow percentChange={percent_change_24h} />
+                                <PercentageChangeRow percentChange={percent_change_7d} />
+                                <td className='p-2.5'>${toTwoDecimalPlace(market_cap)}</td>
+                                <td className='p-2.5 text-right'>
+                                    ${toTwoDecimalPlace(volume_24h)} <br/>
+                                    <span className='text-xs text-medium-grey'>{getCoinVolume(volume_24h, price)} {symbol}</span>
+                                </td>
+                                <td className='p-2.5 text-right'>{numberToString(Math.floor(circulating_supply))} {symbol}</td>
                             </tr>
-                        </thead>
-                        <tbody className='font-semibold'>
-                            {isLoading === false && 
-                                coins?.data?.data?.map((coin, index) => {
-                                    const {id, name, quote, symbol, circulating_supply, slug} = coin
-                                    const {price, percent_change_1h, percent_change_24h, percent_change_7d, market_cap, volume_24h} = quote?.USD
-                                    return(
-                                        <tr className="border-b border-faded-grey" key={id}>
-                                            <td onClick={()=>handleFavorites(id)} className='sticky-item left-0'>
-                                                {favorites.some(item => item == id) ? <FaStar/> : <FaRegStar/>}
-                                            </td>
-                                            <td className='sticky-item left-[34px]'>{(pageIndex * limit) + (index + 1)}</td>
-                                            <td className='sticky-item left-[70px] sm:whitespace-nowrap text-left'>
-                                                <div className='flex items-center'>
-                                                    <Image
-                                                        src={getImage(id)}
-                                                        height={24}
-                                                        width={24}
-                                                        alt="Logo"
-                                                        className='mr-1.5'
-                                                    />
-                                                    <Link href={`/coins/${slug}`}>{name} <span className='text-dark-grey'>{symbol}</span></Link>
-                                                </div>
-                                            </td>
-                                            <td className='p-2.5 text-right'>${price.toFixed(2)}</td>
-                                            <PercentageChangeRow percentChange={percent_change_1h} />
-                                            <PercentageChangeRow percentChange={percent_change_24h} />
-                                            <PercentageChangeRow percentChange={percent_change_7d} />
-                                            <td className='p-2.5'>${toTwoDecimalPlace(market_cap)}</td>
-                                            <td className='p-2.5 text-right'>
-                                                ${toTwoDecimalPlace(volume_24h)} <br/>
-                                                <span className='text-xs text-medium-grey'>{getCoinVolume(volume_24h, price)} {symbol}</span>
-                                            </td>
-                                            <td className='p-2.5 text-right'>{numberToString(Math.floor(circulating_supply))} {symbol}</td>
-                                        </tr>
-                                    )
-                                })
-
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+                        )
+                    })
+                }
+            </TableWrapper>
             <div className='sm:hidden bg-news-grey py-5 grid place-content-center'>
                 {!metricsLoading &&
                     <Pagination handleClick={setPageIndex} c={pageIndex} m={Math.ceil(totalCoins / limit)}/>    
@@ -150,19 +144,7 @@ function Home() {
                     </select>
                 </div>
             </div>
-
-            <section className='bg-news-grey px-4 md:px-8 py-6 md:py-12 mb-12'>
-                <article className='md:text-center md:border border-dark-grey p'>
-                    <div className='md:w-3/5 mx-auto'>
-                        <h1 className='pt-4 sm:pt-16 pb-2 text-sm sm:text-3xl font-semibold'>Be the first to know about every crypto news every day</h1>
-                        <p className='mb-8 text-sm md:text-base'>Get crypto analysis, news and updates right to your inbox! Sign up here so you don&apos;t miss a single newsletter.</p>
-                        <div className='flex flex-col md:flex-row items-center gap-4 mb-4 sm:mb-16'>
-                            <input type='email' placeholder='Enter your email' className='bg-transparent w-full flex-1 border border-dark-grey py-3 px-6 text-sm' />
-                            <button className='text-sm font-semibold text-white w-full md:w-fit bg-green-600 rounded-md py-3 px-6'>Subscribe now</button>
-                        </div>
-                    </div>
-                </article>
-            </section>
+            <NewsLetter />
         </main>
     )
 }

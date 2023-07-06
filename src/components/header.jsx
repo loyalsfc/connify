@@ -122,7 +122,11 @@ function Header() {
                 </nav>
                 <div className='ml-auto hidden lg:block'>
                     <ul className='flex gap-4 items-center'>
-                        <li>Watchlist</li>
+                        <li>
+                            <Link href="/watchlist">
+                                Watchlist
+                            </Link>
+                        </li>
                         <li>
                             <Link href="/portfolio">
                                 Portfolio
@@ -207,7 +211,10 @@ function Navigations(){
                     Converter
                 </Link>
             </li>
-            <li className='lg:hidden'>Watchlist</li>
+            <li className='lg:hidden'>
+                <Link href="/watchlist">
+                    Watchlist
+                </Link></li>
             <li className='lg:hidden'>
                 <Link href="/portfolio">
                     Portfolio

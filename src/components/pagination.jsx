@@ -1,10 +1,14 @@
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React from 'react'
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 
 
 function Pagination({c, m, handleClick}) {
+    const router = useRouter();
+    const limit = m
     function paginate() {
-        var current = c,
+        let current = c,
             last = m,
             delta = 2,
             left = current - delta,
@@ -38,26 +42,32 @@ function Pagination({c, m, handleClick}) {
         <div className='flex items-center sm:border border-faded-grey rounded'>
             <button 
                 disabled={c == 0 ? true : false}
-                className='hover:bg-green-400 h-full block hover:text-white px-2.5 py-1 border-r border-faded-grey'
-                onClick={() => handleClick(c - 1)}
+                className='hover:bg-green-400 h-full block hover:text-white px-2.5 py-1 border-r border-faded-grey disabled:cursor-not-allowed pointer-events-auto'
+                onClick={() => router.push(`/?page=${c - 1}`)}
             >
                 <FaAngleLeft />
             </button>
             {paginate().map((item, index) => {
-                return <button 
+                if(index === 0){
+                    return <Link className='px-2.5 py-1 font-medium h-full block text-sm sm:border-r border-faded-grey' key={index} href="/">{item}</Link>
+                }else if (item === "---"){
+                    return <button className='px-2.5 py-1 font-medium h-full block text-sm sm:border-r border-faded-grey' key={index} disabled={true}>{item}</button>
+                } else {
+                    return <Link 
                             key={index}
-                            onClick={()=>handleClick(item - 1)}
+                            href={`/?page=${item}`}
                             disabled={item === "..." ? true : false}
                             className={`${c == (item - 1) ? "bg-faded-grey" : ""} px-2.5 py-1 font-medium h-full block hover:bg-green-400 hover:text-white text-sm sm:border-r border-faded-grey`}
                         >
                             {item}
-                        </button>
+                        </Link>
+                }
             })
             }
             <button 
-                disabled={c == (limit + 1) ? true : false}
-                className='hover:bg-green-400 hover:text-white px-2.5 py-1 h-full block'
-                onClick={() => handleClick(c + 1)}
+                disabled={c == (limit - 1) ? true : false}
+                className='hover:bg-green-400 hover:text-white px-2.5 py-1 h-full block disabled:cursor-not-allowed leading-loose'
+                onClick={() => router.push(`/?page=${c + 1}`)}
             >
                 <FaAngleRight />    
             </button>

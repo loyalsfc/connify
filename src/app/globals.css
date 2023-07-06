@@ -91,6 +91,7 @@
   --background-end-rgb: 255, 255, 255;
   
   font-family: 'Poppins', sans-serif;
+  scroll-behavior: smooth;
 
   color: #222531;
 }

@@ -1,5 +1,5 @@
 'use client'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { fetcher, toTwoDecimalPlace } from '../../../utils/utils'
 import useSWR from 'swr'
 import Dropdown from '@/components/converter/dropdown'
