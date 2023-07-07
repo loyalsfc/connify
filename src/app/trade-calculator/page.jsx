@@ -6,7 +6,6 @@ function TradeCalculator() {
     const [riskPercent, setRiskPercent] = useState(5)
     const [tradeType, setTradeType] = useState('long')
     const [leverage, setLeverage] = useState(10)
-    // const [positionSize, setPositionSize] = useState(1)
     const [entryPrice, setEntryPrice] = useState()
     const [exitPrice, setExitPrice] = useState()
     const [stopLoss, setStopLoss] = useState()
@@ -22,39 +21,47 @@ function TradeCalculator() {
         return calcAmount.toFixed(2)
     },[totalCapital, riskPercent])
 
-    const calculateLiquidation = useMemo(()=>{
-        if(tradeType === "short"){
+    const positionSize = useMemo(()=>{
+        const loss = Math.abs(entryPrice - stopLoss);
+        const lossPercentage = (loss / entryPrice ) * 100
+        const size = (riskCapital / lossPercentage) * 100
+        return (size / entryPrice).toFixed(3)
+    },[riskCapital, stopLoss, entryPrice])
 
-        } else {
-
-        }
-
-    },[])
-
-    const percentageChange = useMemo(()=>{
-        if(tradeType === "long"){
-            let changes = exitPrice - entryPrice
-            return ((changes / entryPrice) * 100).toFixed(2)
-        }
-        let changes = entryPrice - exitPrice
-        return ((changes / exitPrice) * 100).toFixed(2)
-    },[entryPrice, exitPrice, tradeType])
-    
     const margin = useMemo(()=>{
-        const stopLossPercent = (stopLoss - entryPrice) / entryPrice * 100;
-        const initialMargin = riskCapital / stopLossPercent * 100
-        return (initialMargin * (leverage / 100)).toFixed(2)
+        const initialMargin = positionSize * entryPrice;
+            return (initialMargin / leverage).toFixed(2)
+    },[positionSize, entryPrice, leverage])
 
-    },[riskCapital, stopLoss, entryPrice, leverage])
+    const pnl = useMemo(()=>{
+        let profit = tradeType === "long" ? (exitPrice - entryPrice) : (entryPrice - exitPrice);
+        return (profit * positionSize).toFixed(2)
+    },[exitPrice, entryPrice, positionSize])
 
     const roe = useMemo(()=>{
-        return percentageChange * leverage
-    },[percentageChange, leverage])
+        return ((pnl / margin) * 100).toFixed(2)
+    },[pnl, margin])
 
-    const positionSize = useMemo(()=>{
-        return margin / entryPrice
-    },[margin, entryPrice])
+    const percentageChange = useMemo(()=>{
+        const change = Math.abs(exitPrice - entryPrice);
+        if(tradeType === "long"){
+            const percent = (change / entryPrice) * 100;
+            return percent.toFixed(2)
+        }
+        const percent = (change / exitPrice) * 100;
+        return percent.toFixed(2)
+    }, [entryPrice, exitPrice])
 
+    const liquidity = useMemo(()=>{
+        
+    },[])
+
+    const riskReward = useMemo(()=>{
+        const potentialProfit = exitPrice - entryPrice;
+        const potentialLoss = entryPrice - stopLoss;
+        const rrr = potentialProfit / potentialLoss
+        return rrr.toFixed(2);
+    },[exitPrice, entryPrice, stopLoss])
 
     return (
         <main className='px-4 md:px-8 bg-[#F8F8F8] mb-8'>
@@ -144,34 +151,36 @@ function TradeCalculator() {
                         />
                     </article>
                 </div>
-                <div className='calc-wrapper text-sm'>
-                    <p className='flex justify-between py-1.5'>Risked Capital <span>${riskCapital}</span></p>
+                <div className='calc-wrapper relative text-sm'>
+                    {tradeType === "long" && entryPrice < stopLoss && <Warning text='below' />}
+                    {tradeType === "short" && entryPrice > stopLoss && <Warning text='above' />}
+                    <p className='flex justify-between py-1.5'>Risked Capital <span className=''>${riskCapital}</span></p>
                     <p className='flex justify-between py-1.5'>
                         Margin 
                         <span> 
-                            {entryPrice && stopLoss ?
-                                <span className={margin> 0 ? 'text-green-500' : 'text-red-500'}>${margin}</span> : "-"
+                            { entryPrice && stopLoss ?
+                                <span className={margin < totalCapital ? 'text-green-500' : 'text-red-500'}>${margin}</span> : "-"
                             }
                         </span>
                     </p>
-                    <p className='flex justify-between py-1.5'>Position Size <span>{positionSize ?? "-"}</span></p>
-                    <p className='flex justify-between py-1.5'>Liquidation <span>-</span></p>
-                    <p className='flex justify-between py-1.5'>Risk / Reward <span>-</span></p>
-                    <p className='flex justify-between py-1.5'>Estimated PnL <span>-</span></p>
+                    <p className='flex justify-between py-1.5'>Position Size <span className='font-semibold'>{isNaN(positionSize) ? "-" : positionSize}</span></p>
+                    {/* <p className='flex justify-between py-1.5'>Liquidation <span>-</span></p> */}
+                    <p className='flex justify-between py-1.5'>
+                        Risk / Reward 
+                        {isNaN(riskReward) ? <span>-</span> : <span className={riskReward > 1 ? "text-green-500" : "text-red-500"}>{riskReward}</span>}
+                    </p>
+                    <p className='flex justify-between py-1.5'>
+                        Estimated PnL 
+                        {isNaN(pnl) ? <span>-</span> : <span className={pnl > 0 ? "text-green-500" : "text-red-500"}>${pnl}</span>}
+                    </p>
                     <p className='flex justify-between py-1.5'>
                         ROE
-                        <span> 
-                            {entryPrice && exitPrice ?
-                                <span>{roe}%</span> : "-"
-                            }
-                        </span>
+                        {isNaN(roe) ? <span>-</span> : <span className={roe > 0 ? "text-green-500" : "text-red-500"}>{roe}%</span>}
+                        
                     </p>
                     <p className='flex justify-between py-1.5'>
                         Percent 
-                        <span>
-                            {entryPrice && exitPrice ? 
-                            <span className={percentageChange > 0 ? 'text-green-500' : 'text-red-500'}>{percentageChange}%</span>: "-"}
-                        </span>
+                        {isNaN(percentageChange) ? <span>-</span> : <span className={percentageChange > 0 ? "text-green-500" : "text-red-500"}>{percentageChange}%</span>}
                     </p>
                 </div>
             </section>
@@ -196,11 +205,17 @@ function ItemInput({label, id, value, onChange}){
                     id={id} 
                     className='p-2 text-xs flex-1 focus:outline-none bg-white border-none' 
                     value={value}
-                    onChange={(e)=>onChange(e.target.value)}
+                    onChange={(e)=>onChange(parseFloat(e.target.value))}
                 />
             </div>
         </InputWrapper>
     )
+}
+
+function Warning({text}){
+    return <div className='absolute top-0 left-0 w-full h-full bg-faded-grey/10 backdrop-blur-md flex items-center justify-center'>
+        <p className='text-red-500'>Stop loss must be {text} entry</p>
+    </div>
 }
 
 export default TradeCalculator
