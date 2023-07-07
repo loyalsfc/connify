@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import useSWR from 'swr'
 import { fetcher, getCoinVolume, getImage, numberToString, toTwoDecimalPlace } from '../../utils/utils'
 import Pagination from '@/components/pagination'
@@ -11,12 +11,14 @@ import PercentageChangeRow from '@/components/percentageChange'
 import { useSearchParams  } from 'next/navigation'
 import TableWrapper from '@/components/tableWrapper'
 import NewsLetter from '@/components/newsLetter'
+import { Context } from '@/context/context'
 
 function Home() {
     const searchParams = useSearchParams()
     const pageSearchParam = searchParams.get('page')
     const [pageIndex, setPageIndex] = useState((pageSearchParam - 1) ?? 0)
     const [limit, setLimit] = useState(100)
+    const {favorites, setFavorites} = useContext(Context)
     const {data: coins, error, isLoading} = useSWR(
         `v1/cryptocurrency/listings/latest?start=${(pageIndex * limit) + 1}&limit=${limit}&convert=USD`, 
         fetcher
@@ -26,7 +28,7 @@ function Home() {
         fetcher
     )
     const [totalCoins, setTotalCoins] = useState(metrics?.data?.data?.active_cryptocurrencies)
-    const [favorites, setFavorites] = useState([])
+    // const [favorites, setFavorites] = useState([])
  
     useEffect(()=>{
         setTotalCoins(metrics?.data?.data?.active_cryptocurrencies)
@@ -39,20 +41,6 @@ function Home() {
             setPageIndex(0)
         }
     }, [pageSearchParam])
-
-    useEffect(()=>{
-        localStorage.setItem('favorites', JSON.stringify(favorites))
-    },[favorites])
-
-    const handleFavorites = (id) => {
-        if(favorites.some(item => item == id)){
-            setFavorites(prevItems => {
-                return prevItems.filter(item => item != id)
-            })
-        } else {
-            setFavorites([...favorites, id])
-        }
-    }
 
     return (
         <main>
@@ -84,44 +72,7 @@ function Home() {
                     </ul>
                 }
             </section>
-            <TableWrapper>
-                {isLoading === false && 
-                    coins?.data?.data?.map((coin, index) => {
-                        const {id, name, quote, symbol, circulating_supply, slug} = coin
-                        const {price, percent_change_1h, percent_change_24h, percent_change_7d, market_cap, volume_24h} = quote?.USD
-                        return(
-                            <tr className="border-b border-faded-grey" key={id}>
-                                <td onClick={()=>handleFavorites(id)} className='sticky-item left-0'>
-                                    {favorites.some(item => item == id) ? <FaStar/> : <FaRegStar/>}
-                                </td>
-                                <td className='sticky-item left-[34px]'>{(pageIndex * limit) + (index + 1)}</td>
-                                <td className='sticky-item left-[70px] sm:whitespace-nowrap text-left'>
-                                    <div className='flex items-center'>
-                                        <Image
-                                            src={getImage(id)}
-                                            height={24}
-                                            width={24}
-                                            alt="Logo"
-                                            className='mr-1.5'
-                                        />
-                                        <Link href={`/coins/${slug}`}>{name} <span className='text-dark-grey'>{symbol}</span></Link>
-                                    </div>
-                                </td>
-                                <td className='p-2.5 text-right'>${price.toFixed(2)}</td>
-                                <PercentageChangeRow percentChange={percent_change_1h} />
-                                <PercentageChangeRow percentChange={percent_change_24h} />
-                                <PercentageChangeRow percentChange={percent_change_7d} />
-                                <td className='p-2.5'>${toTwoDecimalPlace(market_cap)}</td>
-                                <td className='p-2.5 text-right'>
-                                    ${toTwoDecimalPlace(volume_24h)} <br/>
-                                    <span className='text-xs text-medium-grey'>{getCoinVolume(volume_24h, price)} {symbol}</span>
-                                </td>
-                                <td className='p-2.5 text-right'>{numberToString(Math.floor(circulating_supply))} {symbol}</td>
-                            </tr>
-                        )
-                    })
-                }
-            </TableWrapper>
+            <TableWrapper isLoading={isLoading} data={coins?.data?.data} pageIndex={pageIndex} limit={limit} />
             <div className='sm:hidden bg-news-grey py-5 grid place-content-center'>
                 {!metricsLoading &&
                     <Pagination handleClick={setPageIndex} c={pageIndex} m={Math.ceil(totalCoins / limit)}/>    
