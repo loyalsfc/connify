@@ -76,6 +76,7 @@ export function getProfitPercentage(currentPrice, averagePrice){
 }
 
 export function soldCoinProfit(transaction, average_fee){
+    // if(!transaction) return 0;
     let profit = 0;
     transaction.forEach(item => {
         if(item.transaction_type === "sell"){

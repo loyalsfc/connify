@@ -31,6 +31,7 @@ function Transactions() {
         `v2/cryptocurrency/quotes/latest?slug=${slug}`,
         fetcher
     )
+    console.log(asset)
 
     if(authLoading || transactionLoading || isLoading){
         return <Loader />

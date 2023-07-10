@@ -36,7 +36,7 @@ function PortFolio() {
 
     async function fetchPortfolio(id){
         const {data:portfolio, error} = await supabase.from('portfolio').select().eq('user_id', id)
-        
+        console.log(portfolio)
         if(error){
             console.log(error)
             return;
@@ -56,7 +56,7 @@ function PortFolio() {
 
     return (
         <main>
-            {showCreateModal && <Modal hideModal={setShowCreateModal} />}
+            {showCreateModal && <Modal hideModal={setShowCreateModal} mutate={mutate} />}
             {user ? (
                 <section className='px-4 sm:px-8 py-8'>
                     <div className='flex justify-between items-center'>

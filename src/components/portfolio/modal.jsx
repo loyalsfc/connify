@@ -1,7 +1,6 @@
 import React, { useContext, useState } from 'react'
 import { FaAngleRight, FaTimes } from 'react-icons/fa'
-import { fetcher, getImage } from '../../../utils/utils'
-import useSWR from 'swr'
+import { getImage } from '../../../utils/utils'
 import Image from 'next/image'
 import { Context } from '../../context/context'
 import Transaction from './transaction'
@@ -9,16 +8,11 @@ import ModalWrapper from '../modalWrapper'
 import { PortfolioContext } from '@/context/portfolioContext'
 import { supabase } from '@/lib/supabaseClient'
 
-function Modal({hideModal}) {
+function Modal({hideModal, mutate}) {
     const [currentPage, setCurrentPage] = useState('coin-select')
     const [selectedCoin, setSelectedCoin] = useState()
-    const {user} = useContext(Context)
+    const {user, coins} = useContext(Context)
     const {updatePortfolio, portfolioId} = useContext(PortfolioContext)
-
-    const {data: coins} = useSWR(
-        'v1/cryptocurrency/map?sort=cmc_rank',
-        fetcher
-    )
     const [filter, setFilter] = useState('')
 
     function handleClick(coin){
@@ -51,8 +45,8 @@ function Modal({hideModal}) {
                 transaction_type: type,
                 asset_slug: selectedCoin.slug,
             })
-        updatePortfolio(asset[0])
-        hideModal(false)
+        mutate();
+        hideModal(false);
     }
 
     return (

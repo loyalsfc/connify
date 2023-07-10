@@ -7,17 +7,8 @@ import PercentageChangeRow from './percentageChange'
 import { formatPrice, getCoinVolume, getImage, numberToString, toTwoDecimalPlace } from '../../utils/utils'
 
 function TableWrapper({isLoading, data, pageIndex, limit}) {
-    const {favorites, setFavorites} = useContext(Context)
+    const {favorites, addToFavorites} = useContext(Context)
 
-    const handleFavorites = (id) => {
-        if(favorites.some(item => item == id)){
-            setFavorites(prevItems => {
-                return prevItems.filter(item => item != id)
-            })
-        } else {
-            setFavorites([...favorites, id])
-        }
-    }
     return (
         <section className='px-4 sm:px-8 overflow-hidden'>
             <div className='relative overflow-x-scroll'>
@@ -39,14 +30,14 @@ function TableWrapper({isLoading, data, pageIndex, limit}) {
                     <tbody className='font-semibold'>
                         {isLoading === false && 
                             data.map((coin, index) => {
-                                const {id, name, quote, symbol, circulating_supply, slug} = coin
+                                const {id, name, quote, symbol, circulating_supply, slug, cmc_rank} = coin
                                 const {price, percent_change_1h, percent_change_24h, percent_change_7d, market_cap, volume_24h} = quote?.USD
                                 return(
                                     <tr className="border-b border-faded-grey" key={id}>
-                                        <td onClick={()=>handleFavorites(id)} className='sticky-item left-0'>
+                                        <td onClick={()=>addToFavorites(id)} className='sticky-item left-0'>
                                             {favorites.some(item => item == id) ? <FaStar/> : <FaRegStar/>}
                                         </td>
-                                        <td className='sticky-item left-[34px]'>{(pageIndex * limit) + (index + 1)}</td>
+                                        <td className='sticky-item left-[34px]'>{cmc_rank}</td> {/*(pageIndex * limit) + (index + 1)*/}
                                         <td className='sticky-item left-[70px] sm:whitespace-nowrap text-left'>
                                             <div className='flex items-center'>
                                                 <Image

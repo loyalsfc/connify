@@ -4,7 +4,7 @@ import React, { useContext, useState } from 'react'
 import { getImage } from '../../../utils/utils';
 import { FaAngleRight, FaTimes } from 'react-icons/fa';
 
-function CoinList({hideModal}) {
+function CoinList({hideModal, handleClick}) {
     const {coins} = useContext(Context)
     const [filter, setFilter] = useState('')
 
@@ -18,7 +18,7 @@ function CoinList({hideModal}) {
             <div className='py-3'>
                 <input 
                     type="search" 
-                    className='text-sm px-3 py-2 border-medium-grey border focus:border-green-500 focus:outline-none rounded-md w-full' 
+                    className='text-sm px-3 py-2 border-medium-grey border focus:border-green-500 focus:outline-none rounded-md w-full'
                     value={filter}
                     onChange={(e)=>setFilter(e.target.value)}
                 />

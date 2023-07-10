@@ -53,8 +53,18 @@ const ContextProvider = ({children}) => {
         setAuthLoading(false)
     }
 
+    const addToFavorites = (id) => {
+        if(favorites.some(item => item == id)){
+            setFavorites(prevItems => {
+                return prevItems.filter(item => item != id)
+            })
+        } else {
+            setFavorites([...favorites, id])
+        }
+    }
+
     return(
-        <Context.Provider value={{showAuthModal, setShowAuthModal, notificationRef, showNotification, user, setUser, authLoading, coins, favorites, setFavorites}}>
+        <Context.Provider value={{showAuthModal, setShowAuthModal, notificationRef, showNotification, user, setUser, authLoading, coins, favorites, addToFavorites, setFavorites}}>
             {children}
         </Context.Provider>
     )

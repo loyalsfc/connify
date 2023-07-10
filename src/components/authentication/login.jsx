@@ -40,10 +40,9 @@ function Register() {
     const signUp = async(info) =>{
         const { data, error } = await supabase.auth.signUp(info);
         if(data?.user?.identities.length > 0){
-            const {data: damn, error} = await supabase
+            await supabase
                 .from('portfolio')
-                .insert({name: "My Portfolio", user_id: data?.user?.id})
-            console.log(damn, error)
+                .insert({name: "My Portfolio", user_id: data?.user?.id, is_default: true})
             showNotification('Check Email for Confirmation', '#22655E');
         } else if(data?.user?.identities.length === 0){
             showNotification('User already exist', '#EF4444');
