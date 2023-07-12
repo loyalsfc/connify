@@ -8,15 +8,13 @@ import useSWR from 'swr'
 import { FaPlus, FaStar, FaTimes } from 'react-icons/fa'
 import { Context } from '@/context/context'
 import Loader from '@/components/loader'
-import ModalWrapper from '@/components/modalWrapper'
-import CoinList from '@/components/portfolio/coinList'
 import Image from 'next/image'
 import AddFavorite from '@/components/addFavorite'
 
 function Favorites() {
-    const {favorites, setFavorites, coins} = useContext(Context)
+    const {favorites} = useContext(Context)
     const [showModal, setShowModal] = useState(false)
-    const {data, error, isLoading} = useSWR(
+    const {data, isLoading} = useSWR(
         `v2/cryptocurrency/quotes/latest?id=${favorites.join()}`,
         fetcher
     )
@@ -59,7 +57,7 @@ function Favorites() {
                         <button onClick={()=>setShowModal(true)} className='flex items-center gap-2 bg-faded-grey rounded-md font-semibold px-2 py-1 text-sm'><FaPlus/> Add Coins</button>
                     </div>
                 </article>
-                <TableWrapper isLoading={isLoading} data={wishlist.sort((a, b) => a.cmc_rank - b.cmc_rank)} pageIndex={0} limit={100} />
+                <TableWrapper isLoading={isLoading} data={wishlist.sort((a, b) => a.cmc_rank - b.cmc_rank)} />
                 <NewsLetter />
             </main>
         </>

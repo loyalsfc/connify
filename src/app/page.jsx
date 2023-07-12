@@ -1,34 +1,28 @@
 'use client'
 
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import useSWR from 'swr'
-import { fetcher, getCoinVolume, getImage, numberToString, toTwoDecimalPlace } from '../../utils/utils'
+import { fetcher, numberToString, } from '../../utils/utils'
 import Pagination from '@/components/pagination'
-import { FaRegStar, FaStar } from 'react-icons/fa'
-import Link from 'next/link'
-import Image from 'next/image'
-import PercentageChangeRow from '@/components/percentageChange'
 import { useSearchParams  } from 'next/navigation'
 import TableWrapper from '@/components/tableWrapper'
 import NewsLetter from '@/components/newsLetter'
-import { Context } from '@/context/context'
 
 function Home() {
     const searchParams = useSearchParams()
     const pageSearchParam = searchParams.get('page')
     const [pageIndex, setPageIndex] = useState((pageSearchParam - 1) ?? 0)
     const [limit, setLimit] = useState(100)
-    const {favorites, setFavorites} = useContext(Context)
-    const {data: coins, error, isLoading} = useSWR(
+
+    const {data: coins, isLoading} = useSWR(
         `v1/cryptocurrency/listings/latest?start=${(pageIndex * limit) + 1}&limit=${limit}&convert=USD`, 
         fetcher
     )
-    const {data: metrics, error: metricsError, isLoading: metricsLoading} = useSWR(
+    const {data: metrics, isLoading: metricsLoading} = useSWR(
         "v1/global-metrics/quotes/latest",
         fetcher
     )
     const [totalCoins, setTotalCoins] = useState(metrics?.data?.data?.active_cryptocurrencies)
-    // const [favorites, setFavorites] = useState([])
  
     useEffect(()=>{
         setTotalCoins(metrics?.data?.data?.active_cryptocurrencies)
@@ -72,7 +66,7 @@ function Home() {
                     </ul>
                 }
             </section>
-            <TableWrapper isLoading={isLoading} data={coins?.data?.data} pageIndex={pageIndex} limit={limit} />
+            <TableWrapper isLoading={isLoading} data={coins?.data?.data} />
             <div className='sm:hidden bg-news-grey py-5 grid place-content-center'>
                 {!metricsLoading &&
                     <Pagination handleClick={setPageIndex} c={pageIndex} m={Math.ceil(totalCoins / limit)}/>    

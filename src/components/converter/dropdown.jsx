@@ -109,7 +109,7 @@ function Dropdown({itemCurrency, setItemCurrency}) {
                     </div>
                 </div>
                 {showList &&
-                    <div ref={popupRef} className="w-full top-12 bg-white shadow-md absolute max-h-[300px] overflow-scroll">
+                    <div ref={popupRef} className="w-full top-12 bg-white shadow-md absolute max-h-[300px] overflow-scroll z-50">
                         {fiatsList?.length || coinsList?.length ? (
                             <div className='w-full py-4'>
                                 {fiatsList?.length > 0 && <div>

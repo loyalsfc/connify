@@ -74,7 +74,7 @@ function Converter() {
                             </div>
                             <div className='w-[calc(50%_-_25px)]'>
                                 <div className='flex gap-1 items-center'>{isLoading ? 
-                                    <div className='h-4 w-4 border-2 border-medium-grey rounded-full border-t-[#F8F8F8] animate-spin'></div>:
+                                    <div className='h-4 w-4 border-2 border-medium-grey rounded-full border-t-[#F8F8F8] animate-spin shrink-0'></div>:
                                     <div className='whitespace-pre-wrap'>{toTwoDecimalPlace(data?.data?.data?.quote[toCurrency.symbol]?.price)}</div>} {toCurrency.fullName}
                                 </div>
                             </div>
