@@ -52,12 +52,6 @@ function Register() {
         console.log(data, error);
     }
 
-    async function initPortfolio(){
-        const {data, error} = await supabase
-            .from('portfolio')
-            .insert({name: "My Portfolio", id})
-    }
-
     return (
         <div>
             <LoginComponent isLogin={false} auth={signUp}/>

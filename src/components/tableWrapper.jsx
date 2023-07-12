@@ -37,9 +37,9 @@ function TableWrapper({isLoading, data, pageIndex, limit}) {
                                         <td onClick={()=>addToFavorites(id)} className='sticky-item left-0'>
                                             {favorites.some(item => item == id) ? <FaStar/> : <FaRegStar/>}
                                         </td>
-                                        <td className='sticky-item left-[34px]'>{cmc_rank}</td> {/*(pageIndex * limit) + (index + 1)*/}
-                                        <td className='sticky-item left-[70px] sm:whitespace-nowrap text-left'>
-                                            <div className='flex items-center'>
+                                        <td className='sticky-item left-[34px]'>{cmc_rank}</td>
+                                        <td className='sticky-item left-[70px] sm:whitespace-nowrap text-left pr-4 text-ellipsis w-fit'>
+                                            <div className='flex items-center text-ellipsis'>
                                                 <Image
                                                     src={getImage(id)}
                                                     height={24}

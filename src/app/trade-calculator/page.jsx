@@ -167,7 +167,7 @@ function TradeCalculator() {
                     {/* <p className='flex justify-between py-1.5'>Liquidation <span>-</span></p> */}
                     <p className='flex justify-between py-1.5'>
                         Risk / Reward 
-                        {isNaN(riskReward) ? <span>-</span> : <span className={riskReward > 1 ? "text-green-500" : "text-red-500"}>{riskReward}</span>}
+                        {isNaN(riskReward) ? <span>-</span> : <span className={riskReward >= 1 ? "text-green-500" : "text-red-500"}>{riskReward}</span>}
                     </p>
                     <p className='flex justify-between py-1.5'>
                         Estimated PnL 

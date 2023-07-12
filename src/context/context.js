@@ -11,14 +11,16 @@ const ContextProvider = ({children}) => {
     const notificationRef = useRef(null)
     const [user, setUser]  = useState(null)  
     const [authLoading, setAuthLoading] = useState(true)
-    const [favorites, setFavorites] = useState(JSON.parse(localStorage.getItem('favorites')) ?? [])
+    const [favorites, setFavorites] = useState(typeof window !== "undefined" ? JSON.parse(localStorage.getItem('favorites')) : [])
     const {data: coins} = useSWR(
         'v1/cryptocurrency/map?sort=cmc_rank',
         fetcher
     )
 
     useEffect(()=>{
-        localStorage.setItem('favorites', JSON.stringify(favorites))
+        if(typeof window !== "undefined"){
+            localStorage.setItem('favorites', JSON.stringify(favorites))
+        }
     },[favorites])
     
     const showNotification = (text, color) => {
