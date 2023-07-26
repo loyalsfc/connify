@@ -1,10 +1,12 @@
+"use client"
+
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React from 'react'
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 
 
-function Pagination({c, m, handleClick}) {
+function Pagination({c, m}) {
     const router = useRouter();
     const limit = m
     function paginate() {
@@ -48,16 +50,32 @@ function Pagination({c, m, handleClick}) {
                 <FaAngleLeft />
             </button>
             {paginate().map((item, index) => {
+                console.log(c, index)
                 if(index === 0){
-                    return <Link className='px-2.5 py-1 font-medium h-full block text-sm sm:border-r border-faded-grey' key={index} href="/">{item}</Link>
-                }else if (item === "---"){
-                    return <button className='px-2.5 py-1 font-medium h-full block text-sm sm:border-r border-faded-grey' key={index} disabled={true}>{item}</button>
+                    return(
+                        <Link 
+                            className='paginate-btn' 
+                            key={index} 
+                            href="/"
+                        >
+                            {item}
+                        </Link>
+                    )
+                }else if (item === "..."){
+                    return (
+                        <button 
+                            className='paginate-btn' 
+                            key={index}
+                            disabled={true}
+                        >
+                            {item}
+                        </button>
+                    )
                 } else {
                     return <Link 
                             key={index}
                             href={`/?page=${item}`}
-                            disabled={item === "..." ? true : false}
-                            className={`${c == (item - 1) ? "bg-faded-grey" : ""} px-2.5 py-1 font-medium h-full block hover:bg-green-400 hover:text-white text-sm sm:border-r border-faded-grey`}
+                            className={`${c == item  ? "bg-faded-grey" : ""} paginate-btn`}
                         >
                             {item}
                         </Link>

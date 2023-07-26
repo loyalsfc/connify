@@ -16,7 +16,6 @@ const ContextProvider = ({children}) => {
         'v1/cryptocurrency/map?sort=cmc_rank',
         fetcher
     )
-    console.log(favorites);
 
     useEffect(()=>{
         if(typeof window !== "undefined"){

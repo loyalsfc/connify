@@ -29,7 +29,7 @@ function TableWrapper({isLoading, data }) {
                     </thead>
                     <tbody className='font-semibold'>
                         {isLoading === false && 
-                            data.map((coin, index) => {
+                            data?.map((coin, index) => {
                                 const {id, name, quote, symbol, circulating_supply, slug, cmc_rank} = coin
                                 const {price, percent_change_1h, percent_change_24h, percent_change_7d, market_cap, volume_24h} = quote?.USD
                                 return(

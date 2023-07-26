@@ -1,5 +1,13 @@
 'use client'
+
 import React, { useMemo, useState } from 'react'
+
+export const metadata = {
+    title: 'Trade Calculator',
+    openGraph: {
+        title: 'Trade Calculator',
+    },
+}
 
 function TradeCalculator() {
     const [totalCapital, setTotalCapital] = useState(1000)
@@ -43,7 +51,7 @@ function TradeCalculator() {
     },[pnl, margin])
 
     const percentageChange = useMemo(()=>{
-        const change = Math.abs(exitPrice - entryPrice);
+        const change = exitPrice - entryPrice;
         if(tradeType === "long"){
             const percent = (change / entryPrice) * 100;
             return percent.toFixed(2)
@@ -152,8 +160,8 @@ function TradeCalculator() {
                     </article>
                 </div>
                 <div className='calc-wrapper relative text-sm'>
-                    {tradeType === "long" && entryPrice < stopLoss && <Warning text='below' />}
-                    {tradeType === "short" && entryPrice > stopLoss && <Warning text='above' />}
+                    {tradeType === "long" && parseFloat(entryPrice) < parseFloat(stopLoss) && <Warning text='below' />}
+                    {tradeType === "short" && parseFloat(entryPrice) > parseFloat(stopLoss) && <Warning text='above' />}
                     <p className='flex justify-between py-1.5'>Risked Capital <span className=''>${riskCapital}</span></p>
                     <p className='flex justify-between py-1.5'>
                         Margin 
@@ -164,7 +172,7 @@ function TradeCalculator() {
                         </span>
                     </p>
                     <p className='flex justify-between py-1.5'>Position Size <span className='font-semibold'>{isNaN(positionSize) ? "-" : positionSize}</span></p>
-                    {/* <p className='flex justify-between py-1.5'>Liquidation <span>-</span></p> */}
+                    <p className='flex justify-between py-1.5'>Liquidation <span>-</span></p>
                     <p className='flex justify-between py-1.5'>
                         Risk / Reward 
                         {isNaN(riskReward) ? <span>-</span> : <span className={riskReward >= 1 ? "text-green-500" : "text-red-500"}>{riskReward}</span>}
@@ -196,6 +204,18 @@ function InputWrapper({label, id, children}){
 }
 
 function ItemInput({label, id, value, onChange}){
+    const handleChange = (e) => {
+        const {value} = e.target
+        if(value === ""){
+            return onChange()
+        }
+        // Validate the input using regex
+        const isValid = /^(\d*\.?\d*)$/.test(value);
+        if (isValid) {
+            onChange(value);
+        }
+    }
+
     return(
         <InputWrapper label={label} id={id}>
             <div className={`flex items-center border border-medium-grey flex-1 rounded-md overflow-hidden ${id === "risk-capital" ? "flex-row-reverse" : ""}`}>
@@ -204,8 +224,8 @@ function ItemInput({label, id, value, onChange}){
                     type="number" 
                     id={id} 
                     className='p-2 text-xs flex-1 focus:outline-none bg-white border-none' 
-                    value={value}
-                    onChange={(e)=>onChange(parseFloat(e.target.value))}
+                    value={value || ""}
+                    onChange={handleChange}
                 />
             </div>
         </InputWrapper>

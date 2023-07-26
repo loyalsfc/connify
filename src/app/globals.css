@@ -74,6 +74,9 @@
   .add-transaction{
     @apply bg-green-500 text-white text-xs sm:text-base font-semibold flex items-center gap-2 p-2 rounded-md
   }
+  .paginate-btn{
+    @apply px-2.5 py-1 font-medium h-full block text-sm sm:border-r border-faded-grey hover:bg-green-400 hover:text-white
+  }
 }
 .display-less::before{
   content: "";
@@ -109,6 +112,10 @@ button:disabled{
 }
 *::-webkit-scrollbar{
   display: none;
+}
+*{
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
 tr:hover td{

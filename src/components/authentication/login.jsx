@@ -38,7 +38,7 @@ function Register() {
 
     
     const signUp = async(info) =>{
-        const { data, error } = await supabase.auth.signUp(info);
+        const { data } = await supabase.auth.signUp(info);
         if(data?.user?.identities.length > 0){
             await supabase
                 .from('portfolio')
@@ -49,7 +49,6 @@ function Register() {
         } else {
             showNotification('An error occured', '#EF4444');
         }
-        console.log(data, error);
     }
 
     return (

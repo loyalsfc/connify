@@ -19,7 +19,17 @@ export function toTwoDecimalPlace(num){
     return numberToString(Math.floor(num * 100) / 100)
 }
 
-// export const fetcher = (url) => axios.get(`http://192.168.0.192:5000/api/${url}`)
+export const makeRequest = async (url, cache, revalidate) => {
+    const res = await fetch(process.env.NEXT_PUBLIC_FETCH_URL, {
+        headers: {
+            "content-type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify({url}),
+        cache,
+    })
+    return res.json();
+}
 
 export const fetcher = (url) => axios.post(process.env.NEXT_PUBLIC_FETCH_URL, {url})
 
