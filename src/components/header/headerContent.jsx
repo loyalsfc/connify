@@ -2,21 +2,15 @@
 
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import {FaAngleDown, FaAngleUp, FaBars, FaSearch, FaTimes, FaUser} from "react-icons/fa"
-import { fetcher } from '../../utils/utils'
-import useSWR from 'swr'
-import { numberToString } from '../../utils/utils'
-import Logo from './Logo'
+import { FaAngleUp, FaBars, FaSearch, FaTimes, FaUser} from "react-icons/fa"
+import { numberToString } from '../../../utils/utils'
+import Logo from '../Logo'
 import { usePathname } from 'next/navigation'
-import { Context } from '../context/context'
+import { Context } from '../../context/context'
 import { supabase } from '@/lib/supabaseClient'
-import Search from './search'
+import Search from '../search'
 
-function Header() {
-    const {data: metrics, error: metricsError, isLoading: metricsLoading} = useSWR(
-        "v1/global-metrics/quotes/latest",
-        fetcher
-    )
+function HeaderContent({metrics}) {
     const {setShowAuthModal, user} = useContext(Context)
     const mobileMenu = useRef(null)
     const menu = useRef(null)
@@ -77,29 +71,29 @@ function Header() {
     }
 
     return (
-        <header className='flex flex-col-reverse lg:flex-col'>
+        <>
             <div className='header-item justify-between py-2'>
                 <div className='flex gap-4 overflow-x-scroll'>
                     <Listing 
                         title="Cryptos"
-                        value={numberToString(metrics?.data?.data?.total_cryptocurrencies)}
+                        value={numberToString(metrics?.total_cryptocurrencies)}
                     />
                     <Listing 
                         title="Exchanges"
-                        value={metrics?.data?.data?.active_exchanges}
+                        value={metrics?.active_exchanges}
                     />
                     <Listing 
                         title="Market Cap"
-                        value={`$${numberToString(Math.floor(metrics?.data?.data?.quote?.USD.total_market_cap)) ?? ""}`}
+                        value={`$${numberToString(Math.floor(metrics?.quote?.USD.total_market_cap)) ?? ""}`}
                     />
                     <Listing 
                         title="24h Vol"
-                        value={`$${numberToString(Math.floor(metrics?.data?.data?.quote?.USD.total_volume_24h)) ?? ""}`}
+                        value={`$${numberToString(Math.floor(metrics?.quote?.USD.total_volume_24h)) ?? ""}`}
                     />
                     <Listing 
                         title="Dominance"
-                        value={`BTC: ${metrics?.data?.data?.btc_dominance.toFixed(1) ?? ""}% 
-                            ETH: ${metrics?.data?.data?.eth_dominance.toFixed(1) ?? ""}%
+                        value={`BTC: ${metrics?.btc_dominance.toFixed(1) ?? ""}% 
+                            ETH: ${metrics?.eth_dominance.toFixed(1) ?? ""}%
                         `}
                     />
                 </div>
@@ -184,7 +178,7 @@ function Header() {
                     </div>)}
                 </div>
             </div>
-        </header>
+        </>
     )
 }
 
@@ -241,4 +235,4 @@ function DropMenu({signOut}){
     )
 }
 
-export default Header
+export default HeaderContent

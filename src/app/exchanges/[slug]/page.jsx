@@ -1,164 +1,36 @@
-'use client'
-
-import React, { useEffect, useRef, useState } from 'react'
-import useSWR from 'swr'
-import { fetcher, getImage, numberToString, toTwoDecimalPlace } from '../../../../utils/utils'
-import Loader from '@/components/loader'
+import React from 'react'
+import {  makeRequestWithRevalidate, numberToString, toTwoDecimalPlace } from '../../../../utils/utils'
 import Image from 'next/image'
-import { FaAngleDown, FaAngleUp, FaCheckCircle, FaComment, FaCopy, FaDollarSign, FaLink, FaRegCopy, FaTwitter, FaWallet } from 'react-icons/fa'
+import { FaComment, FaDollarSign, FaLink, FaTwitter } from 'react-icons/fa'
 import Link from 'next/link'
-import axios from 'axios'
-import { Chart as ChartJS, ArcElement, Tooltip } from 'chart.js';
-import { Doughnut } from 'react-chartjs-2'
 
-ChartJS.register(ArcElement, Tooltip);
+import AboutExchange from '@/components/exchanges/exhangePage/aboutExchange'
+import ExchangeAssets from '@/components/exchanges/exhangePage/exchangeAssets'
+import AssetCharts from '@/components/exchanges/exhangePage/assetCharts'
 
-const allocations = [
-    {
-        id: 1,
-        symbol: 'BTC',
-        percentage: 26.46
-    },
-    {
-        id: 825,
-        symbol: 'USDT',
-        percentage: 26.39
-    },
-    {
-        id: 1839,
-        symbol: 'BNB',
-        percentage: 14.00
-    },
-    {
-        id: 1027,
-        symbol: 'ETH',
-        percentage: 11.43
-    },
-    {
-        id: 4687,
-        symbol: 'BUSD',
-        percentage: 4.71
-    },
-    {
-        id: 1111,
-        symbol: 'OTHER',
-        percentage: 26.39
-    },
-]
+async function getExchangeInfo(slug){
+    const exchangeMetadata = await makeRequestWithRevalidate(`v1/exchange/info?slug=${slug}`, 60);
+    const exchangeId = exchangeMetadata?.data[slug]?.id;
+    const exchangeAssets = await makeRequestWithRevalidate(`v1/exchange/assets?id=${exchangeId}`, 60);
+    return {exchangeMetadata, exchangeAssets};
+}
 
-function ExchangePage({params}) {
-    const [showLess, setShowLess] = useState(true)
-    const [assets, setAssets] = useState([])
-    const [assetLimits, setAssetsLimit] = useState(19)
-    const notification = useRef()
-    const {data: meta, error: metaError, isLoading: metaLoading} = useSWR(
-        `v1/exchange/info?slug=${params.slug}`,
-        fetcher
-    )
-    
-    useEffect(()=>{
-        const url = process.env.NEXT_PUBLIC_FETCH_URL
-        if(meta){
-            axios.post(url, {
-                url: `v1/exchange/assets?id=${meta.data.data[params.slug]?.id}`
-            })
-            .then(({data}) => {
-                setAssets(data?.data)
-            })
-        }
-    },[meta])
-    
-    if(metaLoading){
-        return <Loader />
+export async function generateMetadata({params}, parent){
+    const slug = params.slug;
+    const exchangeMetadata = await makeRequestWithRevalidate(`v1/exchange/info?slug=${slug}`, 60);
+
+    return {
+        title: exchangeMetadata?.data[slug]?.name,
     }
+}
 
-    const {id, logo, name, urls, spot_volume_usd, weekly_visits, description} = meta?.data?.data[params.slug]
+async function ExchangePage({params}) {
+    const {exchangeMetadata: meta, exchangeAssets: assets} = await getExchangeInfo(params.slug);
 
-    const convertTextToHTML = (text) => {
-        const linkRegex = /\[(.*?)\]\((.*?)\)/g;
-        let result;
-        const parts = [];
-      
-        let lastIndex = 0;
-        while ((result = linkRegex.exec(text))) {
-            const linkText = result[1];
-            const linkHref = result[2];
-        
-            parts.push(text.substring(lastIndex, result.index));
-            parts.push({ linkText, linkHref });
-        
-            lastIndex = result.index + result[0].length;
-        }
-        parts.push(text.substring(lastIndex));
-      
-        return parts.map((part, index) => {
-            if (typeof part === "object") {
-                const { linkText, linkHref } = part;
-                return (
-                <Link href={linkHref ?? ""} key={index}>
-                    <span className='text-blue-colour'>{linkText}</span>
-                </Link>
-                );
-            } else {
-                return <span key={index}>{part}</span>;
-            }
-        });
-    };
-
-    const coinData = {
-        labels: allocations.map(item => item.symbol),
-        datasets: [
-            {
-                label: '% of Assets',
-                data: allocations.map(item => item.percentage),
-                backgroundColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)',
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)',
-                ],
-                borderWidth: 1,
-            },
-        ],
-    };
-
-    const options = {
-        legend: {
-          display: false
-        }
-    };
-
-    function truncateContactAddress(address){
-        const prefix = address.slice(0, 6)
-        const suffix = address.slice(-6)
-        return prefix + "..." + suffix
-    }   
-
-    function copyAddress(e){
-        navigator.clipboard.writeText(e.currentTarget.getAttribute('data-contact-address'))
-        notification.current.classList.remove('scale-0');
-        setTimeout(()=>{
-            notification.current.classList.add('scale-0');
-        }, 5000)
-    }
-
+    const {id, logo, name, urls, spot_volume_usd, weekly_visits, description} = meta?.data[params.slug]
 
     return (
         <main>
-            <p ref={notification} className='bg-[#000000B3] flex gap-2 py-2.5 px-4 w-fit items-center rounded-md text-white fixed z-20 top-[10%] scale-0 left-1/2 -translate-x-1/2'>
-                <span className='text-green-500'><FaCheckCircle/></span>
-                Copied
-            </p>
             <section className='px-4 sm:px-8 py-8 pt-12 flex flex-wrap sm:flex-no gap-4 sm:gap-y-8 sm:gap-0'>                
                 <article className='flex items-center gap-4 w-full sm:w-1/4'>
                     <div className='w-fit h-fit p-2 border border-medium-grey rounded'>
@@ -192,109 +64,16 @@ function ExchangePage({params}) {
                 </div>
                 <div className='text-medium-grey w-full sm:w-3/4'>
                     <h3 className='font-semibold text-xl sm:mt-8 mb-4'>About {name}</h3>
-                    <div className=''>
-                        <div className={showLess ? 'display-less' : ""}>
-                            {
-                                description.split('\n').map((item, index) => {
-                                    if(item.includes('##')){
-                                        return <h2 className='font-bold py-4' key={index}>{item.replace('##', '')}</h2>
-                                    } else {
-                                        return <p className='text-sm' key={index}>{convertTextToHTML(item)}</p>    
-                                    }
-                                })
-                            }
-                        </div>
-                        <button onClick={()=>setShowLess(!showLess)} className='text-medium-grey sm:text-blue-colour bg-faded-grey sm:bg-transparent w-full mt-4 sm:w-fit grid place-content-center py-2 sm:py-3 rounded-md font-bold text-sm'>
-                            {showLess ? <span className='flex items-center'> Show More <FaAngleDown /></span> : <span className='flex items-center'> Show Less <FaAngleUp    /></span>}
-                        </button>
-                    </div>
+                    <AboutExchange description={description} />
                 </div>
             </section>
             <section className="px-4 sm:px-8 mb-8">
                 <h2 className='font-semibold text-2xl mb-4'>Financial reserves</h2>
                 <div className='flex flex-col-reverse md:flex-row gap-8 items-start'>
-                    <div className='bg-news-grey p-4 md:p-6 rounded-2xl overflow-scroll relative w-full  md:w-3/5 shrink-0'>
-                        <table className='table w-full'>
-                            <thead className='text-xs sticky top-0 border-y border-faded-grey bg-news-grey'>
-                                <tr >
-                                    <th className='py-2.5 z-10 top-0 bg-news-grey sticky left-0'>Token</th>
-                                    <th className='py-2.5 sticky top-0 bg-news-grey'>Balance</th>
-                                    <th className='py-2.5 sticky top-0 bg-news-grey'>Price</th>
-                                    <th className='py-2.5 sticky top-0 bg-news-grey'>value</th>
-                                </tr>
-                            </thead>
-                            <tbody className='text-sm font-semibold'>
-                                {assets.length ? assets.map((item, index) =>{
-                                    if(index < assetLimits){
-                                        const {crypto_id, price_usd, name, symbol} = item.currency
-                                        return <tr key={index} className='border-b border-faded-grey last:border-b-0'>
-                                            <td className='flex items-center sticky left-0 p-2.5 whitespace-nowrap bg-news-grey'>
-                                                <div className='relative shrink-0'>
-                                                    <Image
-                                                        src={getImage(crypto_id)}
-                                                        height={24}
-                                                        width={24}
-                                                        alt='Icon'
-                                                        className='rounded-full object-cover'
-                                                    />
-                                                    <Image
-                                                        src={getImage(item.platform.crypto_id)}
-                                                        height={16}
-                                                        width={16}
-                                                        alt='Exchange Icon'
-                                                        className='absolute top-3.5 left-3.5 z-10 rounded-full object-cover'
-                                                    />
-                                                </div>
-                                                <p className='ml-4'>
-                                                    <span className="block text-sm font-semibold">{symbol}</span>
-                                                    <span 
-                                                        className="flex items-center gap-2 text-medium-grey text-xs contact-address-wrapper"
-                                                        data-contact-address = {item.wallet_address}
-                                                        onClick={copyAddress}
-                                                    >
-                                                        <FaWallet /> {truncateContactAddress(item.wallet_address)} <span className='copy-icon'><FaRegCopy/></span>
-                                                    </span>
-                                                </p>
-                                            </td>
-                                            <td className='text-end p-2.5'>{numberToString(item.balance)}</td>
-                                            <td className='text-end p-2.5'>${toTwoDecimalPlace(price_usd)}</td>
-                                            <td className='text-end p-2.5'>${toTwoDecimalPlace(price_usd * item.balance)}</td>
-                                        </tr>
-                                    }
-                                }):<tr>
-                                    <td className='text-center italic py-20' colSpan={4}>No Data to show</td>
-                                </tr>
-                                }
-                            </tbody>
-                        </table>
-                        <p className='mt-2 text-xs font-semibold text-medium-grey sticky left-0'>Only wallets with {'>'}500,000 USD balance are shown <br/>
-                            * Balances from these wallets may be delayed</p>
-                        <button onClick={()=>setAssetsLimit(assetLimits + 20)} className="w-full bg-faded-grey p-4 rounded-md text-center mt-4 sticky left-0 font-bold">Load more</button>
-                    </div>
+                    <ExchangeAssets assets={assets?.data} />
                     <div className='bg-news-grey p-6 rounded-2xl w-full md:w-2/5'>
                         <h3 className="text-xl font-semibold mb-4">Token Allocation</h3>
-                        <div className='w-2/3 mx-auto'>
-                            {assets.length ?<div>
-                                <Doughnut data={coinData} options={options} />
-                                <ul className='py-4'>
-                                    {allocations.map(item=>{
-                                        return <li key={item.id} className='p-1.5 flex items-center gap-4 rounded-lg font-semibold hover:bg-faded-grey'>
-                                            <div className='shrink-0 h-5 w-5'>
-                                                <Image
-                                                    src={getImage(item.id)}
-                                                    height={20}
-                                                    width={20}
-                                                    alt='Coin Logo'
-                                                />
-                                            </div>
-                                            <span>{item.symbol}</span>
-                                            <span className='ml-auto'>{item.percentage.toFixed(2)}%</span>
-                                        </li>
-                                    })}
-                                </ul>
-                            </div>
-                            : <div className='py-20 text-center italic'>No data to show</div>}
-                        </div>
+                        <AssetCharts assets={assets?.data} />
                     </div>
                 </div>
             </section>

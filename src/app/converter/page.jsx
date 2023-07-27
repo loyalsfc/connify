@@ -4,13 +4,6 @@ import { fetcher, toTwoDecimalPlace } from '../../../utils/utils'
 import useSWR from 'swr'
 import Dropdown from '@/components/converter/dropdown'
 
-export const metadata = {
-    title: 'Cryptocurrency Converter',
-    openGraph: {
-        title: 'Cryptocurrency Converter',
-    },
-}
-
 function Converter() {
     const [fromCurrency, setFromCurrency] = useState({ fullName: 'Bitcoin (BTC)', symbol: 'BTC', id: 1})
     const [toCurrency, setToCurrency] = useState({ fullName: 'United States Dollar "$" (USD)', symbol: 'USD', id: 2781})

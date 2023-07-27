@@ -19,7 +19,7 @@ export function toTwoDecimalPlace(num){
     return numberToString(Math.floor(num * 100) / 100)
 }
 
-export const makeRequest = async (url, cache, revalidate) => {
+export const makeRequest = async (url, cache) => {
     const res = await fetch(process.env.NEXT_PUBLIC_FETCH_URL, {
         headers: {
             "content-type": "application/json",
@@ -27,6 +27,18 @@ export const makeRequest = async (url, cache, revalidate) => {
         method: "POST",
         body: JSON.stringify({url}),
         cache,
+    })
+    return res.json();
+}
+
+export const makeRequestWithRevalidate = async (url, revalidate) => {
+    const res = await fetch(process.env.NEXT_PUBLIC_FETCH_URL, {
+        headers: {
+            "content-type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify({url}),
+        next: {revalidate}
     })
     return res.json();
 }
