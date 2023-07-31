@@ -77,7 +77,7 @@ function AssetCharts({assets}) {
 
     return (
         <div className='w-2/3 mx-auto'>
-            {assets.length ?<div>
+            {assets?.length ?<div>
                 <Doughnut data={coinData} options={options} />
                 <ul className='py-4'>
                     {allocations.map(item=>{

@@ -20,7 +20,7 @@ function AboutExchange({description}) {
             parts.push(text.substring(lastIndex, result.index));
             parts.push({ linkText, linkHref });
         
-            lastIndex = result.index + result[0].length;
+            lastIndex = result.index + result[0]?.length;
         }
         parts.push(text.substring(lastIndex));
       

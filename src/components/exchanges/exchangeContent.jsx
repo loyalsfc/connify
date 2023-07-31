@@ -10,7 +10,7 @@ function ExchangeContent({exchanges}) {
     const [limit, setLimit] = useState(101);
 
     const loadMore = () => {
-        if(limit > exchanges.length) return;
+        if(limit > exchanges?.length) return;
         setLimit(limit + 102)
     }
 

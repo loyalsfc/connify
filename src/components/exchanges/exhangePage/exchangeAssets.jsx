@@ -39,7 +39,7 @@ function ExchangeAssets({assets}) {
                     </tr>
                 </thead>
                 <tbody className='text-sm font-semibold'>
-                    {assets.length ? assets.map((item, index) =>{
+                    {assets?.length ? assets?.map((item, index) =>{
                         if(index < assetLimits){
                             const {crypto_id, price_usd, name, symbol} = item.currency
                             return <tr key={index} className='border-b border-faded-grey last:border-b-0'>

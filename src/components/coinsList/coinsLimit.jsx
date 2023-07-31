@@ -1,3 +1,6 @@
+
+'use client'
+
 import React from 'react'
 import Pagination from '../pagination'
 
@@ -8,7 +11,7 @@ function CoinsLimit({pageIndex, metrics, limit}) {
     const handleChange = (e) => {
         // cookieStore.set('limit', e.target.value)
     }
-    console.log(lastNumber)
+
     return (
         <>
             <div className='sm:hidden bg-news-grey py-5 grid place-content-center'>
@@ -26,6 +29,7 @@ function CoinsLimit({pageIndex, metrics, limit}) {
                         className='focus:outline-none bg-faded-grey py-1.5 px-2 rounded text-black' 
                         name="limit" 
                         id="limit"
+                        defaultValue={limit}
                         // onChange={handleChange}
                     >
                         <option value="100">100</option>

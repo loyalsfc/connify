@@ -5,9 +5,10 @@ import { makeRequest, makeRequestWithRevalidate } from '../../utils/utils'
 import { cookies } from 'next/headers'
 import CoinsLimit from '@/components/coinsList/coinsLimit'
 
-async function getData(pageIndex){
-    const index = pageIndex ?? 1
-    const url = `v1/cryptocurrency/listings/latest?start=${((index - 1) * 100) + 1}&limit=100&convert=USD`
+async function getData(pageIndex, limit){
+    const index = pageIndex ?? 1;
+    const pageLimit = limit ?? 100
+    const url = `v1/cryptocurrency/listings/latest?start=${((index - 1) * parseInt(pageLimit)) + 1}&limit=${pageLimit}&convert=USD`
     const coins = await makeRequest(url, 'no-store')
     return coins
 }
@@ -20,15 +21,15 @@ async function getMetrics(){
 async function Home({searchParams}) {  
     const cookieStore = cookies()
     const limit = cookieStore.get("limit")
-    // console.log(limit)
-    const coinsData = getData(searchParams.page)
+    console.log(limit)
+    const coinsData = getData(searchParams.page, limit?.value)
     const metricsData = getMetrics()
     const [coins, metrics] = await Promise.all([coinsData, metricsData])
     
     return (
         <main>
             <CoinList coins={coins} metrics={metrics} />
-            <CoinsLimit pageIndex={parseInt(searchParams.page ?? 1)} metrics={metrics} limit={100}/>
+            <CoinsLimit pageIndex={parseInt(searchParams.page ?? 1)} metrics={metrics} limit={limit?.value ?? 100}/>
             <NewsLetter />
         </main>
     )
