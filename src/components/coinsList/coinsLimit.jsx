@@ -3,13 +3,19 @@
 
 import React from 'react'
 import Pagination from '../pagination'
+import { useRouter } from 'next/navigation';
 
 function CoinsLimit({pageIndex, metrics, limit}) {
+    const router = useRouter()
     const lastNumber = Math.ceil(metrics?.data?.active_cryptocurrencies / limit) ;
-    // const cookieStore = cookies()
 
-    const handleChange = (e) => {
-        // cookieStore.set('limit', e.target.value)
+    const handleChange = async(e) => {
+        const value = e.target.value;
+        await fetch("/api/cookies",{
+            method: "POST",
+            body: JSON.stringify({value})
+        })
+        router.refresh();
     }
 
     return (
@@ -30,7 +36,7 @@ function CoinsLimit({pageIndex, metrics, limit}) {
                         name="limit" 
                         id="limit"
                         defaultValue={limit}
-                        // onChange={handleChange}
+                        onChange={handleChange}
                     >
                         <option value="100">100</option>
                         <option value="50">50</option>

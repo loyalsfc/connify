@@ -50,7 +50,6 @@ function Pagination({c, m}) {
                 <FaAngleLeft />
             </button>
             {paginate().map((item, index) => {
-                console.log(c, index)
                 if(index === 0){
                     return(
                         <Link 
