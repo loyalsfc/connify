@@ -1,5 +1,6 @@
 'use client'
 
+import { supabase } from '@/lib/supabaseClient'
 import Image from 'next/image'
 import React, { useState } from 'react'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
@@ -24,16 +25,22 @@ function LoginComponent({isLogin, auth}) {
         setFormData({...formData, [e.target.id]: value})
     }
 
+    const oauthLogin = async(provider) => {    
+        const { data, error } = await supabase.auth.signInWithOAuth({
+            provider
+        })
+    }
+
     return (
         <>
             <div className='my-4'>
-                <button className='w-full'>
+                <button className='w-full' onClick={()=>oauthLogin()}>
                     <SocialLogin 
                         icon="https://static.coingecko.com/s/google-167c1e093ccfc014420e14da91325a1f70c91e592f58164fefe84603d2fde02e.svg"
                         name="Google"
                     />
                 </button>
-                <button className='w-full'>
+                <button className='w-full' onClick={()=>oauthLogin()}>
                     <SocialLogin 
                         icon="/github.png"
                         name="Github"
