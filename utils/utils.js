@@ -20,7 +20,10 @@ export function toTwoDecimalPlace(num){
 }
 
 export const makeRequest = async (url, cache) => {
-    const res = await fetch("http://localhost:3000/api/dataFetching",{
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}api/dataFetching`,{
+        headers: {
+            "content-type": "application/json",
+        },
         method: "POST",
         body: JSON.stringify({url})
     })
