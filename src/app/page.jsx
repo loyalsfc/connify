@@ -21,7 +21,6 @@ async function getMetrics(){
 async function Home({searchParams}) {  
     const cookieStore = cookies()
     const limit = cookieStore.get("limit")
-    console.log(limit)
     const coinsData = getData(searchParams.page, limit?.value)
     const metricsData = getMetrics()
     const [coins, metrics] = await Promise.all([coinsData, metricsData])

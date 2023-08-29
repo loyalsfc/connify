@@ -1,44 +1,36 @@
-'use client'
-
-import React, { useRef } from 'react'
-import useSWR from 'swr'
-import { fetcher, formatPrice, numberToString, toTwoDecimalPlace } from '../../../../utils/utils'
+import React from 'react'
+import { fetcher, formatPrice, makeRequest, numberToString, toTwoDecimalPlace } from '../../../../utils/utils'
 import Image from 'next/image'
 import { FaAngleDown, FaAngleUp, FaRegFile, FaBattleNet, FaGithub, FaTwitter, FaRedditAlien, FaCommentDots } from 'react-icons/fa'
 import Link from 'next/link'
-import Loader from '@/components/loader'
+import CoinToUsd from '@/components/coin-page/coin-page'
 
-function CoinPage({params}) {
-    const qtyField = useRef()
-    const priceField = useRef()
-    const {data: metaData, error: metaError, isLoading: metaLoading} = useSWR(
-        `v2/cryptocurrency/info?slug=${params.slug}`,
-        fetcher
-    )
+async function getCoinData(slug){
+    const coinData = await makeRequest(`v2/cryptocurrency/quotes/latest?slug=${slug}`);
+    const metaData = await makeRequest(`v2/cryptocurrency/info?slug=${slug}`);
+    return {coinData, metaData};
+}
 
-    const {data: coinData, error: coinError, isLoading: coinLoading} = useSWR(
-        `v2/cryptocurrency/quotes/latest?slug=${params.slug}`,
-        fetcher
-    )
+export async function generateMetadata({params}, parent){
+    const slug = params.slug;
+    const exchangeMetadata = await makeRequest(`v2/cryptocurrency/info?slug=${slug}`);
 
-    if(metaLoading || coinLoading){
-        return(
-            <Loader />
-        )
+    const id = Object.keys(exchangeMetadata?.data)[0]
+
+    return {
+        title: exchangeMetadata?.data[id]?.name,
     }
+}
 
-    const id = Object.keys(coinData?.data?.data)[0]
-    const coinInfo = {...metaData?.data?.data[id], ...coinData?.data?.data[id]}
+async function CoinPage({params}) {
+    const {coinData, metaData} = await getCoinData(params.slug)
+
+    const id = Object.keys(coinData?.data)[0]
+    const coinInfo = {...metaData?.data[id], ...coinData?.data[id]}
     const {logo, name, symbol, quote, cmc_rank, circulating_supply, total_supply, max_supply, infinite_supply, description, urls} = coinInfo
     const {market_cap, volume_24h, fully_diluted_market_cap, price} = quote?.USD
     const {technical_doc, website, source_code, twitter, reddit, message_board, explorer} = urls
-    const handleQty = (e) => {
-        priceField.current.value = (e.target.value * price).toFixed(2)
-    }
 
-    const handlePrice = (e) => {
-        qtyField.current.value =(e.target.value / price).toFixed(5)
-    }
 
     function convertLinkToHyperlink(text) {
         // Regular expression to match URLs
@@ -174,29 +166,7 @@ function CoinPage({params}) {
             <section className='px-4 sm:px-8'>
                 <div className='py-8'>
                     <h2 className='text-center font-bold text-2xl'>{name} Converter</h2>
-                    <article className='bg-faded-grey pb-4 rounded-md w-fit mx-auto'>
-                        <div className='flex flex-col sm:flex-row gap-4 px-4 py-4'>
-                            <div className='bg-white rounded-md'>
-                                <span className='px-2 border-r border-white'>{symbol}</span>
-                                <input 
-                                    type="number" 
-                                    className='py-2  px-2 border-l-2 border-faded-grey focus:outline-none' 
-                                    onChange={(e)=>handleQty(e)}
-                                    ref={qtyField}
-                                />
-                            </div>
-                            <div className='bg-white rounded-md'>
-                                <span className='px-2 border-r border-white'>USD</span>
-                                <input 
-                                    type="number" 
-                                    className='py-2 px-2 border-l-2 border-faded-grey focus:outline-none' 
-                                    onChange={(e)=>handlePrice(e)}
-                                    ref={priceField}
-                                />
-                            </div>
-                        </div>
-                        <p className='text-center font-semibold text-sm'>1 {symbol} = ${toTwoDecimalPlace(price)}</p>
-                    </article>
+                    <CoinToUsd price={price} symbol={symbol} />
                 </div>
             </section>
         </main>
