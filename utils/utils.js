@@ -20,33 +20,40 @@ export function toTwoDecimalPlace(num){
 }
 
 export const makeRequest = async (url, cache) => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}api/dataFetching`,{
-        headers: {
-            "content-type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify({url})
-    })
-    
-    // const res = await fetch(process.env.NEXT_PUBLIC_FETCH_URL, {
+    // const res = await fetch(`${process.env.NEXT_PUBLIC_URL}api/dataFetching`,{
     //     headers: {
     //         "content-type": "application/json",
     //     },
     //     method: "POST",
-    //     body: JSON.stringify({url}),
-    //     cache,
+    //     body: JSON.stringify({url})
     // })
-    return res.json();
-}
-
-export const makeRequestWithRevalidate = async (url, revalidate) => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}api/dataFetching`, {
+    
+    const res = await fetch(process.env.NEXT_PUBLIC_FETCH_URL, {
         headers: {
             "content-type": "application/json",
         },
         method: "POST",
         body: JSON.stringify({url}),
-        next: {revalidate}
+        cache,
+    })
+    return res.json();
+}
+
+export const makeRequestWithRevalidate = async (url, revalidation) => {
+    // const res = await fetch(`${process.env.NEXT_PUBLIC_URL}api/dataFetching`, {
+    //     headers: {
+    //         "content-type": "application/json",
+    //     },
+    //     method: "POST",
+    //     body: JSON.stringify({url}),
+    // })
+    const res = await fetch(process.env.NEXT_PUBLIC_FETCH_URL, {
+        headers: {
+            "content-type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify({url}),
+        revalidation,
     })
     return res.json();
 }
