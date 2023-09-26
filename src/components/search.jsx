@@ -6,13 +6,11 @@ import { fetcher, getExchangeImage, getImage } from '../../utils/utils'
 import Link from 'next/link'
 import Image from 'next/image'
 
-function Search({close}) {
+function Search({close, exchanges}) {
     const [searchQuary, setSearchQuary] = useState('')
     const {coins} = useContext(Context)
-    const {data: exchanges} = useSWR(
-        `v1/exchange/map?sort=volume_24h`,
-        fetcher
-    )
+
+    console.log(exchanges);
 
     function filter(item){
         return item.name.toLowerCase().includes(searchQuary) || item?.symbol?.toLowerCase().includes(searchQuary)

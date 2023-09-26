@@ -1,7 +1,7 @@
 'use client'
 
 import { supabase } from '@/lib/supabaseClient'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import React, { useContext, useEffect, useState } from 'react'
 import { FaAngleLeft, FaArrowDown, FaArrowUp, FaPen, FaPlus, FaTrash } from 'react-icons/fa'
 import useSWR from 'swr'
@@ -31,21 +31,20 @@ function Transactions() {
         `v2/cryptocurrency/quotes/latest?slug=${slug}`,
         fetcher
     )
-    console.log(asset)
+    const router = useRouter();
 
     if(authLoading || transactionLoading || isLoading){
         return <Loader />
     }
 
-    // console.log(transaction)
-
     if(!asset){
         return (
             <div className='px-8 py-40 text-center flex flex-col items-center justify-center'>
                 <p>An error occured</p>
-                <Link className='px-3 py-2 rounded-md bg-faded-grey mt-8 ml-4 flex w-fit items-center gap-3' href="/portfolio">
-                     <FaAngleLeft/> Back
-                </Link>
+                <button onClick={()=>router.refresh()} className='px-3 py-2 rounded-md bg-faded-grey mt-8 ml-4 flex w-fit items-center gap-3'>Refresh</button>
+                {/* <Link className='px-3 py-2 rounded-md bg-faded-grey mt-8 ml-4 flex w-fit items-center gap-3' href="/portfolio">
+                    <FaAngleLeft/> Back
+                </Link> */}
             </div>
         )
     }
@@ -61,11 +60,21 @@ function Transactions() {
         
         return data;
     }
-    const transaction = asset.transactions 
-    const {id: assetId, coin_name, holding, average_fee} = asset
+
+    const transaction = asset?.transactions;
+    const {id: assetId, coin_name, holding, average_fee} = asset;
+
+    if(!transaction || !coin_name){
+        return (
+            <div className='px-8 py-40 text-center flex flex-col items-center justify-center'>
+                <p>An error occured</p>
+                <button onClick={()=>router.refresh()} className='px-3 py-2 rounded-md bg-faded-grey mt-8 ml-4 flex w-fit items-center gap-3'>Refresh</button>
+            </div>
+        )
+    }
 
     function getPrice(){
-        return data?.data?.data[coin_name.id]?.quote.USD.price
+        return data?.data?.data[coin_name?.id]?.quote.USD.price
     }
 
     function getDurationChange(id, duration){
@@ -185,19 +194,19 @@ function Transactions() {
                 </Link> 
                 <article className='mt-3'>
                     <h1>
-                        <span className='text-xs text-medium-grey'>{coin_name.name} ({coin_name.symbol}) Balance</span>
+                        <span className='text-xs text-medium-grey'>{coin_name?.name} ({coin_name?.symbol}) Balance</span>
                         <div className='flex items-center gap-4 font-bold py-2'>
                             <Image
-                                src={getImage(coin_name.id)}
+                                src={getImage(coin_name?.id)}
                                 height={32}
                                 width={32}
                                 alt='Coin Logo'
                             />
                             <p className='text-3xl'>${formatPrice(holdingValue())}</p>
                             <span 
-                                className={`${getDurationChange(coin_name.id, '24h') > 1 ?"bg-green-500" : "bg-red-500"} ml-auto sm:ml-0 p-1 text-white rounded-md`}
+                                className={`${getDurationChange(coin_name?.id, '24h') > 1 ?"bg-green-500" : "bg-red-500"} ml-auto sm:ml-0 p-1 text-white rounded-md`}
                             >
-                                {getDurationChange(coin_name.id, '24h')?.toFixed(2)}%
+                                {getDurationChange(coin_name?.id, '24h')?.toFixed(2)}%
                             </span>
                         </div>
                     </h1>
@@ -209,7 +218,7 @@ function Transactions() {
                     </div>
                 </article>
                 <div className='pt-8 pb-4 flex items-center justify-between'>
-                    <h4 className='sm:text-xl font-semibold'><span className='hidden sm:inline'>{coin_name.name}</span> Transactions</h4>
+                    <h4 className='sm:text-xl font-semibold'><span className='hidden sm:inline'>{coin_name?.name}</span> Transactions</h4>
                     <button 
                         onClick={()=>setShowAddTransaction(true)} 
                         className="add-transaction"
@@ -258,13 +267,13 @@ function Transactions() {
                                                     className={item.transaction_type === "buy" ? "text-green-500":"text-red-500"}
                                                 >
                                                     {item.transaction_type === "buy" ? "+" : "-"}
-                                                    {item.quantity} {coin_name.symbol}
+                                                    {item.quantity} {coin_name?.symbol}
                                                 </p>):(
                                                     <p 
                                                         className={item.transfer_type === "in" ? "text-green-500":"text-red-500"}
                                                     >
                                                         {item.transfer_type === "in" ? "+" : "-"}
-                                                        {item.quantity} {coin_name.symbol}
+                                                        {item.quantity} {coin_name?.symbol}
                                                     </p>
                                                 )}
                                             </div>

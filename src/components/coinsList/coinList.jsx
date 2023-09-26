@@ -1,36 +1,13 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
-import useSWR from 'swr'
-import Pagination from '@/components/pagination'
-import { useSearchParams  } from 'next/navigation'
+import React from 'react'
 import TableWrapper from '@/components/tableWrapper'
-import { fetcher, numberToString } from '../../../utils/utils'
-import CoinsLimit from './coinsLimit'
+import { numberToString } from '../../../utils/utils'
 
 function CoinList({coins, metrics}) {
-    const searchParams = useSearchParams()
-    const pageSearchParam = searchParams.get('page')
-    const [pageIndex, setPageIndex] = useState((pageSearchParam - 1) ?? 0)
-    const [limit, setLimit] = useState(100)
-
-    const [totalCoins, setTotalCoins] = useState(metrics?.data?.active_cryptocurrencies)
- 
-    useEffect(()=>{
-        setTotalCoins(metrics?.data?.active_cryptocurrencies)
-    },[metrics])
-    
-    useEffect(()=>{
-        if(pageSearchParam){
-            setPageIndex((pageSearchParam - 1) ?? 0);
-        } else {
-            setPageIndex(0)
-        }
-    }, [pageSearchParam])
-
     return (
         <>
-        <section className='mt-8 mb-12 px-4 sm:px-8'>
+            <section className='mt-8 mb-12 px-4 sm:px-8'>
                 <h1 className='text-sm md:text-2xl font-bold mb-2'>Today&apos;s Cryptocurrency Prices by Market Cap</h1>
                 <p className='text-sm'>
                     The global cryptocurrency market cap today is $1.17 Trillion, a 

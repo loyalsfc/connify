@@ -12,12 +12,14 @@ import useSWR from 'swr'
 import { PortfolioContext } from '../../context/portfolioContext'
 import Assets from '@/components/portfolio/assets'
 import { fetcher } from '../../../utils/utils'
+import { useRouter } from 'next/navigation'
 
 function PortFolio() {
     const { authLoading, user} = useContext(Context);
     const {data: data, isLoading, mutate} = useSWR(user?.id, fetchPortfolio)
     const [showCreateModal, setShowCreateModal] = useState(false)
-    const {setPortfolio, portfolio: {assets}} = useContext(PortfolioContext)
+    const {setPortfolio, portfolio: {assets}} = useContext(PortfolioContext);
+    const router = useRouter()
     const assetsId = useMemo(()=>{
         return assets.map(item => item.coin_name.id)
     },[assets])
@@ -32,6 +34,15 @@ function PortFolio() {
     
     if(authLoading || isLoading || coinPricesLoading){
         return <Loader />
+    }
+    console.log(data);
+    if(!data || !coinPrices){
+        return (
+            <div className='px-8 py-40 text-center flex flex-col items-center justify-center'>
+                <p>An error occured</p>
+                <button onClick={()=>router.refresh()} className='px-3 py-2 rounded-md bg-faded-grey mt-8 ml-4 flex w-fit items-center gap-3'>Refresh</button>
+            </div>
+        )
     }
 
     async function fetchPortfolio(id){
@@ -51,8 +62,8 @@ function PortFolio() {
         return {portfolio, assets};
 
     }
-
-    const portfolio = data?.portfolio?.find(portfolio => portfolio.is_default === true);
+    console.log(data?.portfolio);
+    const currentPortfolio = data?.portfolio?.find(portfolio => portfolio.is_default === true);
 
     return (
         <main>
@@ -60,7 +71,7 @@ function PortFolio() {
             {user ? (
                 <section className='px-4 sm:px-8 py-8'>
                     <div className='flex justify-between items-center'>
-                        <span className='text-xl sm:text-2xl font-bold'>{portfolio?.name}</span>
+                        <span className='text-xl sm:text-2xl font-bold'>{currentPortfolio?.name}</span>
 
                         <div className='flex items-center gap-2 sm:gap-3'>
                             <button className='h-6 w-6 sm:h-10 sm:w-10 rounded-full grid place-content-center  sm:text-2xl hover:bg-green-500/30'>

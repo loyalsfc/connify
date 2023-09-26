@@ -1,4 +1,5 @@
 'use client'
+
 import { supabase } from "@/lib/supabaseClient"
 import { createContext, useEffect, useRef, useState } from "react"
 import useSWR from 'swr'

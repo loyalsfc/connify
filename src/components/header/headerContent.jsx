@@ -10,7 +10,7 @@ import { Context } from '../../context/context'
 import { supabase } from '@/lib/supabaseClient'
 import Search from '../search'
 
-function HeaderContent({metrics}) {
+function HeaderContent({metrics, exchanges}) {
     const {setShowAuthModal, user} = useContext(Context)
     const mobileMenu = useRef(null)
     const menu = useRef(null)
@@ -138,7 +138,7 @@ function HeaderContent({metrics}) {
                         </li>
                     </ul>
                 </div>
-                {showSearch && <div ref={searchBox}><Search close={setShowSearch} /></div>}
+                {showSearch && <div ref={searchBox}><Search close={setShowSearch} exchanges={exchanges} /></div>}
                 <button ref={mobileSearchBtn} onClick={()=>setShowSearch(true)} className='ml-auto text-2xl block lg:hidden'>
                     <FaSearch />
                 </button>
