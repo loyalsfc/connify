@@ -12,7 +12,7 @@ const ContextProvider = ({children}) => {
     const notificationRef = useRef(null)
     const [user, setUser]  = useState(null)  
     const [authLoading, setAuthLoading] = useState(true)
-    const [favorites, setFavorites] = useState({isLoading: true, items: typeof window !== "undefined" ? JSON.parse(localStorage.getItem('favorites')).items ?? [] : []})
+    const [favorites, setFavorites] = useState({isLoading: true, items: typeof window !== "undefined" ? (JSON.parse(localStorage.getItem('favorites'))?.items ?? []) : []})
     const {data: coins} = useSWR(
         'v1/cryptocurrency/map?sort=cmc_rank',
         fetcher
