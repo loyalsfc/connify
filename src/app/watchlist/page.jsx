@@ -14,12 +14,18 @@ import AddFavorite from '@/components/addFavorite'
 function Favorites() {
     const {favorites} = useContext(Context)
     const [showModal, setShowModal] = useState(false)
+    console.log(favorites)
     const {data, isLoading} = useSWR(
-        `v2/cryptocurrency/quotes/latest?id=${favorites.join()}`,
+        `v2/cryptocurrency/quotes/latest?id=${favorites.items.join()}`,
         fetcher
     )
     
-    if(!favorites.length){
+    console.log(isLoading, favorites?.isLoading)
+    if(isLoading){
+        return <Loader />
+    }
+    
+    if(!favorites.items.length){
         return (
             <>
                 {showModal && <AddFavorite setShowModal={setShowModal} />}
@@ -37,10 +43,6 @@ function Favorites() {
                 </div>
             </>
         )
-    }
-
-    if(isLoading){
-        return <Loader />
     }
     // console.log(error)
 

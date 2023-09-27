@@ -35,7 +35,7 @@ function TableWrapper({isLoading, data }) {
                                 return(
                                     <tr className="border-b border-faded-grey" key={id}>
                                         <td onClick={()=>addToFavorites(id)} className='sticky-item left-0'>
-                                            {favorites?.some(item => item == id) ? <FaStar/> : <FaRegStar/>}
+                                            {favorites?.items?.some(item => item == id) ? <FaStar/> : <FaRegStar/>}
                                         </td>
                                         <td className='sticky-item left-[34px]'>{cmc_rank}</td>
                                         <td className='sticky-item left-[70px] sm:whitespace-nowrap text-left pr-4 text-ellipsis w-fit'>

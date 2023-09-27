@@ -12,29 +12,11 @@ const ContextProvider = ({children}) => {
     const notificationRef = useRef(null)
     const [user, setUser]  = useState(null)  
     const [authLoading, setAuthLoading] = useState(true)
-    const [favorites, setFavorites] = useState(typeof window !== "undefined" ? JSON.parse(localStorage.getItem('favorites')) : [])
+    const [favorites, setFavorites] = useState({isLoading: true, items: JSON.parse(localStorage.getItem('favorites')).items ?? []})
     const {data: coins} = useSWR(
         'v1/cryptocurrency/map?sort=cmc_rank',
         fetcher
     )
-
-    useEffect(()=>{
-        if(typeof window !== "undefined"){
-            localStorage.setItem('favorites', JSON.stringify(favorites))
-        }
-    },[favorites])
-    
-    const showNotification = (text, color) => {
-        const wrapper = document.createElement('div')
-        wrapper.classList.add('notification');
-        wrapper.style.backgroundColor = color;
-        wrapper.textContent = text;
-        notificationRef.current.append(wrapper);
-
-        setTimeout(()=>{
-            wrapper.remove();
-        }, 5000)
-    }
 
     useEffect(()=>{
         fetchSession();
@@ -46,7 +28,18 @@ const ContextProvider = ({children}) => {
                 setUser(null)
             }   
         })
+        console.log(localStorage.getItem('favorites'))
+        setFavorites({
+            isLoading: false,
+            ...favorites
+        })
     },[])
+
+    useEffect(()=>{
+        if(typeof window !== "undefined"){
+            localStorage.setItem('favorites', JSON.stringify(favorites))
+        }
+    },[favorites])
 
     const fetchSession = async() => {
         const { data: {session}, error } = await supabase.auth.getSession()
@@ -55,13 +48,25 @@ const ContextProvider = ({children}) => {
     }
 
     const addToFavorites = (id) => {
-        if(favorites.some(item => item == id)){
+        if(favorites.items.some(item => item == id)){
             setFavorites(prevItems => {
-                return prevItems.filter(item => item != id)
+                return {...favorites, items:prevItems.items.filter(item => item != id)}
             })
         } else {
-            setFavorites([...favorites, id])
+            setFavorites({...favorites, items:[...favorites.items, id]})
         }
+    }
+
+    const showNotification = (text, color) => {
+        const wrapper = document.createElement('div')
+        wrapper.classList.add('notification');
+        wrapper.style.backgroundColor = color;
+        wrapper.textContent = text;
+        notificationRef.current.append(wrapper);
+
+        setTimeout(()=>{
+            wrapper.remove();
+        }, 5000)
     }
 
     return(

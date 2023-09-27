@@ -6,7 +6,7 @@ import { FaTimes } from 'react-icons/fa'
 
 function AddFavorite({setShowModal}) {
     const {favorites, setFavorites, coins} = useContext(Context)
-    const [temporalFavorites, setTemporalFavorites] = useState(favorites)
+    const [temporalFavorites, setTemporalFavorites] = useState(favorites.items)
     const coinList = coins?.data?.data;
 
     function getName(id){
@@ -27,7 +27,7 @@ function AddFavorite({setShowModal}) {
     }
 
     const handleClick = () => {
-        setFavorites(temporalFavorites)
+        setFavorites({...favorites, items:temporalFavorites})
         setShowModal(false)
     }
 

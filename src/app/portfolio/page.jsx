@@ -36,7 +36,7 @@ function PortFolio() {
         return <Loader />
     }
     console.log(data);
-    if(!data || !coinPrices){
+    if((!data || !coinPrices) && user?.id){
         return (
             <div className='px-8 py-40 text-center flex flex-col items-center justify-center'>
                 <p>An error occured</p>
