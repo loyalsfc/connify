@@ -20,14 +20,6 @@ export function toTwoDecimalPlace(num){
 }
 
 export const makeRequest = async (url, cache) => {
-    // const res = await fetch(`${process.env.NEXT_PUBLIC_URL}api/dataFetching`,{
-    //     headers: {
-    //         "content-type": "application/json",
-    //     },
-    //     method: "POST",
-    //     body: JSON.stringify({url})
-    // })
-    
     const res = await fetch(process.env.NEXT_PUBLIC_FETCH_URL, {
         headers: {
             "content-type": "application/json",
@@ -40,13 +32,6 @@ export const makeRequest = async (url, cache) => {
 }
 
 export const makeRequestWithRevalidate = async (url, revalidation) => {
-    // const res = await fetch(`${process.env.NEXT_PUBLIC_URL}api/dataFetching`, {
-    //     headers: {
-    //         "content-type": "application/json",
-    //     },
-    //     method: "POST",
-    //     body: JSON.stringify({url}),
-    // })
     const res = await fetch(process.env.NEXT_PUBLIC_FETCH_URL, {
         headers: {
             "content-type": "application/json",

@@ -35,7 +35,7 @@ function PortFolio() {
     if(authLoading || isLoading || coinPricesLoading){
         return <Loader />
     }
-    console.log(data);
+
     if((!data || !coinPrices) && user?.id){
         return (
             <div className='px-8 py-40 text-center flex flex-col items-center justify-center'>
@@ -47,7 +47,6 @@ function PortFolio() {
 
     async function fetchPortfolio(id){
         const {data:portfolio, error} = await supabase.from('portfolio').select().eq('user_id', id)
-        console.log(portfolio)
         if(error){
             console.log(error)
             return;
@@ -62,7 +61,7 @@ function PortFolio() {
         return {portfolio, assets};
 
     }
-    console.log(data?.portfolio);
+    
     const currentPortfolio = data?.portfolio?.find(portfolio => portfolio.is_default === true);
 
     return (
