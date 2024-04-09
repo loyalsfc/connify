@@ -20,7 +20,7 @@ function ExchangeContent({exchanges}) {
                 {
                     exchanges?.map((item, index) => {
                         if(index > limit) return;
-                        return <Link href={`/exchanges/${item.slug}`} key={item.id}>
+                        return <Link href={`/exchanges/${item.slug}`} className='hover:scale-105 transition-all' key={item.id}>
                             <div className='flex flex-col items-center gap-4 hover:bg-news-grey p-2 md:p-4 rounded-lg'>
                                 <Image
                                     src={getExchangeImage(item.id)}

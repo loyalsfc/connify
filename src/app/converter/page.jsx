@@ -10,7 +10,7 @@ function Converter() {
     const [quantity, setQuantity] = useState(1)
 
     const {data, isLoading, mutate} = useSWR(
-        `v2/tools/price-conversion?amount=${quantity}&id=${fromCurrency.id}&convert=${toCurrency.symbol}`,
+        `/api/price-conversion?amount=${quantity}&id=${fromCurrency.id}&convert=${toCurrency.symbol}`,
         fetcher
     )
 
@@ -80,7 +80,7 @@ function Converter() {
                             </div>
                         </div>
                         <div className='flex justify-center' onClick={()=>mutate()}>
-                            <button className='py-1.5 px-3.5 rounded-md border-faded-grey border bg-white text-sm'>Refresh</button>
+                            <button className='py-1.5 px-3.5 rounded-md border-faded-grey border bg-white text-sm hover:bg-green-400 hover:text-white'>Refresh</button>
                         </div>
                     </div>
                 </article>
