@@ -33,7 +33,7 @@ function Transaction({coin, hideFunction, callbackFunc}) {
 export function BuySellComponent({type, coin, callbackFunc, hideFunction}){
     const submitBtn = useRef()
     const {data: coinData, error} = useSWR(
-        `v2/cryptocurrency/quotes/latest?slug=${coin.slug}`,
+        `/api/coin-details?slug=${coin.slug}`,
         fetcher
     )
     

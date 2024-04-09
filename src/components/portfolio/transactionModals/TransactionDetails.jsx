@@ -1,5 +1,5 @@
 import ModalWrapper from '@/components/modalWrapper'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { FaTimes } from 'react-icons/fa'
 import { formatDate, formatPrice } from '../../../../utils/utils'
 
@@ -10,7 +10,7 @@ function TransactionDetails({hideModal, transaction, showDelete, showEdit, coin_
             <div className='py-5 sm:py-0 h-full sm:h-fit flex flex-col'>
                 <h2 className='text-lg font-medium sm:text-xl flex justify-between items-center mb-3'>
                     Transaction Details
-                    <button onClick={()=>hideModal(false)} className='text'><FaTimes/></button>
+                    <button onClick={()=>hideModal(false)} className='text hover:scale-110 transition-all'><FaTimes/></button>
                 </h2>
                 <ul>
                     <li className='transaction-details'>

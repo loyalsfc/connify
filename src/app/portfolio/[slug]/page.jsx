@@ -28,7 +28,7 @@ function Transactions() {
     const [selectedId, setSelectedId] = useState()
     const {showNotification} = useContext(Context)
     const {data, isLoading} = useSWR(
-        `v2/cryptocurrency/quotes/latest?slug=${slug}`,
+        `/api/coin-details?slug=${slug}`,
         fetcher
     )
     const router = useRouter();
@@ -55,9 +55,7 @@ function Transactions() {
             .eq('slug', slug)
             .eq('user_id', id)
             .limit(1)
-            .single()
-            // .order("date", {ascending: false})
-        
+            .single()        
         return data;
     }
 
@@ -221,7 +219,7 @@ function Transactions() {
                     <h4 className='sm:text-xl font-semibold'><span className='hidden sm:inline'>{coin_name?.name}</span> Transactions</h4>
                     <button 
                         onClick={()=>setShowAddTransaction(true)} 
-                        className="add-transaction"
+                        className="add-transaction hover:opacity-80 transition-all"
                     >
                         <FaPlus/> Add Transaction
                     </button>

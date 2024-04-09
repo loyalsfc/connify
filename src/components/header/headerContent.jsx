@@ -139,7 +139,9 @@ function HeaderContent({metrics, exchanges}) {
                                     className='bg-transparent  w-44'
                                     onClick={()=>setShowSearch(true)}
                                     ref={searchInput}
-                                >Search</div>
+                                >
+                                    Search
+                                </div>
                             </div>
                         </li>
                     </ul>

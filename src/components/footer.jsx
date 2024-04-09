@@ -11,37 +11,37 @@ function Footer() {
                 <Logo className="mb-4 md:mb-0" />
                 <br className='md:hidden mb-4'/>
                 <ListComponent title="About">
-                    <li>About Us</li>
-                    <li>Careers Join Us</li>
-                    <li>Company Blog</li>
-                    <li>Branding Guide</li>
-                    <li>Disclaimer</li>
-                    <li>Terms of Service</li>
-                    <li>Privacy Policy</li>
-                    <li>Ad Policy</li>
+                    <li className="hover:underline cursor-pointer">About Us</li>
+                    <li className="hover:underline cursor-pointer">Careers Join Us</li>
+                    <li className="hover:underline cursor-pointer">Company Blog</li>
+                    <li className="hover:underline cursor-pointer">Branding Guide</li>
+                    <li className="hover:underline cursor-pointer">Disclaimer</li>
+                    <li className="hover:underline cursor-pointer">Terms of Service</li>
+                    <li className="hover:underline cursor-pointer">Privacy Policy</li>
+                    <li className="hover:underline cursor-pointer">Ad Policy</li>
                 </ListComponent>
                 <ListComponent title="Community">
-                    <li>Twitter</li>
-                    <li>Telegram Chat</li>
-                    <li>Telegram News</li>
-                    <li>Instagram</li>
-                    <li>Reddit</li>
-                    <li>Discord</li>
-                    <li>Facebook</li>
-                    <li>Youtube</li>
-                    <li>TikTok</li>
+                    <li className="hover:underline cursor-pointer">Twitter</li>
+                    <li className="hover:underline cursor-pointer">Telegram Chat</li>
+                    <li className="hover:underline cursor-pointer">Telegram News</li>
+                    <li className="hover:underline cursor-pointer">Instagram</li>
+                    <li className="hover:underline cursor-pointer">Reddit</li>
+                    <li className="hover:underline cursor-pointer">Discord</li>
+                    <li className="hover:underline cursor-pointer">Facebook</li>
+                    <li className="hover:underline cursor-pointer">Youtube</li>
+                    <li className="hover:underline cursor-pointer">TikTok</li>
                 </ListComponent>        
                 <ListComponent title="Support">
-                    <li>Request Form</li>
-                    <li>Advertising</li>
-                    <li>Candy Rewards Listing</li>
-                    <li>Help Center</li>
-                    <li>Bug Bounty</li>
-                    <li>FAQ</li>
+                    <li className="hover:underline cursor-pointer">Request Form</li>
+                    <li className="hover:underline cursor-pointer">Advertising</li>
+                    <li className="hover:underline cursor-pointer">Candy Rewards Listing</li>
+                    <li className="hover:underline cursor-pointer">Help Center</li>
+                    <li className="hover:underline cursor-pointer">Bug Bounty</li>
+                    <li className="hover:underline cursor-pointer">FAQ</li>
                 </ListComponent>   
                 <ListComponent title="Donation">
-                    <li>Bitcoin</li>
-                    <li>Ethereum</li>
+                    <li className="hover:underline cursor-pointer">Bitcoin</li>
+                    <li className="hover:underline cursor-pointer">Ethereum</li>
                 </ListComponent>         
             </div>
             <p className='text-sm font-medium sm:font-semibold text-center md:text-left text-medium-grey pt-8 md:pt-16 pb-4'>© 2023 Coinnify. All rights reserved</p>
