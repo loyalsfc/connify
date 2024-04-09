@@ -112,17 +112,23 @@ function HeaderContent({metrics, exchanges}) {
             <div className='header-item gap-6 py-2 lg:py-4 relative'>
                 <Link href="/"><Logo /></Link>
                 <nav className='hidden lg:block' >
-                    <Navigations/>
+                    <Navigations path={pathname}/>
                 </nav>
                 <div className='ml-auto hidden lg:block'>
                     <ul className='flex gap-4 items-center'>
                         <li>
-                            <Link href="/watchlist">
+                            <Link 
+                                href="/watchlist" 
+                                className={`headernavs ${pathname.includes("/watchlist") && "border-b-4"}`}
+                            >
                                 Watchlist
                             </Link>
                         </li>
                         <li>
-                            <Link href="/portfolio">
+                            <Link 
+                                href="/portfolio"
+                                className={`headernavs ${pathname.includes("/portfolio") && "border-b-4"}`}
+                            >
                                 Portfolio
                             </Link>
                         </li>
@@ -152,7 +158,7 @@ function HeaderContent({metrics, exchanges}) {
                     <button onClick={()=>toggleMenu('left-0', '-left-full')} className='ms-auto'><FaTimes /></button>
                 </div>
                 <div className='px-4 pt-8'>
-                    <Navigations />
+                    <Navigations path={pathname}/>
                     {!user ? <div className='gap-3 text-center flex flex-col-reverse mt-8'>
                         <button 
                             onClick={()=>setShowAuthModal({isShown: true, type: 'login'})}  
@@ -182,35 +188,53 @@ function HeaderContent({metrics, exchanges}) {
     )
 }
 
-function Navigations(){
+function Navigations({path}){
     return(
         <ul className='flex flex-col lg:flex-row gap-4 nav-menu'>
             <li>
-                <Link href="/">
+                <Link 
+                    href="/" 
+                    className={`${path === "/" && "border-b-4"} headernavs`}
+                >
                     Cryptocurrencies
                 </Link>
             </li>
             <li>
-                <Link href="/exchanges">
+                <Link 
+                    href="/exchanges" 
+                    className={`${path.includes("/exchanges") && "border-b-4"} headernavs`}
+                >
                     Exchange
                 </Link>
             </li>
             <li>
-                <Link href="/trade-calculator">
+                <Link 
+                    href="/trade-calculator" 
+                    className={`${path.includes("/trade-calculator") && "border-b-4"} headernavs`}
+                >
                     Trade Caculator
                 </Link>
             </li>
             <li>
-                <Link href="/converter">
+                <Link 
+                    href="/converter" 
+                    className={`${path.includes("/converter") && "border-b-4"} headernavs`}
+                >
                     Converter
                 </Link>
             </li>
             <li className='lg:hidden'>
-                <Link href="/watchlist">
+                <Link 
+                    href="/watchlist" 
+                    className='hover:underline hover:text-green-400 border-b py-2 border-b-green-400'
+                >
                     Watchlist
                 </Link></li>
             <li className='lg:hidden'>
-                <Link href="/portfolio">
+                <Link 
+                    href="/portfolio" 
+                    className='hover:underline hover:text-green-400 border-b py-2 border-b-green-400'
+                >
                     Portfolio
                 </Link>
             </li>

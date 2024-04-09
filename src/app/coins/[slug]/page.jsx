@@ -1,5 +1,5 @@
 import React from 'react'
-import { fetcher, formatPrice, makeRequest, makeRequestWithRevalidate, numberToString, toTwoDecimalPlace } from '../../../../utils/utils'
+import { formatPrice, makeRequest, numberToString, toTwoDecimalPlace } from '../../../../utils/utils'
 import Image from 'next/image'
 import { FaAngleDown, FaAngleUp, FaRegFile, FaBattleNet, FaGithub, FaTwitter, FaRedditAlien, FaCommentDots } from 'react-icons/fa'
 import Link from 'next/link'

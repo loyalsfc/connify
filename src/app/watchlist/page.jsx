@@ -5,7 +5,7 @@ import TableWrapper from '@/components/tableWrapper'
 import React, { useContext, useState } from 'react'
 import { fetcher } from '../../../utils/utils'
 import useSWR from 'swr'
-import { FaPlus, FaStar, FaTimes } from 'react-icons/fa'
+import { FaPlus } from 'react-icons/fa'
 import { Context } from '@/context/context'
 import Loader from '@/components/loader'
 import Image from 'next/image'
@@ -14,13 +14,11 @@ import AddFavorite from '@/components/addFavorite'
 function Favorites() {
     const {favorites} = useContext(Context)
     const [showModal, setShowModal] = useState(false)
-    console.log(favorites)
     const {data, isLoading} = useSWR(
-        `v2/cryptocurrency/quotes/latest?id=${favorites.items.join()}`,
+        `/api/coinPrices?id=${favorites.items.join()}`,
         fetcher
     )
     
-    console.log(isLoading, favorites?.isLoading)
     if(isLoading){
         return <Loader />
     }
@@ -44,10 +42,8 @@ function Favorites() {
             </>
         )
     }
-    // console.log(error)
 
-
-    const wishlist = Object.values(data?.data?.data);
+    const wishlist = Object.values(data?.data?.data?.data);
     
     return (
         <>
@@ -56,7 +52,12 @@ function Favorites() {
                 <article className='py-8 px-4 sm:px-8'>
                     <h2 className='text-3xl font-bold'>Crypto Watchlists</h2>
                     <div className='py-4 flex justify-end'>
-                        <button onClick={()=>setShowModal(true)} className='flex items-center gap-2 bg-faded-grey rounded-md font-semibold px-2 py-1 text-sm'><FaPlus/> Add Coins</button>
+                        <button 
+                            onClick={()=>setShowModal(true)} 
+                            className='flex items-center gap-2 bg-faded-grey rounded-md font-semibold px-2 py-1 text-sm'
+                        >
+                            <FaPlus/> Add Coins
+                        </button>
                     </div>
                 </article>
                 <TableWrapper isLoading={isLoading} data={wishlist.sort((a, b) => a.cmc_rank - b.cmc_rank)} />
