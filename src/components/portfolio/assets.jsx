@@ -192,7 +192,7 @@ function Assets({assets, prices, showAddModal}) {
                                     <PercentageChangeRow hide={true} percentChange={getDurationChange(item.coin_name.id, '24h')} />
                                     <PercentageChangeRow hide={true} percentChange={getDurationChange(item.coin_name.id, '7d')} />
                                     <td>
-                                        <Link href={`/portfolio/${item.slug}`}>
+                                        <Link href={`/portfolio/${item.slug}`} className='hover:underline'>
                                             <p>${formatePrice(item.holding * getPrice(item.coin_name.id))}</p>
                                             <p>{item.holding} {item.coin_name.symbol}</p>
                                         </Link>
@@ -206,8 +206,16 @@ function Assets({assets, prices, showAddModal}) {
                                     </td>
                                     <td className='p-2 py-4'>
                                         <div className='flex gap-2 items-center relative'>
-                                            <button className='opacity-40' onClick={(e)=>showMenu(e, item.id)}><FaEllipsisV/></button>
-                                            <RowMenu slug={item.slug} showDeleteModal={setShowDeleteModal}/>    
+                                            <button 
+                                                className='opacity-40 hover:bg-gray-400 h-8 w-4 rounded-sm grid place-content-center' 
+                                                onClick={(e)=>showMenu(e, item.id)}
+                                            >
+                                                <FaEllipsisV/>
+                                            </button>
+                                            <RowMenu 
+                                                slug={item.slug} 
+                                                showDeleteModal={setShowDeleteModal}
+                                            />    
                                         </div>
                                     </td>
                                 </tr>

@@ -1,6 +1,6 @@
 'use client'
 
-import { supabase } from "@/lib/supabaseClient"
+import { supabase } from "../lib/supabaseClient"
 import { createContext, useEffect, useRef, useState } from "react"
 import useSWR from 'swr'
 import { fetcher } from "../../utils/utils"
@@ -14,7 +14,7 @@ const ContextProvider = ({children}) => {
     const [authLoading, setAuthLoading] = useState(true)
     const [favorites, setFavorites] = useState({isLoading: true, items: typeof window !== "undefined" ? (JSON.parse(localStorage.getItem('favorites'))?.items ?? []) : []})
     const {data: coins} = useSWR(
-        'v1/cryptocurrency/map?sort=cmc_rank',
+        '/api/cryptos',
         fetcher
     )
 

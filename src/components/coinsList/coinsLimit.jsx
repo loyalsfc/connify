@@ -10,6 +10,10 @@ function CoinsLimit({pageIndex, metrics, limit}) {
     const lastNumber = Math.ceil(metrics?.data?.active_cryptocurrencies / limit) ;
 
     const handleChange = async(e) => {
+        window.scrollTo({
+            top: 0,
+            behavior: "instant"
+        })
         const value = e.target.value;
         await fetch("/api/cookies",{
             method: "POST",

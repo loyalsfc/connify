@@ -24,7 +24,7 @@ function PortFolio() {
         return assets.map(item => item.coin_name.id)
     },[assets])
     const {data: coinPrices, isLoading: coinPricesLoading, error} = useSWR(
-        `v2/cryptocurrency/quotes/latest?id=${assetsId.join()}`,
+        `/api/coinPrices?id=${assetsId.join()}`,
         fetcher
     )
 
@@ -85,7 +85,7 @@ function PortFolio() {
                         </div>
                     </div>
                     {data?.assets?.length ? (
-                        <Assets assets={assets} prices={coinPrices} showAddModal={setShowCreateModal} />
+                        <Assets assets={assets} prices={coinPrices?.data} showAddModal={setShowCreateModal} />
                     ):
                         <div className='text-center flex flex-col items-center py-8'>
                         <Image
@@ -95,7 +95,12 @@ function PortFolio() {
                             alt='Empty'
                         />
                         <h4 className='text-xl font-semibold mt-4'>This portfolio requires a few finishing touches...</h4>
-                        <button onClick={()=>setShowCreateModal(true)} className='text-green-500'>Add a new coin to get started!</button>
+                        <button 
+                            onClick={()=>setShowCreateModal(true)} 
+                            className='text-green-500'
+                        >
+                            Add a new coin to get started!
+                        </button>
                     </div>
                 }
                 </section>

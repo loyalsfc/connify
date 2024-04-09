@@ -1,4 +1,5 @@
 import axios from "axios"
+export const baseUrl = "https://pro-api.coinmarketcap.com/"
 
 export function numberToString(num){
     if(!num) return;
@@ -20,30 +21,41 @@ export function toTwoDecimalPlace(num){
 }
 
 export const makeRequest = async (url, cache) => {
-    const res = await fetch(process.env.NEXT_PUBLIC_FETCH_URL, {
+    const res = await fetch(`${baseUrl}${url}`, {
         headers: {
             "content-type": "application/json",
+            'X-CMC_PRO_API_KEY': process.env.NEXT_PUBLIC_CMC_API_KEY
         },
-        method: "POST",
-        body: JSON.stringify({url}),
-        cache,
+        cache
+
     })
-    return res.json();
+
+    if(!res.ok){
+        throw new Error("An error occured")
+    }
+
+    const data = await res.json();
+    return data
 }
 
 export const makeRequestWithRevalidate = async (url, revalidation) => {
-    const res = await fetch(process.env.NEXT_PUBLIC_FETCH_URL, {
+    const res = await fetch(`${baseUrl}${url}`, {
         headers: {
             "content-type": "application/json",
+            'X-CMC_PRO_API_KEY': process.env.NEXT_PUBLIC_CMC_API_KEY
         },
-        method: "POST",
-        body: JSON.stringify({url}),
-        revalidation,
+        revalidation
     })
-    return res.json();
+
+    if(!res.ok){
+        throw new Error("An error occured")
+    }
+
+    const data = await res.json();
+    return data;
 }
 
-export const fetcher = (url) => axios.post(process.env.NEXT_PUBLIC_FETCH_URL, {url})
+export const fetcher = (url) => axios.get(url);
 
 export const coinFetcher = (slug) => axios.post(`http://192.168.0.192:5000/api/coin`, {slug})
 

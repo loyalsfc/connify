@@ -18,13 +18,13 @@ function Dropdown({itemCurrency, setItemCurrency}) {
     const wrapper = useRef(null)
 
     const {data, error, isLoading} = useSWR(
-        `v1/fiat/map`,
+        `/api/fiats`,
         fetcher
     )
 
     useEffect(()=>{
         setFiatsList(data?.data?.data)
-        setCoinsList(coins?.data?.data)
+        setCoinsList(coins?.data?.data?.data)
     },[data, coins])
 
     useEffect(() => {
@@ -57,7 +57,7 @@ function Dropdown({itemCurrency, setItemCurrency}) {
     }
 
     function filtering(value){
-        setCoinsList(coins?.data?.data.filter(item => item.name.toLowerCase().includes(value) || item.symbol.toLowerCase().includes(value)))
+        setCoinsList(coins?.data?.data?.data.filter(item => item.name.toLowerCase().includes(value) || item.symbol.toLowerCase().includes(value)))
         setFiatsList(data?.data?.data.filter(item => item.name.toLowerCase().includes(value) || item.symbol.toLowerCase().includes(value) || item.sign.includes(value) ))
     }
 

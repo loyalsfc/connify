@@ -24,9 +24,9 @@ function CoinList({hideModal, handleClick}) {
                 />
             </div>
             <div className='flex-1 overflow-scroll'>
-                {coins?.data?.data?.filter(filterFunction).length ? (<ul> 
+                {coins?.data?.data?.data?.filter(filterFunction).length ? (<ul> 
                     {
-                        coins?.data?.data?.filter(filterFunction)
+                        coins?.data?.data?.data?.filter(filterFunction)
                             .map((coin, index) => {
                                 if(index > 29) return;
                                 return(

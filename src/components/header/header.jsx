@@ -9,11 +9,6 @@ async function getMetrics(){
 }
 
 async function Header() {
-
-    // const {data: exchanges} = useSWR(
-    //     ``,
-    //     fetcher
-    // )
     const {metrics, exchanges} = await getMetrics()
 
     return (
