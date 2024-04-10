@@ -9,8 +9,17 @@ async function getData(pageIndex, limit){
     const index = pageIndex ?? 1;
     const pageLimit = limit ?? 100
     const url = `v1/cryptocurrency/listings/latest?start=${((index - 1) * parseInt(pageLimit)) + 1}&limit=${pageLimit}&convert=USD`
-    const coins = await makeRequest(url, 'no-store')
-    return coins
+    // const coins = await makeRequest(url, 'no-store')
+    const res = await fetch(process.env.NEXT_PUBLIC_URL + `/api/cryptocurrencies?start=${((index - 1) * parseInt(pageLimit)) + 1}&limit=${pageLimit}&convert=USD`, {
+        headers: {
+            "content-type": "application/json",
+            'X-CMC_PRO_API_KEY': process.env.NEXT_PUBLIC_CMC_API_KEY
+        },
+        cache: "no-store",
+    })
+
+    return res.json();
+    // return coins
 }
 
 async function getMetrics(){
