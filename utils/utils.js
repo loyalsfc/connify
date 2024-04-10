@@ -21,10 +21,10 @@ export function toTwoDecimalPlace(num){
 }
 
 export const makeRequest = async (url, cache) => {
-    console.log(process.env.NEXT_PUBLIC_URL + url);
-    const res = await fetch(process.env.NEXT_PUBLIC_URL + url, {
+    const res = await fetch(baseUrl + url, {
         headers: {
             "content-type": "application/json",
+            'X-CMC_PRO_API_KEY': process.env.NEXT_PUBLIC_CMC_API_KEY
         },
         cache,
     })
@@ -33,9 +33,7 @@ export const makeRequest = async (url, cache) => {
 }
 
 export const makeRequestWithRevalidate = async (url, revalidation) => {
-    console.log(url);
-    console.log(process.env.NEXT_PUBLIC_URL + url);
-    const res = await fetch(process.env.NEXT_PUBLIC_URL + url, {
+    const res = await fetch(baseUrl + url, {
         headers: {
             "content-type": "application/json",
             'X-CMC_PRO_API_KEY': process.env.NEXT_PUBLIC_CMC_API_KEY

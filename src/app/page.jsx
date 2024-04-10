@@ -8,13 +8,13 @@ import CoinsLimit from '@/components/coinsList/coinsLimit'
 async function getData(pageIndex, limit){
     const index = pageIndex ?? 1;
     const pageLimit = limit ?? 100
-    const url = `/api/cryptocurrencies?start=${((index - 1) * parseInt(pageLimit)) + 1}&limit=${pageLimit}&convert=USD`
+    const url = `v1/cryptocurrency/listings/latest?start=${((index - 1) * parseInt(pageLimit)) + 1}&limit=${pageLimit}&convert=USD`
     const coins = await makeRequest(url, 'no-store')
     return coins
 }
 
 async function getMetrics(){
-    const metrics = await makeRequestWithRevalidate("/api/coin-metrics", 60)
+    const metrics = await makeRequestWithRevalidate("v1/global-metrics/quotes/latest", 60)
     return metrics
 }
 
@@ -24,6 +24,8 @@ async function Home({searchParams}) {
     const coinsData = getData(searchParams.page, limit?.value)
     const metricsData = getMetrics()
     const [coins, metrics] = await Promise.all([coinsData, metricsData])
+
+    console.log(coins)
     
     return (
         <main>
