@@ -1,9 +1,9 @@
 import React from 'react'
-import { makeRequestWithRevalidate } from '../../../utils/utils'
+import { coinMetrics, makeRequestWithRevalidate } from '../../../utils/utils'
 import HeaderContent from './headerContent'
 
 async function getMetrics(){
-    const metrics = await makeRequestWithRevalidate('v1/global-metrics/quotes/latest', 60);
+    const metrics = await coinMetrics()
     const exchanges = await makeRequestWithRevalidate('v1/exchange/map?sort=volume_24h', 60);
     return {metrics, exchanges};
 }

@@ -1,19 +1,17 @@
 import React from 'react'
 import NewsLetter from '@/components/newsLetter'
 import CoinList from '@/components/coinsList/coinList'
-import { makeRequest, makeRequestWithRevalidate } from '../../utils/utils'
+import { coinMetrics } from '../../utils/utils'
 import { cookies } from 'next/headers'
 import CoinsLimit from '@/components/coinsList/coinsLimit'
 
 async function getData(pageIndex, limit){
     const index = pageIndex ?? 1;
     const pageLimit = limit ?? 100
-    const url = `v1/cryptocurrency/listings/latest?start=${((index - 1) * parseInt(pageLimit)) + 1}&limit=${pageLimit}&convert=USD`
-    // const coins = await makeRequest(url, 'no-store')
-    const res = await fetch(process.env.NEXT_PUBLIC_URL + `/api/cryptocurrencies?start=${((index - 1) * parseInt(pageLimit)) + 1}&limit=${pageLimit}&convert=USD`, {
+    const url = `/api/cryptocurrencies?start=${((index - 1) * parseInt(pageLimit)) + 1}&limit=${pageLimit}&convert=USD`
+    const res = await fetch(process.env.NEXT_PUBLIC_URL + url, {
         headers: {
             "content-type": "application/json",
-            'X-CMC_PRO_API_KEY': process.env.NEXT_PUBLIC_CMC_API_KEY
         },
         cache: "no-store",
     })
@@ -23,7 +21,7 @@ async function getData(pageIndex, limit){
 }
 
 async function getMetrics(){
-    const metrics = await makeRequestWithRevalidate("v1/global-metrics/quotes/latest", 60)
+    const metrics = await coinMetrics()
     return metrics
 }
 

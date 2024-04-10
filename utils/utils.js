@@ -20,13 +20,12 @@ export function toTwoDecimalPlace(num){
     return numberToString(Math.floor(num * 100) / 100)
 }
 
-export const makeRequest = async (url, cache) => {
-    const res = await fetch(baseUrl + url, {
+export const coinMetrics = async () => {
+    const res = await fetch(process.env.NEXT_PUBLIC_URL + `/api/coin-metrics`, {
         headers: {
             "content-type": "application/json",
-            'X-CMC_PRO_API_KEY': process.env.NEXT_PUBLIC_CMC_API_KEY
         },
-        cache,
+        revalidation: 60
     })
 
     return res.json();
