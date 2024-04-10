@@ -1,9 +1,9 @@
 import React from 'react'
-import { makeRequestWithRevalidate } from '../../../utils/utils'
+import { fetchExchanges } from '../../../utils/utils'
 import ExchangeContent from '@/components/exchanges/exchangeContent';
 
 async function getExchanges(){
-    const res = makeRequestWithRevalidate("v1/exchange/map?sort=volume_24h", 60);
+    const res = fetchExchanges("v1/exchange/map?sort=volume_24h");
     return res;
 }
 

@@ -1,19 +1,19 @@
 import React from 'react'
-import { formatPrice, makeRequest, numberToString, toTwoDecimalPlace } from '../../../../utils/utils'
+import { fetchExchanges, formatPrice, makeRequest, numberToString, toTwoDecimalPlace } from '../../../../utils/utils'
 import Image from 'next/image'
 import { FaAngleDown, FaAngleUp, FaRegFile, FaBattleNet, FaGithub, FaTwitter, FaRedditAlien, FaCommentDots } from 'react-icons/fa'
 import Link from 'next/link'
 import CoinToUsd from '@/components/coin-page/coin-page'
 
 async function getCoinData(slug){
-    const coinData = await makeRequest(`v2/cryptocurrency/quotes/latest?slug=${slug}`,'no-store');
-    const metaData = await makeRequest(`v2/cryptocurrency/info?slug=${slug}`, 'no-store');
+    const coinData = await fetchExchanges(`v2/cryptocurrency/quotes/latest?slug=${slug}`);
+    const metaData = await fetchExchanges(`v2/cryptocurrency/info?slug=${slug}`);
     return {coinData, metaData};
 }
 
 export async function generateMetadata({params}, parent){
     const slug = params.slug;
-    const exchangeMetadata = await makeRequest(`v2/cryptocurrency/info?slug=${slug}`);
+    const exchangeMetadata = await fetchExchanges(`v2/cryptocurrency/info?slug=${slug}`);
 
     const id = Object.keys(exchangeMetadata?.data)[0]
 

@@ -46,7 +46,10 @@ function PortFolio() {
     }
 
     async function fetchPortfolio(id){
-        const {data:portfolio, error} = await supabase.from('portfolio').select().eq('user_id', id)
+        const {data:portfolio, error} = await supabase
+            .from('portfolio')
+            .select()
+            .eq('user_id', id)
         if(error){
             console.log(error)
             return;

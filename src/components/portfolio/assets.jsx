@@ -172,7 +172,7 @@ function Assets({assets, prices, showAddModal}) {
                             return(
                                 <tr key={item.id} className='border-b border-faded-grey '>
                                     <td className='sticky left-0 bg-white pr-2'>
-                                        <Link href={`/coins/${item.coin_name.slug}`}>
+                                        <Link href={`/coins/${item.coin_name.slug}`} className='hover:underline'>
                                             <div className='flex items-center gap-3 font-semibold px-2 py-3'>
                                                 <Image
                                                     src={getImage(item.coin_name.id)}
@@ -192,7 +192,7 @@ function Assets({assets, prices, showAddModal}) {
                                     <PercentageChangeRow hide={true} percentChange={getDurationChange(item.coin_name.id, '24h')} />
                                     <PercentageChangeRow hide={true} percentChange={getDurationChange(item.coin_name.id, '7d')} />
                                     <td>
-                                        <Link href={`/portfolio/${item.slug}`}>
+                                        <Link href={`/portfolio/${item.slug}`} className='hover:underline hover:text-green-400'>
                                             <p>${formatePrice(item.holding * getPrice(item.coin_name.id))}</p>
                                             <p>{item.holding} {item.coin_name.symbol}</p>
                                         </Link>
@@ -204,9 +204,9 @@ function Assets({assets, prices, showAddModal}) {
                                             {profitPercent}%
                                         </p>
                                     </td>
-                                    <td className='p-2 py-4'>
+                                    <td className='p-1 py-2'>
                                         <div className='flex gap-2 items-center relative'>
-                                            <button className='opacity-40' onClick={(e)=>showMenu(e, item.id)}><FaEllipsisV/></button>
+                                            <button className='opacity-40 w-4 h-5 hover:bg-green-400 grid place-content-center' onClick={(e)=>showMenu(e, item.id)}><FaEllipsisV/></button>
                                             <RowMenu slug={item.slug} showDeleteModal={setShowDeleteModal}/>    
                                         </div>
                                     </td>

@@ -42,6 +42,19 @@ export const makeRequestWithRevalidate = async (url, revalidation) => {
     return res.json();
 }
 
+export const fetchExchanges = async (url) => {
+    const res = await fetch(process.env.NEXT_PUBLIC_URL + `/api/dataFetching`, {
+        headers: {
+            "content-type": "application/json",
+        },
+        revalidation: 60,
+        method: "POST",
+        body: JSON.stringify({url})
+    })
+
+    return res.json();
+}
+
 export const fetcher = (url) => axios.post("/api/dataFetching", {url})
 
 export const coinFetcher = (slug) => axios.post(`http://192.168.0.192:5000/api/coin`, {slug})

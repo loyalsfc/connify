@@ -1,5 +1,5 @@
 import React from 'react'
-import {  makeRequestWithRevalidate, numberToString, toTwoDecimalPlace } from '../../../../utils/utils'
+import {  fetchExchanges, numberToString, toTwoDecimalPlace } from '../../../../utils/utils'
 import Image from 'next/image'
 import { FaComment, FaDollarSign, FaLink, FaTwitter } from 'react-icons/fa'
 import Link from 'next/link'
@@ -9,15 +9,15 @@ import ExchangeAssets from '@/components/exchanges/exhangePage/exchangeAssets'
 import AssetCharts from '@/components/exchanges/exhangePage/assetCharts'
 
 async function getExchangeInfo(slug){
-    const exchangeMetadata = await makeRequestWithRevalidate(`v1/exchange/info?slug=${slug}`, 60);
+    const exchangeMetadata = await fetchExchanges(`v1/exchange/info?slug=${slug}`);
     const exchangeId = exchangeMetadata?.data[slug]?.id;
-    const exchangeAssets = await makeRequestWithRevalidate(`v1/exchange/assets?id=${exchangeId}`, 60);
+    const exchangeAssets = await fetchExchanges(`v1/exchange/assets?id=${exchangeId}`);
     return {exchangeMetadata, exchangeAssets};
 }
 
 export async function generateMetadata({params}, parent){
     const slug = params.slug;
-    const exchangeMetadata = await makeRequestWithRevalidate(`v1/exchange/info?slug=${slug}`, 60);
+    const exchangeMetadata = await fetchExchanges(`v1/exchange/info?slug=${slug}`);
 
     return {
         title: exchangeMetadata?.data[slug]?.name,

@@ -10,46 +10,55 @@ function Footer() {
             <div className="flex flex-col md:flex-row items-start justify-between">
                 <Logo className="mb-4 md:mb-0" />
                 <br className='md:hidden mb-4'/>
-                <ListComponent title="About">
-                    <li>About Us</li>
-                    <li>Careers Join Us</li>
-                    <li>Company Blog</li>
-                    <li>Branding Guide</li>
-                    <li>Disclaimer</li>
-                    <li>Terms of Service</li>
-                    <li>Privacy Policy</li>
-                    <li>Ad Policy</li>
-                </ListComponent>
-                <ListComponent title="Community">
-                    <li>Twitter</li>
-                    <li>Telegram Chat</li>
-                    <li>Telegram News</li>
-                    <li>Instagram</li>
-                    <li>Reddit</li>
-                    <li>Discord</li>
-                    <li>Facebook</li>
-                    <li>Youtube</li>
-                    <li>TikTok</li>
-                </ListComponent>        
-                <ListComponent title="Support">
-                    <li>Request Form</li>
-                    <li>Advertising</li>
-                    <li>Candy Rewards Listing</li>
-                    <li>Help Center</li>
-                    <li>Bug Bounty</li>
-                    <li>FAQ</li>
-                </ListComponent>   
-                <ListComponent title="Donation">
-                    <li>Bitcoin</li>
-                    <li>Ethereum</li>
-                </ListComponent>         
+                <ListComponent 
+                    title="About"
+                    contents={[
+                        "About Us",
+                        "Careers Join Us",
+                        "Company Blog",
+                        "Branding Guide",
+                        "Disclaimer",
+                        "Terms of Service",
+                        "Privacy Policy",
+                        "Ad Policy",
+                    ]}
+                />
+                <ListComponent 
+                    title="Community"
+                    contents={[
+                        "Twitter",
+                        "Telegram Chat",
+                        "Telegram News",
+                        "Instagram",
+                        "Reddit",
+                        "Discord",
+                        "Facebook",
+                        "Youtube",
+                        "TikTok",
+                    ]}
+                />        
+                <ListComponent 
+                    title="Support"
+                    contents={[
+                        "Request Form",
+                        "Advertising",
+                        "Candy Rewards Listing",
+                        "Help Center",
+                        "Bug Bounty",
+                        "FAQ",
+                    ]}
+                />   
+                <ListComponent 
+                    title="Donation" 
+                    contents={["Bitcoin", "Ethereum"]} 
+                />
             </div>
             <p className='text-sm font-medium sm:font-semibold text-center md:text-left text-medium-grey pt-8 md:pt-16 pb-4'>© 2023 Coinnify. All rights reserved</p>
         </footer>
     )
 }
 
-function ListComponent({title, children}){
+function ListComponent({title, contents}){
     const handleClick = (e) => {
         e.currentTarget.nextElementSibling.classList.replace('hidden', 'flex')
     }
@@ -62,7 +71,9 @@ function ListComponent({title, children}){
                 </button>
             </h4>
             <ul className='hidden md:flex flex-col gap-4 pl-4 md:pl-0 font-medium mb-4 md:mb-0'>
-                {children}
+                {contents?.map((item, index) => {
+                    return <li className="hover:underline cursor-pointer hover:text-green-400" key={index}>{item}</li>
+                })}
             </ul>
         </div>
     )
