@@ -95,7 +95,7 @@ function PortFolio() {
                             alt='Empty'
                         />
                         <h4 className='text-xl font-semibold mt-4'>This portfolio requires a few finishing touches...</h4>
-                        <button onClick={()=>setShowCreateModal(true)} className='text-green-500'>Add a new coin to get started!</button>
+                        <button onClick={()=>setShowCreateModal(true)} className='text-green-500 hover:opacity-90 transition-all'>Add a new coin to get started!</button>
                     </div>
                 }
                 </section>

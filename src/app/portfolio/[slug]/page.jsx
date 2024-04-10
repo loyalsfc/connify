@@ -221,7 +221,7 @@ function Transactions() {
                     <h4 className='sm:text-xl font-semibold'><span className='hidden sm:inline'>{coin_name?.name}</span> Transactions</h4>
                     <button 
                         onClick={()=>setShowAddTransaction(true)} 
-                        className="add-transaction"
+                        className="add-transaction hover:opacity-80 transition-all"
                     >
                         <FaPlus/> Add Transaction
                     </button>

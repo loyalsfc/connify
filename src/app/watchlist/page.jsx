@@ -5,7 +5,7 @@ import TableWrapper from '@/components/tableWrapper'
 import React, { useContext, useState } from 'react'
 import { fetcher } from '../../../utils/utils'
 import useSWR from 'swr'
-import { FaPlus, FaStar, FaTimes } from 'react-icons/fa'
+import { FaPlus } from 'react-icons/fa'
 import { Context } from '@/context/context'
 import Loader from '@/components/loader'
 import Image from 'next/image'
@@ -14,13 +14,12 @@ import AddFavorite from '@/components/addFavorite'
 function Favorites() {
     const {favorites} = useContext(Context)
     const [showModal, setShowModal] = useState(false)
-    console.log(favorites)
+    
     const {data, isLoading} = useSWR(
         `v2/cryptocurrency/quotes/latest?id=${favorites.items.join()}`,
         fetcher
     )
     
-    console.log(isLoading, favorites?.isLoading)
     if(isLoading){
         return <Loader />
     }
