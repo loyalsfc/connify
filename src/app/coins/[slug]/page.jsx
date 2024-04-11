@@ -6,14 +6,19 @@ import Link from 'next/link'
 import CoinToUsd from '@/components/coin-page/coin-page'
 
 async function getCoinData(slug){
-    const coinData = await fetchExchanges(`v2/cryptocurrency/quotes/latest?slug=${slug}`);
-    const metaData = await fetchExchanges(`v2/cryptocurrency/info?slug=${slug}`);
-    return {coinData, metaData};
+    const res = await fetch(process.env.NEXT_PUBLIC_URL + `/api/cryptocurrency-info?slug=${slug}`, {
+        headers: {
+            "content-type": "application/json",
+        },
+        cache: "no-store",
+    })
+
+    return res.json();
 }
 
 export async function generateMetadata({params}, parent){
     const slug = params.slug;
-    const exchangeMetadata = await fetchExchanges(`v2/cryptocurrency/info?slug=${slug}`);
+    const exchangeMetadata = await getCoinData(slug);
 
     const id = Object.keys(exchangeMetadata?.data)[0]
 
@@ -26,7 +31,9 @@ async function CoinPage({params}) {
     const {coinData, metaData} = await getCoinData(params.slug)
 
     const id = Object.keys(coinData?.data)[0]
+
     const coinInfo = {...metaData?.data[id], ...coinData?.data[id]}
+    
     const {logo, name, symbol, quote, cmc_rank, circulating_supply, total_supply, max_supply, infinite_supply, description, urls} = coinInfo
     const {market_cap, volume_24h, fully_diluted_market_cap, price} = quote?.USD
     const {technical_doc, website, source_code, twitter, reddit, message_board, explorer} = urls

@@ -9,10 +9,6 @@ import ExchangeAssets from '@/components/exchanges/exhangePage/exchangeAssets'
 import AssetCharts from '@/components/exchanges/exhangePage/assetCharts'
 
 async function getExchangeInfo(slug){
-    // const exchangeMetadata = await fetchExchanges(`v1/exchange/info?slug=${slug}`);
-    // const exchangeId = exchangeMetadata?.data[slug]?.id;
-    // const exchangeAssets = await fetchExchanges(`v1/exchange/assets?id=${exchangeId}`);
-    // return {exchangeMetadata, exchangeAssets};
     const res = await fetch(process.env.NEXT_PUBLIC_URL + `/api/exchanges-info?slug=${slug}`, {
         headers: {
             "content-type": "application/json",
