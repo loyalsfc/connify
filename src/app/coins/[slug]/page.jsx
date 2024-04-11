@@ -1,5 +1,5 @@
 import React from 'react'
-import { fetchExchanges, formatPrice, makeRequest, numberToString, toTwoDecimalPlace } from '../../../../utils/utils'
+import { formatPrice, numberToString, toTwoDecimalPlace } from '../../../../utils/utils'
 import Image from 'next/image'
 import { FaAngleDown, FaAngleUp, FaRegFile, FaBattleNet, FaGithub, FaTwitter, FaRedditAlien, FaCommentDots } from 'react-icons/fa'
 import Link from 'next/link'
@@ -20,10 +20,10 @@ export async function generateMetadata({params}, parent){
     const slug = params.slug;
     const exchangeMetadata = await getCoinData(slug);
 
-    const id = Object.keys(exchangeMetadata?.data)[0]
+    const id = Object.keys(exchangeMetadata?.metaData?.data)[0]
 
     return {
-        title: exchangeMetadata?.data[id]?.name,
+        title: exchangeMetadata?.metaData?.data[id]?.name,
     }
 }
 
@@ -33,7 +33,7 @@ async function CoinPage({params}) {
     const id = Object.keys(coinData?.data)[0]
 
     const coinInfo = {...metaData?.data[id], ...coinData?.data[id]}
-    
+
     const {logo, name, symbol, quote, cmc_rank, circulating_supply, total_supply, max_supply, infinite_supply, description, urls} = coinInfo
     const {market_cap, volume_24h, fully_diluted_market_cap, price} = quote?.USD
     const {technical_doc, website, source_code, twitter, reddit, message_board, explorer} = urls
