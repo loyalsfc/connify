@@ -1,10 +1,16 @@
 import React from 'react'
-import { fetchExchanges } from '../../../utils/utils'
 import ExchangeContent from '@/components/exchanges/exchangeContent';
 
 async function getExchanges(){
-    const res = fetchExchanges("v1/exchange/map?sort=volume_24h");
-    return res;
+    const url = "/api/exchanges";
+    const res = await fetch(process.env.NEXT_PUBLIC_URL + url, {
+        headers: {
+            "content-type": "application/json",
+        },
+        cache: "no-store",
+    })
+
+    return res.json();
 }
 
 export const metadata = {

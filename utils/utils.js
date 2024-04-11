@@ -47,7 +47,6 @@ export const fetchExchanges = async (url) => {
         headers: {
             "content-type": "application/json",
         },
-        revalidation: 60,
         method: "POST",
         body: JSON.stringify({url})
     })
