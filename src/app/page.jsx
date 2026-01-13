@@ -31,8 +31,6 @@ async function Home({searchParams}) {
     const coinsData = getData(searchParams.page, limit?.value)
     const metricsData = getMetrics()
     const [coins, metrics] = await Promise.all([coinsData, metricsData])
-
-    console.log(coins)
     
     return (
         <main>
